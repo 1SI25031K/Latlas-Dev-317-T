@@ -72,7 +72,10 @@
     "profileAvatar": "Profile image",
     "avatarUploading": "Uploading...",
     "shareAvatarWithStudents": "Show profile image to students",
-    "profileSave": "Save"
+    "profileSave": "Save",
+    "profileEdit": "Edit",
+    "profileClose": "Close",
+    "profileNoName": "No name set"
   },
   "onboarding": {
     "title": "Set up your profile",

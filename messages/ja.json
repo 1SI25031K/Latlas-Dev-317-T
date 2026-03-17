@@ -72,7 +72,10 @@
     "profileAvatar": "プロフィール画像",
     "avatarUploading": "アップロード中...",
     "shareAvatarWithStudents": "生徒にプロフィール画像を表示する",
-    "profileSave": "保存"
+    "profileSave": "保存",
+    "profileEdit": "編集",
+    "profileClose": "閉じる",
+    "profileNoName": "名前未設定"
   },
   "onboarding": {
     "title": "プロフィールを設定",

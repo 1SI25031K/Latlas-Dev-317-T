@@ -72,7 +72,10 @@
     "profileAvatar": "Profilbild",
     "avatarUploading": "Hochladen...",
     "shareAvatarWithStudents": "Profilbild für Studierende anzeigen",
-    "profileSave": "Speichern"
+    "profileSave": "Speichern",
+    "profileEdit": "Bearbeiten",
+    "profileClose": "Schließen",
+    "profileNoName": "Kein Name"
   },
   "onboarding": {
     "title": "Profil einrichten",

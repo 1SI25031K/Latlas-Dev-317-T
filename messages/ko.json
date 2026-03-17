@@ -72,7 +72,10 @@
     "profileAvatar": "프로필 이미지",
     "avatarUploading": "업로드 중...",
     "shareAvatarWithStudents": "학생에게 프로필 이미지 표시",
-    "profileSave": "저장"
+    "profileSave": "저장",
+    "profileEdit": "편집",
+    "profileClose": "닫기",
+    "profileNoName": "이름 없음"
   },
   "onboarding": {
     "title": "프로필 설정",

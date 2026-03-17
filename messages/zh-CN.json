@@ -72,7 +72,10 @@
     "profileAvatar": "头像",
     "avatarUploading": "上传中...",
     "shareAvatarWithStudents": "向学生显示头像",
-    "profileSave": "保存"
+    "profileSave": "保存",
+    "profileEdit": "编辑",
+    "profileClose": "关闭",
+    "profileNoName": "未设置姓名"
   },
   "onboarding": {
     "title": "设置个人资料",

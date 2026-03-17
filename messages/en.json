@@ -1,0 +1,72 @@
+{
+  "common": {
+    "appName": "Latlas",
+    "loading": "Loading..."
+  },
+  "auth": {
+    "login": "Log in",
+    "signup": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full name",
+    "loginTitle": "Log in",
+    "signupTitle": "Create account",
+    "loginButton": "Log in",
+    "signupButton": "Sign up",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "goToSignup": "Sign up",
+    "goToLogin": "Log in"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "classes": "Classes",
+    "createClass": "Create class",
+    "monitoring": "Monitoring",
+    "settings": "Settings",
+    "profile": "Profile",
+    "noClasses": "No classes yet",
+    "createFirstClass": "Create your first class"
+  },
+  "class": {
+    "name": "Class name",
+    "accessCode": "Access code",
+    "createdAt": "Created",
+    "password": "Password",
+    "createTitle": "Create class",
+    "namePlaceholder": "Enter class name"
+  },
+  "monitoring": {
+    "title": "Monitoring",
+    "subtitle": "Monitor student activity"
+  },
+  "settings": {
+    "title": "Settings",
+    "comingSoon": "Settings will be implemented in a later phase.",
+    "language": "Language",
+    "appearance": "Appearance",
+    "background": "Background",
+    "fontSize": "Font size",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "fontSizeSmall": "Small",
+    "fontSizeMedium": "Medium",
+    "fontSizeLarge": "Large",
+    "themeGray": "Gray",
+    "themeBlue": "Blue",
+    "themeGreen": "Green",
+    "themeTeal": "Teal",
+    "themeRed": "Red",
+    "themeOrange": "Orange",
+    "themeYellow": "Yellow",
+    "themeAmber": "Amber",
+    "themePurple": "Purple",
+    "themePink": "Pink",
+    "themeIndigo": "Indigo",
+    "themeCyan": "Cyan"
+  },
+  "locale": {
+    "ja": "日本語",
+    "en": "English"
+  }
+}

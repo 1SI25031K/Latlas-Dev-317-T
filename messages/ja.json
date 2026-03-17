@@ -1,0 +1,72 @@
+{
+  "common": {
+    "appName": "Latlas",
+    "loading": "読み込み中..."
+  },
+  "auth": {
+    "login": "ログイン",
+    "signup": "新規登録",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "fullName": "氏名",
+    "loginTitle": "ログイン",
+    "signupTitle": "アカウントを作成",
+    "loginButton": "ログイン",
+    "signupButton": "登録",
+    "noAccount": "アカウントをお持ちでない方",
+    "hasAccount": "すでにアカウントをお持ちの方",
+    "goToSignup": "新規登録",
+    "goToLogin": "ログイン"
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "classes": "クラス一覧",
+    "createClass": "クラスを新規作成",
+    "monitoring": "モニタリング",
+    "settings": "設定",
+    "profile": "プロフィール",
+    "noClasses": "クラスがありません",
+    "createFirstClass": "最初のクラスを作成してください"
+  },
+  "class": {
+    "name": "クラス名",
+    "accessCode": "アクセスコード",
+    "createdAt": "作成日",
+    "password": "パスワード",
+    "createTitle": "クラスを新規作成",
+    "namePlaceholder": "クラス名を入力"
+  },
+  "monitoring": {
+    "title": "モニタリング",
+    "subtitle": "生徒のアクティビティを監視"
+  },
+  "settings": {
+    "title": "設定",
+    "comingSoon": "設定は後続フェーズで実装します。",
+    "language": "言語",
+    "appearance": "表示",
+    "background": "背景",
+    "fontSize": "文字サイズ",
+    "themeLight": "ライト",
+    "themeDark": "ダーク",
+    "fontSizeSmall": "小",
+    "fontSizeMedium": "中",
+    "fontSizeLarge": "大",
+    "themeGray": "グレー",
+    "themeBlue": "ブルー",
+    "themeGreen": "グリーン",
+    "themeTeal": "ティール",
+    "themeRed": "レッド",
+    "themeOrange": "オレンジ",
+    "themeYellow": "イエロー",
+    "themeAmber": "アンバー",
+    "themePurple": "パープル",
+    "themePink": "ピンク",
+    "themeIndigo": "インディゴ",
+    "themeCyan": "シアン"
+  },
+  "locale": {
+    "ja": "日本語",
+    "en": "English"
+  }
+}

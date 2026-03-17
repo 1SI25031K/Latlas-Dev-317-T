@@ -42,17 +42,25 @@ export async function middleware(request: NextRequest) {
   const basePath = isLocale ? pathname.slice(locale.length + 1) || "/" : pathname;
   const isDashboard =
     basePath === "/dashboard" || basePath.startsWith("/dashboard/");
-  const isAuthPage = basePath === "/login" || basePath === "/signup";
+  const isOnboarding = basePath === "/onboarding";
 
   if (isLocale && isDashboard && !session) {
     const url = request.nextUrl.clone();
     url.pathname = `/${locale}/login`;
     return NextResponse.redirect(url);
   }
-  if (isLocale && isAuthPage && session) {
-    const url = request.nextUrl.clone();
-    url.pathname = `/${locale}/dashboard`;
-    return NextResponse.redirect(url);
+
+  if (isLocale && session && isOnboarding) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("onboarding_completed_at")
+      .eq("id", session.user.id)
+      .single();
+    if (profile?.onboarding_completed_at) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${locale}/dashboard`;
+      return NextResponse.redirect(url);
+    }
   }
 
   return intlResponse;

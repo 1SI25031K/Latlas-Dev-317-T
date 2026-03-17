@@ -21,7 +21,8 @@
   "dashboard": {
     "title": "Dashboard",
     "home": "Home",
-    "accountSubtitle": "Your personal account",
+    "accountSubtitle": "Ihr Konto",
+    "signOut": "Abmelden",
     "classes": "Classes",
     "showMore": "Show more",
     "createClass": "Create class",
@@ -58,7 +59,32 @@
     "fontSizeMedium": "Medium",
     "fontSizeLarge": "Large",
     "iconAnimations": "Symbolanimationen",
-    "iconAnimationsDescription": "Symbole beim Hover animieren"
+    "iconAnimationsDescription": "Symbole beim Hover animieren",
+    "profile": "Profil",
+    "profileUpdateLimit": "Sie können Ihr Profil nur einmal alle 24 Stunden ändern.",
+    "profileUpdateNext": "Nächste Änderung möglich in",
+    "profileUpdateHours": "Stunden",
+    "profileFullName": "Anzeigename",
+    "profileTitle": "Position",
+    "profileTitlePlaceholder": "z. B. Professor, TA",
+    "profileDepartment": "Abteilung",
+    "profileDepartmentPlaceholder": "z. B. Ingenieurwesen, Informatik",
+    "profileAvatar": "Profilbild",
+    "avatarUploading": "Hochladen...",
+    "shareAvatarWithStudents": "Profilbild für Studierende anzeigen",
+    "profileSave": "Speichern"
+  },
+  "onboarding": {
+    "title": "Profil einrichten",
+    "fullName": "Anzeigename",
+    "titleLabel": "Position",
+    "titlePlaceholder": "z. B. Professor, TA",
+    "department": "Abteilung",
+    "departmentPlaceholder": "z. B. Ingenieurwesen, Informatik",
+    "avatarUrl": "Profilbild",
+    "avatarUrlPlaceholder": "Bild auswählen",
+    "avatarUploading": "Hochladen...",
+    "submit": "Speichern und zum Dashboard"
   },
   "locale": {
     "ja": "日本語",

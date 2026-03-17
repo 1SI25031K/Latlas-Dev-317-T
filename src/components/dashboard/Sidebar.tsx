@@ -19,9 +19,10 @@ type SidebarProps = {
   classes: Class[];
   profileName: string | null;
   userEmail: string | null;
+  avatarUrl?: string | null;
 };
 
-export function Sidebar({ locale, classes, profileName, userEmail }: SidebarProps) {
+export function Sidebar({ locale, classes, profileName, userEmail, avatarUrl }: SidebarProps) {
   const t = useTranslations("dashboard");
   const pathname = usePathname();
   const supabase = createClient();
@@ -72,13 +73,21 @@ export function Sidebar({ locale, classes, profileName, userEmail }: SidebarProp
       <div className="border-b p-3" style={{ borderColor: "var(--dashboard-border)" }}>
         <div className="flex items-center gap-3">
           <div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border"
+            className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full border"
             style={{
               backgroundColor: "var(--dashboard-card)",
               borderColor: "var(--dashboard-border)",
             }}
           >
-            {iconWrap("h-4 w-4", "", <User className="h-4 w-4" style={{ color: "var(--dashboard-text-muted)" }} />)}
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt=""
+                className="h-8 w-8 object-cover"
+              />
+            ) : (
+              iconWrap("h-4 w-4", "", <User className="h-4 w-4" style={{ color: "var(--dashboard-text-muted)" }} />)
+            )}
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>
@@ -153,7 +162,7 @@ export function Sidebar({ locale, classes, profileName, userEmail }: SidebarProp
           style={{ color: "var(--dashboard-text-muted)" }}
         >
           {iconWrap("h-4 w-4", "group-hover:translate-x-0.5", <LogOut className="h-4 w-4" />)}
-          Sign out
+          {t("signOut")}
         </button>
       </div>
     </aside>

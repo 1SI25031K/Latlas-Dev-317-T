@@ -21,7 +21,8 @@
   "dashboard": {
     "title": "Dashboard",
     "home": "Home",
-    "accountSubtitle": "Your personal account",
+    "accountSubtitle": "您的账户",
+    "signOut": "退出登录",
     "classes": "Classes",
     "showMore": "Show more",
     "createClass": "Create class",
@@ -58,7 +59,32 @@
     "fontSizeMedium": "Medium",
     "fontSizeLarge": "Large",
     "iconAnimations": "图标动画",
-    "iconAnimationsDescription": "悬停时播放图标动画"
+    "iconAnimationsDescription": "悬停时播放图标动画",
+    "profile": "个人资料",
+    "profileUpdateLimit": "个人资料每24小时只能修改一次。",
+    "profileUpdateNext": "下次可修改时间：",
+    "profileUpdateHours": "小时后",
+    "profileFullName": "显示名称",
+    "profileTitle": "职位",
+    "profileTitlePlaceholder": "如：教授、助教",
+    "profileDepartment": "所属",
+    "profileDepartmentPlaceholder": "如：工学部、信息学研究科",
+    "profileAvatar": "头像",
+    "avatarUploading": "上传中...",
+    "shareAvatarWithStudents": "向学生显示头像",
+    "profileSave": "保存"
+  },
+  "onboarding": {
+    "title": "设置个人资料",
+    "fullName": "显示名称",
+    "titleLabel": "职位",
+    "titlePlaceholder": "如：教授、助教",
+    "department": "所属",
+    "departmentPlaceholder": "如：工学部、信息学研究科",
+    "avatarUrl": "头像",
+    "avatarUrlPlaceholder": "选择图片",
+    "avatarUploading": "上传中...",
+    "submit": "保存并进入控制台"
   },
   "locale": {
     "ja": "日本語",

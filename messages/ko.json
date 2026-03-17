@@ -21,7 +21,8 @@
   "dashboard": {
     "title": "Dashboard",
     "home": "Home",
-    "accountSubtitle": "Your personal account",
+    "accountSubtitle": "내 계정",
+    "signOut": "로그아웃",
     "classes": "Classes",
     "showMore": "Show more",
     "createClass": "Create class",
@@ -58,7 +59,32 @@
     "fontSizeMedium": "Medium",
     "fontSizeLarge": "Large",
     "iconAnimations": "아이콘 애니메이션",
-    "iconAnimationsDescription": "마우스를 올리면 아이콘 애니메이션 재생"
+    "iconAnimationsDescription": "마우스를 올리면 아이콘 애니메이션 재생",
+    "profile": "프로필",
+    "profileUpdateLimit": "프로필은 24시간에 한 번만 변경할 수 있습니다.",
+    "profileUpdateNext": "다음 변경 가능까지",
+    "profileUpdateHours": "시간",
+    "profileFullName": "표시 이름",
+    "profileTitle": "직함",
+    "profileTitlePlaceholder": "예: 교수, TA",
+    "profileDepartment": "소속",
+    "profileDepartmentPlaceholder": "예: 공학부, 정보학연구과",
+    "profileAvatar": "프로필 이미지",
+    "avatarUploading": "업로드 중...",
+    "shareAvatarWithStudents": "학생에게 프로필 이미지 표시",
+    "profileSave": "저장"
+  },
+  "onboarding": {
+    "title": "프로필 설정",
+    "fullName": "표시 이름",
+    "titleLabel": "직함",
+    "titlePlaceholder": "예: 교수, TA",
+    "department": "소속",
+    "departmentPlaceholder": "예: 공학부, 정보학연구과",
+    "avatarUrl": "프로필 이미지",
+    "avatarUrlPlaceholder": "이미지 선택",
+    "avatarUploading": "업로드 중...",
+    "submit": "저장하고 대시보드로"
   },
   "locale": {
     "ja": "日本語",

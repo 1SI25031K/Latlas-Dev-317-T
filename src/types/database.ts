@@ -5,6 +5,12 @@ export type Profile = {
   full_name: string | null;
   role: UserRole;
   email: string | null;
+  title: string | null;
+  department: string | null;
+  avatar_url: string | null;
+  onboarding_completed_at: string | null;
+  profile_updated_at: string | null;
+  share_avatar_with_students: boolean;
 };
 
 export type Class = {
@@ -26,4 +32,10 @@ export type ProfileInsert = {
   full_name?: string | null;
   role?: UserRole;
   email?: string | null;
+  title?: string | null;
+  department?: string | null;
+  avatar_url?: string | null;
+  onboarding_completed_at?: string | null;
+  profile_updated_at?: string | null;
+  share_avatar_with_students?: boolean;
 };

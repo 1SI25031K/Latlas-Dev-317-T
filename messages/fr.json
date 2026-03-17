@@ -21,7 +21,8 @@
   "dashboard": {
     "title": "Dashboard",
     "home": "Home",
-    "accountSubtitle": "Your personal account",
+    "accountSubtitle": "Votre compte",
+    "signOut": "Déconnexion",
     "classes": "Classes",
     "showMore": "Show more",
     "createClass": "Create class",
@@ -58,7 +59,32 @@
     "fontSizeMedium": "Medium",
     "fontSizeLarge": "Large",
     "iconAnimations": "Animation des icônes",
-    "iconAnimationsDescription": "Animer les icônes au survol"
+    "iconAnimationsDescription": "Animer les icônes au survol",
+    "profile": "Profil",
+    "profileUpdateLimit": "Vous ne pouvez modifier votre profil qu'une fois toutes les 24 heures.",
+    "profileUpdateNext": "Prochaine modification possible dans",
+    "profileUpdateHours": "heures",
+    "profileFullName": "Nom d'affichage",
+    "profileTitle": "Titre",
+    "profileTitlePlaceholder": "ex. Professeur, TA",
+    "profileDepartment": "Département",
+    "profileDepartmentPlaceholder": "ex. Génie, École d'informatique",
+    "profileAvatar": "Image de profil",
+    "avatarUploading": "Téléchargement...",
+    "shareAvatarWithStudents": "Afficher l'image de profil aux étudiants",
+    "profileSave": "Enregistrer"
+  },
+  "onboarding": {
+    "title": "Configurer votre profil",
+    "fullName": "Nom d'affichage",
+    "titleLabel": "Titre",
+    "titlePlaceholder": "ex. Professeur, TA",
+    "department": "Département",
+    "departmentPlaceholder": "ex. Génie, École d'informatique",
+    "avatarUrl": "Image de profil",
+    "avatarUrlPlaceholder": "Choisir une image",
+    "avatarUploading": "Téléchargement...",
+    "submit": "Enregistrer et aller au tableau de bord"
   },
   "locale": {
     "ja": "日本語",

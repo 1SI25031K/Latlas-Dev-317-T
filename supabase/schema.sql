@@ -9,7 +9,13 @@ CREATE TABLE IF NOT EXISTS profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name TEXT,
   role user_role NOT NULL DEFAULT 'teacher',
-  email TEXT
+  email TEXT,
+  title TEXT,
+  department TEXT,
+  avatar_url TEXT,
+  onboarding_completed_at TIMESTAMPTZ,
+  profile_updated_at TIMESTAMPTZ,
+  share_avatar_with_students BOOLEAN NOT NULL DEFAULT false
 );
 
 -- Classes

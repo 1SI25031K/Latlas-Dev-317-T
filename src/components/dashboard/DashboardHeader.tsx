@@ -3,8 +3,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { User, Settings, LogOut } from "iconoir-react";
+import { User, Settings, LogOut, MediaImage } from "iconoir-react";
 import { createClient } from "@/lib/supabase/client";
+import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
 
 type DashboardHeaderProps = {
   locale: string;
@@ -21,6 +22,7 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   const t = useTranslations("dashboard");
   const pathname = usePathname();
+  const { wallpaperOn, setWallpaperOn } = useDashboardSettings();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
@@ -58,7 +60,7 @@ export function DashboardHeader({
 
   return (
     <header
-      className="flex h-14 shrink-0 items-center justify-between border-b px-4"
+      className="flex h-16 shrink-0 items-center justify-between border-b px-5"
       style={{
         backgroundColor: "var(--dashboard-card)",
         borderColor: "var(--dashboard-border)",
@@ -68,7 +70,7 @@ export function DashboardHeader({
       <div className="flex items-center gap-3">
         {/* Latlas icon placeholder (replace with logo later) */}
         <span
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-lg font-bold"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl text-xl font-bold"
           style={{
             backgroundColor: "var(--dashboard-bg)",
             border: "1px solid var(--dashboard-border)",
@@ -77,34 +79,49 @@ export function DashboardHeader({
         >
           L
         </span>
-        <span className="text-base font-semibold" style={{ color: "var(--dashboard-text)" }}>
+        <span className="text-lg font-semibold" style={{ color: "var(--dashboard-text)" }}>
           {getPageLabel()}
         </span>
       </div>
 
-      <div className="relative" ref={dropdownRef}>
+      <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={() => setDropdownOpen((o) => !o)}
-          className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border transition-opacity hover:opacity-90"
+          onClick={() => setWallpaperOn(!wallpaperOn)}
+          className="flex h-10 w-10 items-center justify-center rounded-2xl border transition-opacity hover:opacity-90"
           style={{
-            backgroundColor: "var(--dashboard-bg)",
+            backgroundColor: wallpaperOn ? "var(--dashboard-border)" : "var(--dashboard-bg)",
             borderColor: "var(--dashboard-border)",
+            color: "var(--dashboard-text-muted)",
           }}
-          aria-expanded={dropdownOpen}
-          aria-haspopup="true"
-          aria-label={accountName}
+          aria-label={t("wallpaper")}
+          aria-pressed={wallpaperOn}
         >
+          <MediaImage className="h-5 w-5" />
+        </button>
+        <div className="relative" ref={dropdownRef}>
+          <button
+            type="button"
+            onClick={() => setDropdownOpen((o) => !o)}
+            className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border transition-opacity hover:opacity-90"
+            style={{
+              backgroundColor: "var(--dashboard-bg)",
+              borderColor: "var(--dashboard-border)",
+            }}
+            aria-expanded={dropdownOpen}
+            aria-haspopup="true"
+            aria-label={accountName}
+          >
           {avatarUrl ? (
             <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
           ) : (
-            <User className="h-4 w-4" style={{ color: "var(--dashboard-text-muted)" }} />
+            <User className="h-5 w-5" style={{ color: "var(--dashboard-text-muted)" }} />
           )}
         </button>
 
         {dropdownOpen && (
           <div
-            className="absolute right-0 top-full z-30 mt-1 min-w-[180px] rounded-lg border py-1 shadow-lg"
+            className="absolute right-0 top-full z-30 mt-1 min-w-[180px] rounded-2xl border py-1 shadow-lg"
             style={{
               backgroundColor: "var(--dashboard-card)",
               borderColor: "var(--dashboard-border)",
@@ -124,7 +141,7 @@ export function DashboardHeader({
               className="flex items-center gap-2 px-3 py-2 text-sm hover:opacity-90"
               style={{ color: "var(--dashboard-text)" }}
             >
-              <User className="h-4 w-4" style={{ color: "var(--dashboard-text-muted)" }} />
+              <User className="h-5 w-5" style={{ color: "var(--dashboard-text-muted)" }} />
               {t("profile")}
             </Link>
             <Link
@@ -150,6 +167,7 @@ export function DashboardHeader({
             </button>
           </div>
         )}
+        </div>
       </div>
     </header>
   );

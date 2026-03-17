@@ -109,6 +109,54 @@ export async function regenerateClassPassword(
   return { password };
 }
 
+export type RegenerateClassAccessCodeResult = {
+  error?: string;
+  accessCode?: string;
+  password?: string;
+};
+
+export async function regenerateClassAccessCode(
+  classId: string
+): Promise<RegenerateClassAccessCodeResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+
+  const { data: row, error: fetchError } = await supabase
+    .from("classes")
+    .select("id, teacher_id")
+    .eq("id", classId)
+    .single();
+
+  if (fetchError || !row) {
+    return { error: fetchError?.message ?? "Class not found" };
+  }
+  if ((row.teacher_id as string) !== user.id) {
+    return { error: "Forbidden" };
+  }
+
+  const accessCode = generateAccessCode(6);
+  const password = generateRandomPassword(10);
+  const passwordHash = hashPassword(password);
+
+  const { error: updateError } = await supabase
+    .from("classes")
+    .update({
+      access_code: accessCode,
+      password_hash: passwordHash,
+    })
+    .eq("id", classId);
+
+  if (updateError) {
+    return { error: updateError.message };
+  }
+  return { accessCode, password };
+}
+
 export type UpdateClassPayload = {
   name?: string;
   description?: string | null;
@@ -162,6 +210,38 @@ export async function updateClass(
 
   if (updateError) {
     return { error: updateError.message };
+  }
+  return {};
+}
+
+export type DeleteClassResult = { error?: string };
+
+export async function deleteClass(classId: string): Promise<DeleteClassResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+
+  const { data: row, error: fetchError } = await supabase
+    .from("classes")
+    .select("id, teacher_id")
+    .eq("id", classId)
+    .single();
+
+  if (fetchError || !row) {
+    return { error: fetchError?.message ?? "Class not found" };
+  }
+  if ((row.teacher_id as string) !== user.id) {
+    return { error: "Forbidden" };
+  }
+
+  const { error: deleteError } = await supabase.from("classes").delete().eq("id", classId);
+
+  if (deleteError) {
+    return { error: deleteError.message };
   }
   return {};
 }

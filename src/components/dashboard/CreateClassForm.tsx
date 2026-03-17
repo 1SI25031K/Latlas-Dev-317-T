@@ -122,18 +122,18 @@ export function CreateClassForm() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+        className="rounded-2xl bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700"
       >
         {tDash("createClass")}
       </button>
 
       {open && (
         <div
-          className="fixed inset-0 z-10 flex items-center justify-center bg-black/30 p-4"
+          className="fixed inset-0 z-30 flex items-center justify-center bg-black/30 p-4"
           onClick={() => setOpen(false)}
         >
           <div
-            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg border p-6 shadow-lg"
+            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border p-6 shadow-lg"
             style={cardStyle}
             onClick={(e) => e.stopPropagation()}
           >
@@ -186,7 +186,7 @@ export function CreateClassForm() {
                       onChange={(e) => setName(e.target.value)}
                       placeholder={t("namePlaceholder")}
                       required
-                      className="mt-1 w-full rounded-lg border px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="mt-1 w-full rounded-lg border px-3 py-2 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                       style={inputStyle}
                     />
                   </div>
@@ -200,7 +200,7 @@ export function CreateClassForm() {
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder={t("descriptionPlaceholder")}
                       rows={2}
-                      className="mt-1 w-full rounded-lg border px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="mt-1 w-full rounded-lg border px-3 py-2 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                       style={inputStyle}
                     />
                   </div>
@@ -208,7 +208,7 @@ export function CreateClassForm() {
                     <span className="text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>
                       {t("icon")}
                     </span>
-                    <div className="mt-2 grid grid-cols-6 gap-2 sm:grid-cols-8">
+                    <div className="mt-2 flex max-w-[calc(3*2.5rem+2*0.5rem)] flex-nowrap gap-2 overflow-x-auto pb-2">
                       {CLASS_ICON_IDS.map((id) => {
                         const Icon = CLASS_ICON_MAP[id];
                         const selected = iconId === id;
@@ -217,13 +217,13 @@ export function CreateClassForm() {
                             key={id}
                             type="button"
                             onClick={() => setIconId(id)}
-                            className="flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-colors"
                             style={{
                               borderColor: selected ? colorHex : "var(--dashboard-border)",
                               backgroundColor: selected ? `${colorHex}20` : "var(--dashboard-bg)",
                             }}
                           >
-                            <Icon className="h-5 w-5" style={{ color: selected ? colorHex : "var(--dashboard-text-muted)" }} />
+                            <Icon size={20} style={{ color: selected ? colorHex : "var(--dashboard-text-muted)" }} />
                           </button>
                         );
                       })}
@@ -352,12 +352,12 @@ export function CreateClassForm() {
                       }}
                     >
                       <div
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg"
                         style={{ backgroundColor: `${colorHex}30` }}
                       >
                         {(() => {
                           const Icon = CLASS_ICON_MAP[iconId];
-                          return <Icon className="h-5 w-5" style={{ color: colorHex }} />;
+                          return <Icon size={24} style={{ color: colorHex }} />;
                         })()}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -377,7 +377,7 @@ export function CreateClassForm() {
                     setOpen(false);
                     setCreated(null);
                   }}
-                  className="rounded-lg border px-4 py-2 hover:opacity-90"
+                  className="rounded-2xl border px-4 py-2 hover:opacity-90"
                   style={{
                     borderColor: "var(--dashboard-border)",
                     color: "var(--dashboard-text)",
@@ -389,7 +389,7 @@ export function CreateClassForm() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                    className="rounded-2xl bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700 disabled:opacity-50"
                   >
                     {loading ? "..." : t("createTitle")}
                   </button>

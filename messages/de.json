@@ -42,7 +42,9 @@
     "profile": "Profile",
     "noClasses": "No classes yet",
     "createFirstClass": "Create your first class",
-    "greeting": "Good afternoon, {name}!"
+    "greeting": "Good afternoon, {name}!",
+    "upcomingClasses": "Klassen mit baldiger Startzeit",
+    "wallpaper": "Tageshintergrund"
   },
   "class": {
     "name": "Class name",
@@ -89,7 +91,13 @@
     "close": "Schließen",
     "edit": "Bearbeiten",
     "save": "Speichern",
-    "editClass": "Klasse bearbeiten"
+    "editClass": "Klasse bearbeiten",
+    "timeSlot": "Zeitplan",
+    "nextAt": "Nächste",
+    "deleteClass": "Klasse löschen",
+    "deleteClassConfirm": "Möchten Sie diese Klasse wirklich löschen?",
+    "openQrInNewWindow": "Groß in neuem Fenster öffnen",
+    "regenerateQr": "QR-Code erneuern"
   },
   "monitoring": {
     "title": "Monitoring",

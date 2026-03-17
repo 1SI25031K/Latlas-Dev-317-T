@@ -15,9 +15,11 @@ export const STORAGE_KEYS = {
   theme: "latlas-theme",
   fontSize: "latlas-font-size",
   iconAnimation: "latlas-icon-animation",
+  wallpaperOn: "latlas-wallpaper-on",
 } as const;
 
 export const DEFAULT_ICON_ANIMATION = true;
+export const DEFAULT_WALLPAPER_ON = false;
 
 export const DEFAULT_THEME: ThemeId = "system";
 export const DEFAULT_FONT_SIZE: FontSizeId = "medium";

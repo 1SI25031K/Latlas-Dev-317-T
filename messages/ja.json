@@ -42,7 +42,9 @@
     "profile": "プロフィール",
     "noClasses": "クラスがありません",
     "createFirstClass": "最初のクラスを作成してください",
-    "greeting": "こんにちは、{name} さん"
+    "greeting": "こんにちは、{name} さん",
+    "upcomingClasses": "開講時間の近いクラス",
+    "wallpaper": "日替わり壁紙"
   },
   "class": {
     "name": "クラス名",
@@ -89,7 +91,13 @@
     "close": "閉じる",
     "edit": "編集",
     "save": "保存",
-    "editClass": "クラスを編集"
+    "editClass": "クラスを編集",
+    "timeSlot": "開講時間",
+    "nextAt": "次回",
+    "deleteClass": "クラスを削除",
+    "deleteClassConfirm": "このクラスを削除してもよろしいですか？",
+    "openQrInNewWindow": "別のウィンドウで大きく表示",
+    "regenerateQr": "QRコードを更新"
   },
   "monitoring": {
     "title": "モニタリング",

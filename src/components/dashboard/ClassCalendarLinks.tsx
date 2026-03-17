@@ -47,7 +47,7 @@ export function ClassCalendarLinks({ className, schedule }: ClassCalendarLinksPr
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+              className="rounded-2xl bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700"
             >
               {t("googleCalendar")} {slots.length > 1 ? `#${i + 1}` : ""}
             </a>
@@ -56,7 +56,7 @@ export function ClassCalendarLinks({ className, schedule }: ClassCalendarLinksPr
         <button
           type="button"
           onClick={handleDownloadIcs}
-          className="rounded-lg border px-3 py-1.5 text-sm font-medium hover:opacity-90"
+          className="rounded-2xl border px-3 py-1.5 text-sm font-medium hover:opacity-90"
           style={{
             borderColor: "var(--dashboard-border)",
             color: "var(--dashboard-text)",

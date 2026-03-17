@@ -14,6 +14,7 @@ import {
   DEFAULT_THEME,
   DEFAULT_FONT_SIZE,
   DEFAULT_ICON_ANIMATION,
+  DEFAULT_WALLPAPER_ON,
   STORAGE_KEYS,
   type ThemeId,
   type FontSizeId,
@@ -25,9 +26,11 @@ type DashboardSettingsState = {
   resolvedTheme: ResolvedThemeId;
   fontSize: FontSizeId;
   iconAnimation: boolean;
+  wallpaperOn: boolean;
   setTheme: (v: ThemeId) => void;
   setFontSize: (v: FontSizeId) => void;
   setIconAnimation: (v: boolean) => void;
+  setWallpaperOn: (v: boolean) => void;
 };
 
 const DashboardSettingsContext = createContext<DashboardSettingsState | null>(
@@ -54,6 +57,14 @@ function readIconAnimation(): boolean {
   if (v === "false") return false;
   if (v === "true") return true;
   return DEFAULT_ICON_ANIMATION;
+}
+
+function readWallpaperOn(): boolean {
+  if (typeof window === "undefined") return DEFAULT_WALLPAPER_ON;
+  const v = localStorage.getItem(STORAGE_KEYS.wallpaperOn);
+  if (v === "false") return false;
+  if (v === "true") return true;
+  return DEFAULT_WALLPAPER_ON;
 }
 
 function getResolvedTheme(theme: ThemeId): ResolvedThemeId {
@@ -83,11 +94,13 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedThemeId>("light");
   const [fontSize, setFontSizeState] = useState<FontSizeId>(DEFAULT_FONT_SIZE);
   const [iconAnimation, setIconAnimationState] = useState<boolean>(DEFAULT_ICON_ANIMATION);
+  const [wallpaperOn, setWallpaperOnState] = useState<boolean>(DEFAULT_WALLPAPER_ON);
 
   useEffect(() => {
     setThemeState(readTheme());
     setFontSizeState(readFontSize());
     setIconAnimationState(readIconAnimation());
+    setWallpaperOnState(readWallpaperOn());
   }, []);
 
   useEffect(() => {
@@ -122,17 +135,26 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
     } catch {}
   }, []);
 
+  const setWallpaperOn = useCallback((v: boolean) => {
+    setWallpaperOnState(v);
+    try {
+      localStorage.setItem(STORAGE_KEYS.wallpaperOn, v ? "true" : "false");
+    } catch {}
+  }, []);
+
   const value = useMemo(
     () => ({
       theme,
       resolvedTheme,
       fontSize,
       iconAnimation,
+      wallpaperOn,
       setTheme,
       setFontSize,
       setIconAnimation,
+      setWallpaperOn,
     }),
-    [theme, resolvedTheme, fontSize, iconAnimation, setTheme, setFontSize, setIconAnimation]
+    [theme, resolvedTheme, fontSize, iconAnimation, wallpaperOn, setTheme, setFontSize, setIconAnimation, setWallpaperOn]
   );
 
   const bg = THEME_BG[resolvedTheme];

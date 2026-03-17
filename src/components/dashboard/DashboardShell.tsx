@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { DashboardMainWithWallpaper } from "@/components/dashboard/DashboardMainWithWallpaper";
 
 const SIDEBAR_MIN = 180;
 const SIDEBAR_MAX = 400;
@@ -74,10 +75,12 @@ export function DashboardShell({ sidebar, children }: DashboardShellProps) {
         aria-orientation="vertical"
         tabIndex={0}
         onMouseDown={() => setDragging(true)}
-        className="w-1 shrink-0 cursor-col-resize transition-colors hover:bg-blue-500/30 focus:outline-none focus-visible:bg-blue-500/50"
+        className="w-1 shrink-0 cursor-col-resize transition-colors hover:bg-green-500/30 focus:outline-none focus-visible:bg-green-500/50"
         style={{ minWidth: 4 }}
       />
-      <main className="min-w-0 flex-1 overflow-auto">{children}</main>
+      <main className="min-w-0 flex-1 overflow-auto">
+        <DashboardMainWithWallpaper>{children}</DashboardMainWithWallpaper>
+      </main>
     </div>
   );
 }

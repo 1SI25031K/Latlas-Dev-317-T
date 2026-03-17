@@ -42,7 +42,9 @@
     "profile": "Profile",
     "noClasses": "No classes yet",
     "createFirstClass": "Create your first class",
-    "greeting": "Good afternoon, {name}!"
+    "greeting": "Good afternoon, {name}!",
+    "upcomingClasses": "即將開課的班級",
+    "wallpaper": "每日壁紙"
   },
   "class": {
     "name": "Class name",
@@ -89,7 +91,13 @@
     "close": "關閉",
     "edit": "編輯",
     "save": "儲存",
-    "editClass": "編輯班級"
+    "editClass": "編輯班級",
+    "timeSlot": "開課時間",
+    "nextAt": "下次",
+    "deleteClass": "刪除班級",
+    "deleteClassConfirm": "確定要刪除此班級嗎？",
+    "openQrInNewWindow": "在新視窗中放大顯示",
+    "regenerateQr": "更新 QR 碼"
   },
   "monitoring": {
     "title": "Monitoring",

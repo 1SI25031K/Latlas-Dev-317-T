@@ -2,10 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import type { Class } from "@/types/database";
 import type { ClassSchedule, ClassScheduleSlot } from "@/types/database";
-import { regenerateClassPassword, updateClass } from "@/app/actions/classes";
+import {
+  regenerateClassPassword,
+  regenerateClassAccessCode,
+  updateClass,
+  deleteClass,
+} from "@/app/actions/classes";
 import { ClassJoinQrCode } from "@/components/dashboard/ClassJoinQrCode";
 import {
   CLASS_ICON_IDS,
@@ -34,18 +39,28 @@ type ClassDetailModalProps = {
   classId: string | null;
   classes: Class[];
   onClose: () => void;
+  initialEditMode?: boolean;
+  initialDeleteConfirm?: boolean;
 };
 
 export function ClassDetailModal({
   classId,
   classes,
   onClose,
+  initialEditMode = false,
+  initialDeleteConfirm = false,
 }: ClassDetailModalProps) {
   const t = useTranslations("class");
+  const locale = useLocale();
   const router = useRouter();
   const [regeneratedPassword, setRegeneratedPassword] = useState<string | null>(null);
+  const [localAccessCode, setLocalAccessCode] = useState<string | null>(null);
+  const [localPassword, setLocalPassword] = useState<string | null>(null);
   const [regenerating, setRegenerating] = useState(false);
-  const [editing, setEditing] = useState(false);
+  const [regeneratingAccessCode, setRegeneratingAccessCode] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [editing, setEditing] = useState(initialEditMode);
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -60,6 +75,16 @@ export function ClassDetailModal({
 
   const classItem = classes.find((c) => c.id === classId);
   if (!classItem) return null;
+
+  useEffect(() => {
+    setLocalAccessCode(null);
+    setLocalPassword(null);
+    setDeleteConfirm(initialDeleteConfirm);
+  }, [classId, initialDeleteConfirm]);
+
+  useEffect(() => {
+    if (initialEditMode && classId) setEditing(true);
+  }, [classId, initialEditMode]);
 
   useEffect(() => {
     if (!editing || !classItem) return;
@@ -82,6 +107,28 @@ export function ClassDetailModal({
     setRegenerating(false);
     if (result.error) return;
     if (result.password) setRegeneratedPassword(result.password);
+  }
+
+  async function handleRegenerateAccessCode() {
+    setRegeneratingAccessCode(true);
+    const result = await regenerateClassAccessCode(classId!);
+    setRegeneratingAccessCode(false);
+    if (result.error) return;
+    if (result.accessCode) setLocalAccessCode(result.accessCode);
+    if (result.password) {
+      setLocalPassword(result.password);
+      setRegeneratedPassword(result.password);
+    }
+    router.refresh();
+  }
+
+  async function handleDelete() {
+    setDeleting(true);
+    const result = await deleteClass(classId!);
+    setDeleting(false);
+    if (result.error) return;
+    onClose();
+    router.refresh();
   }
 
   function addSlot() {
@@ -145,7 +192,7 @@ export function ClassDetailModal({
       aria-labelledby="class-detail-title"
     >
       <div
-        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg border p-6 shadow-lg"
+        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border p-6 shadow-lg"
         style={cardStyle}
         onClick={(e) => e.stopPropagation()}
       >
@@ -162,7 +209,7 @@ export function ClassDetailModal({
               <button
                 type="button"
                 onClick={() => setEditing(true)}
-                className="rounded px-2 py-1 text-sm font-medium hover:opacity-90"
+                className="rounded-2xl px-2 py-1 text-sm font-medium hover:opacity-90"
                 style={{
                   borderColor: "var(--dashboard-border)",
                   color: "var(--dashboard-text)",
@@ -220,7 +267,7 @@ export function ClassDetailModal({
             </div>
             <div>
               <span className="text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>{t("icon")}</span>
-              <div className="mt-2 grid grid-cols-6 gap-2 sm:grid-cols-8">
+              <div className="mt-2 flex max-w-[calc(3*2.5rem+2*0.5rem)] flex-nowrap gap-2 overflow-x-auto pb-2">
                 {CLASS_ICON_IDS.map((id) => {
                   const Icon = CLASS_ICON_MAP[id];
                   const selected = iconId === id;
@@ -229,7 +276,7 @@ export function ClassDetailModal({
                       key={id}
                       type="button"
                       onClick={() => setIconId(id)}
-                      className="flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-colors"
                       style={{
                         borderColor: selected ? colorHex : "var(--dashboard-border)",
                         backgroundColor: selected ? `${colorHex}20` : "var(--dashboard-bg)",
@@ -346,7 +393,7 @@ export function ClassDetailModal({
               <button
                 type="button"
                 onClick={() => setEditing(false)}
-                className="rounded-lg border px-4 py-2 text-sm hover:opacity-90"
+                className="rounded-2xl border px-4 py-2 text-sm hover:opacity-90"
                 style={{ borderColor: "var(--dashboard-border)", color: "var(--dashboard-text)" }}
               >
                 {t("cancel")}
@@ -354,7 +401,7 @@ export function ClassDetailModal({
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                className="rounded-2xl bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
               >
                 {saving ? "..." : t("save")}
               </button>
@@ -362,43 +409,97 @@ export function ClassDetailModal({
           </form>
         ) : (
           <div className="mt-4 space-y-4">
-            <div>
-              <p className="text-sm font-medium" style={mutedStyle}>{t("accessCode")}</p>
-              <p className="mt-0.5 font-mono text-sm">{classItem.access_code}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium" style={mutedStyle}>{t("password")}</p>
-              {regeneratedPassword ? (
-                <>
-                  <p className="mt-0.5 font-mono text-sm">{regeneratedPassword}</p>
-                  <p className="mt-1 text-xs" style={mutedStyle}>{t("passwordRegenerated")}</p>
-                </>
-              ) : (
-                <>
-                  <p className="mt-0.5 text-sm" style={mutedStyle}>{t("passwordNotStored")}</p>
+            {deleteConfirm ? (
+              <div className="rounded-2xl border border-red-500/50 bg-red-500/10 p-4">
+                <p className="text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>{t("deleteClassConfirm")}</p>
+                <div className="mt-3 flex gap-2">
                   <button
                     type="button"
-                    onClick={handleRegeneratePassword}
-                    disabled={regenerating}
-                    className="mt-2 rounded-lg border px-3 py-1.5 text-sm font-medium hover:opacity-90 disabled:opacity-50"
+                    onClick={() => setDeleteConfirm(false)}
+                    className="rounded-2xl border px-3 py-1.5 text-sm font-medium hover:opacity-90"
                     style={{ borderColor: "var(--dashboard-border)", color: "var(--dashboard-text)" }}
                   >
-                    {regenerating ? "..." : t("regeneratePassword")}
+                    {t("cancel")}
                   </button>
-                </>
-              )}
-            </div>
-            <div>
-              <p className="text-sm font-medium" style={mutedStyle}>{t("qrCode")}</p>
-              <p className="mt-0.5 text-xs" style={mutedStyle}>{t("scanToJoin")}</p>
-              <div className="mt-2 flex justify-center">
-                <ClassJoinQrCode
-                  accessCode={classItem.access_code}
-                  password={regeneratedPassword}
-                  size={200}
-                />
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="rounded-2xl bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                  >
+                    {deleting ? "..." : t("deleteClass")}
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <>
+                <div>
+                  <p className="text-sm font-medium" style={mutedStyle}>{t("accessCode")}</p>
+                  <p className="mt-0.5 font-mono text-sm">{localAccessCode ?? classItem.access_code}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium" style={mutedStyle}>{t("password")}</p>
+                  {(localPassword ?? regeneratedPassword) ? (
+                    <>
+                      <p className="mt-0.5 font-mono text-sm">{localPassword ?? regeneratedPassword}</p>
+                      <p className="mt-1 text-xs" style={mutedStyle}>{t("passwordRegenerated")}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="mt-0.5 text-sm" style={mutedStyle}>{t("passwordNotStored")}</p>
+                      <button
+                        type="button"
+                        onClick={handleRegeneratePassword}
+                        disabled={regenerating}
+                        className="mt-2 rounded-2xl border px-3 py-1.5 text-sm font-medium hover:opacity-90 disabled:opacity-50"
+                        style={{ borderColor: "var(--dashboard-border)", color: "var(--dashboard-text)" }}
+                      >
+                        {regenerating ? "..." : t("regeneratePassword")}
+                      </button>
+                    </>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium" style={mutedStyle}>{t("qrCode")}</p>
+                  <p className="mt-0.5 text-xs" style={mutedStyle}>{t("scanToJoin")}</p>
+                  <div className="mt-2 flex justify-center">
+                    <ClassJoinQrCode
+                      accessCode={localAccessCode ?? classItem.access_code}
+                      password={localPassword ?? regeneratedPassword}
+                      size={200}
+                    />
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => window.open(`/${locale}/dashboard/class/${classId}/qr`, "_blank", "width=520,height=560")}
+                      className="rounded-2xl border px-3 py-1.5 text-sm font-medium hover:opacity-90"
+                      style={{ borderColor: "var(--dashboard-border)", color: "var(--dashboard-text)" }}
+                    >
+                      {t("openQrInNewWindow")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRegenerateAccessCode}
+                      disabled={regeneratingAccessCode}
+                      className="rounded-2xl border px-3 py-1.5 text-sm font-medium hover:opacity-90 disabled:opacity-50"
+                      style={{ borderColor: "var(--dashboard-border)", color: "var(--dashboard-text)" }}
+                    >
+                      {regeneratingAccessCode ? "..." : t("regenerateQr")}
+                    </button>
+                  </div>
+                </div>
+                <div className="border-t pt-4" style={{ borderColor: "var(--dashboard-border)" }}>
+                  <button
+                    type="button"
+                    onClick={() => setDeleteConfirm(true)}
+                    className="rounded-2xl border border-red-500/50 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-500/10"
+                  >
+                    {t("deleteClass")}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

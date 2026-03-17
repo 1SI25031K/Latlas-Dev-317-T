@@ -2,11 +2,15 @@ import type { ComponentType } from "react";
 import {
   IconFAbacus,
   IconFAlembic,
+  IconFAlarmClock,
   IconFAtomSymbol,
+  IconFBarChart,
   IconFBookmark,
   IconFBookmarkTabs,
   IconFBooks,
   IconFBrain,
+  IconFCalendar,
+  IconFCamera,
   IconFClipboard,
   IconFCompass,
   IconFGlobeShowingAmericas,
@@ -15,14 +19,19 @@ import {
   IconFGraduationCap,
   IconFLaptop,
   IconFLightBulb,
+  IconFMagnet,
+  IconFMemo,
   IconFMicroscope,
+  IconFMusicalNote,
   IconFNotebook,
   IconFNotebookWithDecorativeCover,
   IconFPen,
   IconFPencil,
   IconFSchool,
   IconFSparkles,
+  IconFStar,
   IconFTestTube,
+  IconFTrophy,
   IconFMapOfJapan,
 } from "react-fluentui-emoji/lib/flat";
 
@@ -54,6 +63,15 @@ export const CLASS_ICON_IDS = [
   "notebook-decorative",
   "globe-americas",
   "globe-asia",
+  "alarm-clock",
+  "calendar",
+  "bar-chart",
+  "memo",
+  "magnet",
+  "star",
+  "trophy",
+  "camera",
+  "musical-note",
 ] as const;
 
 export type ClassIconId = (typeof CLASS_ICON_IDS)[number];
@@ -87,6 +105,15 @@ export const CLASS_ICON_MAP: Record<ClassIconId, ComponentType<FluentIconProps>>
   "notebook-decorative": IconFNotebookWithDecorativeCover,
   "globe-americas": IconFGlobeShowingAmericas,
   "globe-asia": IconFGlobeShowingAsiaAustralia,
+  "alarm-clock": IconFAlarmClock,
+  "calendar": IconFCalendar,
+  "bar-chart": IconFBarChart,
+  "memo": IconFMemo,
+  "magnet": IconFMagnet,
+  "star": IconFStar,
+  "trophy": IconFTrophy,
+  "camera": IconFCamera,
+  "musical-note": IconFMusicalNote,
 };
 
 /** Returns the Fluent Emoji component for the given icon ID. Unknown IDs (e.g. legacy Lucide IDs) fall back to default. */

@@ -29,10 +29,10 @@ export function Sidebar({ locale, classes }: SidebarProps) {
   );
 
   const navBase =
-    "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors";
+    "flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium transition-colors";
   const navInactive = "hover:opacity-90";
   const navActive =
-    "border-l-2 border-blue-500 bg-[var(--dashboard-nav-active-bg)] text-blue-500";
+    "border-l-2 border-green-500 bg-[var(--dashboard-nav-active-bg)] text-green-500";
 
   function navClass(path: string, exact?: boolean) {
     const active = exact

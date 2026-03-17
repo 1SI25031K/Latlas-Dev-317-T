@@ -77,7 +77,16 @@
     "friday": "五",
     "saturday": "六",
     "saveAndClose": "請儲存後再關閉",
-    "cancel": "取消"
+    "cancel": "取消",
+    "qrCode": "QR碼",
+    "qrCodeDescription": "學生掃描此QR碼即可加入班級。",
+    "scanToJoin": "使用學生應用程式掃描以加入班級",
+    "regeneratePassword": "重新產生密碼",
+    "passwordRegenerated": "新密碼僅在此畫面顯示一次。",
+    "passwordNotStored": "未儲存密碼。重新產生後可查看新密碼。",
+    "showCodeAndQr": "顯示代碼與QR碼",
+    "copyCode": "複製代碼",
+    "close": "關閉"
   },
   "monitoring": {
     "title": "Monitoring",

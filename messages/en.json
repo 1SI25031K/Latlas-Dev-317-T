@@ -77,7 +77,16 @@
     "friday": "Fri",
     "saturday": "Sat",
     "saveAndClose": "Save before closing",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "qrCode": "QR code",
+    "qrCodeDescription": "Students can scan this QR code to join the class.",
+    "scanToJoin": "Scan with the student app to join the class",
+    "regeneratePassword": "Regenerate password",
+    "passwordRegenerated": "The new password is shown only once on this screen.",
+    "passwordNotStored": "Password is not stored. Regenerate to see a new password.",
+    "showCodeAndQr": "Show code and QR",
+    "copyCode": "Copy code",
+    "close": "Close"
   },
   "monitoring": {
     "title": "Monitoring",

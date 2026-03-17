@@ -4,9 +4,10 @@ import { getClassIcon } from "@/lib/class-icon-options";
 
 type ClassCardProps = {
   classItem: Class;
+  onClick?: () => void;
 };
 
-export function ClassCard({ classItem }: ClassCardProps) {
+export function ClassCard({ classItem, onClick }: ClassCardProps) {
   const t = useTranslations("class");
   const locale = useLocale();
   const Icon = getClassIcon(classItem.icon_id);
@@ -19,7 +20,7 @@ export function ClassCard({ classItem }: ClassCardProps) {
     day: "numeric",
   });
 
-  return (
+  const card = (
     <div
       className="rounded-lg border-l-4 border p-4 shadow-sm transition-shadow hover:shadow-md"
       style={{
@@ -59,4 +60,18 @@ export function ClassCard({ classItem }: ClassCardProps) {
       </dl>
     </div>
   );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="w-full cursor-pointer rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-[var(--dashboard-card)]"
+        style={{ padding: 0, border: "none", background: "none" }}
+      >
+        {card}
+      </button>
+    );
+  }
+  return card;
 }

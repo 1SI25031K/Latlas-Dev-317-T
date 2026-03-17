@@ -77,7 +77,16 @@
     "friday": "금",
     "saturday": "토",
     "saveAndClose": "저장한 후 닫아 주세요",
-    "cancel": "취소"
+    "cancel": "취소",
+    "qrCode": "QR 코드",
+    "qrCodeDescription": "학생이 이 QR 코드를 스캔하면 수업에 등록할 수 있습니다.",
+    "scanToJoin": "학생 앱으로 스캔하여 수업 참여",
+    "regeneratePassword": "비밀번호 재발급",
+    "passwordRegenerated": "재발급된 비밀번호는 이 화면에서 한 번만 표시됩니다.",
+    "passwordNotStored": "비밀번호는 저장되지 않습니다. 재발급하면 새 비밀번호가 표시됩니다.",
+    "showCodeAndQr": "코드 및 QR 표시",
+    "copyCode": "코드 복사",
+    "close": "닫기"
   },
   "monitoring": {
     "title": "Monitoring",

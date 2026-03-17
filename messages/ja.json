@@ -77,7 +77,16 @@
     "friday": "金",
     "saturday": "土",
     "saveAndClose": "保存してから閉じてください",
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "qrCode": "QRコード",
+    "qrCodeDescription": "生徒がこのQRコードをスキャンするとクラスに登録できます。",
+    "scanToJoin": "生徒アプリでスキャンしてクラスに参加",
+    "regeneratePassword": "パスワードを再発行",
+    "passwordRegenerated": "再発行したパスワードはこの画面で一度だけ表示されます。",
+    "passwordNotStored": "パスワードは保存されていません。再発行すると新しいパスワードが表示されます。",
+    "showCodeAndQr": "コードとQRを表示",
+    "copyCode": "コードをコピー",
+    "close": "閉じる"
   },
   "monitoring": {
     "title": "モニタリング",

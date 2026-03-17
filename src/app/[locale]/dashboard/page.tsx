@@ -2,7 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ClassCard } from "@/components/dashboard/ClassCard";
+import { ClassListWithDetail } from "@/components/dashboard/ClassListWithDetail";
 import { CreateClassForm } from "@/components/dashboard/CreateClassForm";
 import type { Class } from "@/types/database";
 
@@ -68,11 +68,7 @@ export default async function DashboardPage({ params }: Props) {
           </div>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {classes.map((c) => (
-            <ClassCard key={c.id} classItem={c} />
-          ))}
-        </div>
+        <ClassListWithDetail classes={classes} />
       )}
     </div>
   );

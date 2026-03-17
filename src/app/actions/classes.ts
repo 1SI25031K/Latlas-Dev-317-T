@@ -65,3 +65,46 @@ export async function createClass(payload: CreateClassPayload): Promise<CreateCl
     classSchedule: (inserted?.schedule as ClassSchedule | null) ?? null,
   };
 }
+
+export type RegenerateClassPasswordResult = {
+  error?: string;
+  password?: string;
+};
+
+export async function regenerateClassPassword(
+  classId: string
+): Promise<RegenerateClassPasswordResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+
+  const { data: row, error: fetchError } = await supabase
+    .from("classes")
+    .select("id, teacher_id")
+    .eq("id", classId)
+    .single();
+
+  if (fetchError || !row) {
+    return { error: fetchError?.message ?? "Class not found" };
+  }
+  if ((row.teacher_id as string) !== user.id) {
+    return { error: "Forbidden" };
+  }
+
+  const password = generateRandomPassword(10);
+  const passwordHash = hashPassword(password);
+
+  const { error: updateError } = await supabase
+    .from("classes")
+    .update({ password_hash: passwordHash })
+    .eq("id", classId);
+
+  if (updateError) {
+    return { error: updateError.message };
+  }
+  return { password };
+}

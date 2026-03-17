@@ -77,7 +77,16 @@
     "friday": "Ven",
     "saturday": "Sam",
     "saveAndClose": "Enregistrez avant de fermer",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "qrCode": "QR code",
+    "qrCodeDescription": "Les élèves peuvent scanner ce QR code pour rejoindre la classe.",
+    "scanToJoin": "Scannez avec l'application élève pour rejoindre la classe",
+    "regeneratePassword": "Régénérer le mot de passe",
+    "passwordRegenerated": "Le nouveau mot de passe n'est affiché qu'une seule fois sur cet écran.",
+    "passwordNotStored": "Le mot de passe n'est pas stocké. Régénérez pour afficher un nouveau mot de passe.",
+    "showCodeAndQr": "Afficher le code et le QR",
+    "copyCode": "Copier le code",
+    "close": "Fermer"
   },
   "monitoring": {
     "title": "Monitoring",

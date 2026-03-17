@@ -13,6 +13,7 @@ import {
   type ClassIconId,
 } from "@/lib/class-icon-options";
 import { ClassCalendarLinks } from "@/components/dashboard/ClassCalendarLinks";
+import { ClassJoinQrCode } from "@/components/dashboard/ClassJoinQrCode";
 
 const DAY_NAMES = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
 const PRESET_COLORS = [
@@ -159,6 +160,12 @@ export function CreateClassForm() {
                     {t("password")}: <span className="font-mono">{created.password}</span>
                   </p>
                   <p className="mt-2">{t("saveAndClose")}</p>
+                  <p className="mt-3 text-sm" style={{ color: "var(--dashboard-text-muted)" }}>
+                    {t("qrCodeDescription")}
+                  </p>
+                  <div className="mt-2 flex justify-center">
+                    <ClassJoinQrCode accessCode={created.accessCode} password={created.password} size={180} />
+                  </div>
                   <ClassCalendarLinks
                     className={created.className}
                     schedule={created.classSchedule ?? undefined}

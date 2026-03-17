@@ -77,7 +77,16 @@
     "friday": "Fr",
     "saturday": "Sa",
     "saveAndClose": "Vor dem Schließen speichern",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "qrCode": "QR-Code",
+    "qrCodeDescription": "Schüler können diesen QR-Code scannen, um der Klasse beizutreten.",
+    "scanToJoin": "Mit der Schüler-App scannen, um der Klasse beizutreten",
+    "regeneratePassword": "Passwort neu erstellen",
+    "passwordRegenerated": "Das neue Passwort wird nur einmal auf diesem Bildschirm angezeigt.",
+    "passwordNotStored": "Das Passwort wird nicht gespeichert. Neu erstellen, um ein neues Passwort anzuzeigen.",
+    "showCodeAndQr": "Code und QR anzeigen",
+    "copyCode": "Code kopieren",
+    "close": "Schließen"
   },
   "monitoring": {
     "title": "Monitoring",

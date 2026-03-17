@@ -20,13 +20,17 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "home": "Home",
+    "accountSubtitle": "Your personal account",
     "classes": "Classes",
+    "showMore": "Show more",
     "createClass": "Create class",
     "monitoring": "Monitoring",
     "settings": "Settings",
     "profile": "Profile",
     "noClasses": "No classes yet",
-    "createFirstClass": "Create your first class"
+    "createFirstClass": "Create your first class",
+    "greeting": "Good afternoon, {name}!"
   },
   "class": {
     "name": "Class name",
@@ -49,21 +53,10 @@
     "fontSize": "Font size",
     "themeLight": "Light",
     "themeDark": "Dark",
+    "themeSystem": "System",
     "fontSizeSmall": "Small",
     "fontSizeMedium": "Medium",
-    "fontSizeLarge": "Large",
-    "themeGray": "Gray",
-    "themeBlue": "Blue",
-    "themeGreen": "Green",
-    "themeTeal": "Teal",
-    "themeRed": "Red",
-    "themeOrange": "Orange",
-    "themeYellow": "Yellow",
-    "themeAmber": "Amber",
-    "themePurple": "Purple",
-    "themePink": "Pink",
-    "themeIndigo": "Indigo",
-    "themeCyan": "Cyan"
+    "fontSizeLarge": "Large"
   },
   "locale": {
     "ja": "日本語",

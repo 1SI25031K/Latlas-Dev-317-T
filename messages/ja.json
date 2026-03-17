@@ -20,13 +20,17 @@
   },
   "dashboard": {
     "title": "ダッシュボード",
+    "home": "ホーム",
+    "accountSubtitle": "あなたのアカウント",
     "classes": "クラス一覧",
+    "showMore": "さらに表示",
     "createClass": "クラスを新規作成",
     "monitoring": "モニタリング",
     "settings": "設定",
     "profile": "プロフィール",
     "noClasses": "クラスがありません",
-    "createFirstClass": "最初のクラスを作成してください"
+    "createFirstClass": "最初のクラスを作成してください",
+    "greeting": "こんにちは、{name} さん"
   },
   "class": {
     "name": "クラス名",
@@ -49,21 +53,10 @@
     "fontSize": "文字サイズ",
     "themeLight": "ライト",
     "themeDark": "ダーク",
+    "themeSystem": "システム",
     "fontSizeSmall": "小",
     "fontSizeMedium": "中",
-    "fontSizeLarge": "大",
-    "themeGray": "グレー",
-    "themeBlue": "ブルー",
-    "themeGreen": "グリーン",
-    "themeTeal": "ティール",
-    "themeRed": "レッド",
-    "themeOrange": "オレンジ",
-    "themeYellow": "イエロー",
-    "themeAmber": "アンバー",
-    "themePurple": "パープル",
-    "themePink": "ピンク",
-    "themeIndigo": "インディゴ",
-    "themeCyan": "シアン"
+    "fontSizeLarge": "大"
   },
   "locale": {
     "ja": "日本語",

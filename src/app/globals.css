@@ -25,6 +25,26 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Dashboard theme: CSS variables for light/dark */
+.dashboard-theme-root[data-theme="light"] {
+  --dashboard-bg: #f5f5f7;
+  --dashboard-sidebar: #ffffff;
+  --dashboard-card: #ffffff;
+  --dashboard-text: #171717;
+  --dashboard-text-muted: #6b7280;
+  --dashboard-border: #e5e7eb;
+  --dashboard-nav-active-bg: #f3f4f6;
+}
+.dashboard-theme-root[data-theme="dark"] {
+  --dashboard-bg: #000000;
+  --dashboard-sidebar: #0a0a0a;
+  --dashboard-card: #0a0a0a;
+  --dashboard-text: #c9d1d9;
+  --dashboard-text-muted: #8b949e;
+  --dashboard-border: #21262d;
+  --dashboard-nav-active-bg: rgba(255, 255, 255, 0.05);
+}
+
 /* Dashboard theme wrapper: base font-size for scaling */
 .dashboard-theme-root[data-font-size="small"] {
   font-size: 14px;
@@ -34,4 +54,32 @@ body {
 }
 .dashboard-theme-root[data-font-size="large"] {
   font-size: 18px;
+}
+
+/* Scale Tailwind text utilities inside dashboard by using em (relative to wrapper) */
+.dashboard-theme-root .text-xs {
+  font-size: 0.75em;
+}
+.dashboard-theme-root .text-sm {
+  font-size: 0.875em;
+}
+.dashboard-theme-root .text-base {
+  font-size: 1em;
+}
+.dashboard-theme-root .text-lg {
+  font-size: 1.125em;
+}
+.dashboard-theme-root .text-xl {
+  font-size: 1.25em;
+}
+.dashboard-theme-root .text-2xl {
+  font-size: 1.5em;
+}
+
+/* Locale-specific fonts: Japanese = Hiragino, English = SF Pro */
+.dashboard-theme-root[data-locale="ja"] {
+  font-family: "Hiragino Kaku Gothic ProN", "Hiragino Kaku Gothic Pro", "Hiragino Sans", Meiryo, sans-serif;
+}
+.dashboard-theme-root[data-locale="en"] {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", sans-serif;
 }

@@ -5,7 +5,6 @@ import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsCo
 import {
   THEME_IDS,
   FONT_SIZE_IDS,
-  THEME_BG,
   type ThemeId,
   type FontSizeId,
 } from "@/lib/theme-constants";
@@ -13,18 +12,7 @@ import {
 const THEME_TRANSLATION_KEYS: Record<ThemeId, string> = {
   light: "themeLight",
   dark: "themeDark",
-  gray: "themeGray",
-  blue: "themeBlue",
-  green: "themeGreen",
-  teal: "themeTeal",
-  red: "themeRed",
-  orange: "themeOrange",
-  yellow: "themeYellow",
-  amber: "themeAmber",
-  purple: "themePurple",
-  pink: "themePink",
-  indigo: "themeIndigo",
-  cyan: "themeCyan",
+  system: "themeSystem",
 };
 
 const FONT_SIZE_KEYS: Record<FontSizeId, string> = {
@@ -39,29 +27,40 @@ export function SettingsAppearanceSection() {
 
   return (
     <>
-      <section className="mt-6 rounded-lg border border-gray-200 bg-white p-4">
-        <h2 className="text-sm font-medium uppercase tracking-wider text-gray-500">
+      <section
+        className="mt-6 rounded-lg border p-4"
+        style={{
+          backgroundColor: "var(--dashboard-card)",
+          borderColor: "var(--dashboard-border)",
+          color: "var(--dashboard-text)",
+        }}
+      >
+        <h2
+          className="text-sm font-medium uppercase tracking-wider"
+          style={{ color: "var(--dashboard-text-muted)" }}
+        >
           {t("appearance")}
         </h2>
 
         <div className="mt-4">
-          <h3 className="text-sm font-medium text-gray-700">{t("background")}</h3>
+          <h3 className="text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>
+            {t("background")}
+          </h3>
           <div className="mt-2 flex flex-wrap gap-2">
             {THEME_IDS.map((id) => (
               <button
                 key={id}
                 type="button"
                 onClick={() => setTheme(id)}
-                className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
                   theme === id
-                    ? "border-blue-600 bg-blue-50 text-blue-700 ring-1 ring-blue-600"
-                    : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                    ? "border-blue-500 bg-blue-500/10 text-blue-400 ring-1 ring-blue-500"
+                    : "border-[var(--dashboard-border)] bg-[var(--dashboard-card)] hover:opacity-90"
                 }`}
+                style={{
+                  color: theme === id ? undefined : "var(--dashboard-text)",
+                }}
               >
-                <span
-                  className="h-4 w-4 shrink-0 rounded-full border border-gray-300"
-                  style={{ background: THEME_BG[id] }}
-                />
                 {t(THEME_TRANSLATION_KEYS[id])}
               </button>
             ))}
@@ -69,7 +68,9 @@ export function SettingsAppearanceSection() {
         </div>
 
         <div className="mt-6">
-          <h3 className="text-sm font-medium text-gray-700">{t("fontSize")}</h3>
+          <h3 className="text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>
+            {t("fontSize")}
+          </h3>
           <div className="mt-2 flex gap-2">
             {FONT_SIZE_IDS.map((id) => (
               <button
@@ -78,9 +79,12 @@ export function SettingsAppearanceSection() {
                 onClick={() => setFontSize(id)}
                 className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
                   fontSize === id
-                    ? "border-blue-600 bg-blue-50 text-blue-700 ring-1 ring-blue-600"
-                    : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                    ? "border-blue-500 bg-blue-500/10 text-blue-400 ring-1 ring-blue-500"
+                    : "border-[var(--dashboard-border)] bg-[var(--dashboard-card)] hover:opacity-90"
                 }`}
+                style={{
+                  color: fontSize === id ? undefined : "var(--dashboard-text)",
+                }}
               >
                 {t(FONT_SIZE_KEYS[id])}
               </button>

@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import type { Class } from "@/types/database";
 
 type ClassCardProps = {
@@ -7,20 +7,28 @@ type ClassCardProps = {
 
 export function ClassCard({ classItem }: ClassCardProps) {
   const t = useTranslations("class");
+  const locale = useLocale();
 
   const created = new Date(classItem.created_at);
-  const dateStr = created.toLocaleDateString(undefined, {
+  const dateStr = created.toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow">
-      <h3 className="truncate text-lg font-semibold text-gray-900">
+    <div
+      className="rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
+      style={{
+        backgroundColor: "var(--dashboard-card)",
+        borderColor: "var(--dashboard-border)",
+        color: "var(--dashboard-text)",
+      }}
+    >
+      <h3 className="truncate text-lg font-semibold" style={{ color: "var(--dashboard-text)" }}>
         {classItem.name}
       </h3>
-      <dl className="mt-2 space-y-1 text-sm text-gray-600">
+      <dl className="mt-2 space-y-1 text-sm" style={{ color: "var(--dashboard-text-muted)" }}>
         <div className="flex items-center gap-2">
           <dt className="font-medium">{t("accessCode")}:</dt>
           <dd className="font-mono">{classItem.access_code}</dd>

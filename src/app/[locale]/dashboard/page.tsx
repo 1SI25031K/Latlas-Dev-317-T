@@ -21,6 +21,12 @@ export default async function DashboardPage({ params }: Props) {
     redirect(`/${locale}/login`);
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", session.user.id)
+    .single();
+
   const { data: classesData } = await supabase
     .from("classes")
     .select("*")
@@ -29,16 +35,33 @@ export default async function DashboardPage({ params }: Props) {
 
   const classes = (classesData ?? []) as Class[];
   const t = await getTranslations("dashboard");
+  const displayName = profile?.full_name || session.user.email || t("profile");
 
   return (
-    <div className="p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-gray-900">{t("title")}</h1>
+    <div className="p-6" style={{ color: "var(--dashboard-text)" }}>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold" style={{ color: "var(--dashboard-text)" }}>
+            {t("greeting", { name: displayName })}
+          </h1>
+          <p className="mt-1 text-sm" style={{ color: "var(--dashboard-text-muted)" }}>
+            {t("title")}
+          </p>
+        </div>
         <CreateClassForm />
       </div>
       {classes.length === 0 ? (
-        <div className="rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-600">
-          <p className="font-medium">{t("noClasses")}</p>
+        <div
+          className="rounded-lg border p-8 text-center transition-shadow"
+          style={{
+            backgroundColor: "var(--dashboard-card)",
+            borderColor: "var(--dashboard-border)",
+            color: "var(--dashboard-text-muted)",
+          }}
+        >
+          <p className="font-medium" style={{ color: "var(--dashboard-text)" }}>
+            {t("noClasses")}
+          </p>
           <p className="mt-1 text-sm">{t("createFirstClass")}</p>
           <div className="mt-4">
             <CreateClassForm />

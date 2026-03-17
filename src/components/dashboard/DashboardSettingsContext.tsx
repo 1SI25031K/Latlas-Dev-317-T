@@ -16,10 +16,12 @@ import {
   STORAGE_KEYS,
   type ThemeId,
   type FontSizeId,
+  type ResolvedThemeId,
 } from "@/lib/theme-constants";
 
 type DashboardSettingsState = {
   theme: ThemeId;
+  resolvedTheme: ResolvedThemeId;
   fontSize: FontSizeId;
   setTheme: (v: ThemeId) => void;
   setFontSize: (v: FontSizeId) => void;
@@ -32,7 +34,7 @@ const DashboardSettingsContext = createContext<DashboardSettingsState | null>(
 function readTheme(): ThemeId {
   if (typeof window === "undefined") return DEFAULT_THEME;
   const v = localStorage.getItem(STORAGE_KEYS.theme);
-  if (v && THEME_BG[v as ThemeId]) return v as ThemeId;
+  if (v === "light" || v === "dark" || v === "system") return v;
   return DEFAULT_THEME;
 }
 
@@ -41,6 +43,14 @@ function readFontSize(): FontSizeId {
   const v = localStorage.getItem(STORAGE_KEYS.fontSize);
   if (v === "small" || v === "medium" || v === "large") return v;
   return DEFAULT_FONT_SIZE;
+}
+
+function getResolvedTheme(theme: ThemeId): ResolvedThemeId {
+  if (theme === "light" || theme === "dark") return theme;
+  if (typeof window === "undefined") return "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
 }
 
 export function useDashboardSettings() {
@@ -54,16 +64,29 @@ export function useDashboardSettings() {
 
 type DashboardThemeWrapperProps = {
   children: ReactNode;
+  locale?: string;
 };
 
-export function DashboardThemeWrapper({ children }: DashboardThemeWrapperProps) {
+export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrapperProps) {
   const [theme, setThemeState] = useState<ThemeId>(DEFAULT_THEME);
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedThemeId>("light");
   const [fontSize, setFontSizeState] = useState<FontSizeId>(DEFAULT_FONT_SIZE);
 
   useEffect(() => {
     setThemeState(readTheme());
     setFontSizeState(readFontSize());
   }, []);
+
+  useEffect(() => {
+    const resolved = getResolvedTheme(theme);
+    setResolvedTheme(resolved);
+
+    if (theme !== "system") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = () => setResolvedTheme(getResolvedTheme("system"));
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [theme]);
 
   const setTheme = useCallback((v: ThemeId) => {
     setThemeState(v);
@@ -82,25 +105,27 @@ export function DashboardThemeWrapper({ children }: DashboardThemeWrapperProps) 
   const value = useMemo(
     () => ({
       theme,
+      resolvedTheme,
       fontSize,
       setTheme,
       setFontSize,
     }),
-    [theme, fontSize, setTheme, setFontSize]
+    [theme, resolvedTheme, fontSize, setTheme, setFontSize]
   );
 
-  const bg = THEME_BG[theme];
-  const isDark = theme === "dark";
+  const bg = THEME_BG[resolvedTheme];
+  const textColor = resolvedTheme === "dark" ? "#c9d1d9" : undefined;
 
   return (
     <DashboardSettingsContext.Provider value={value}>
       <div
-        data-theme={theme}
+        data-theme={resolvedTheme}
         data-font-size={fontSize}
+        data-locale={locale}
         className="flex h-screen overflow-hidden dashboard-theme-root"
         style={{
           background: bg,
-          color: isDark ? "#ededed" : undefined,
+          color: textColor,
         }}
       >
         {children}

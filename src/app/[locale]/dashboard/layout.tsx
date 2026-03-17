@@ -36,11 +36,12 @@ export default async function DashboardLayout({ children, params }: Props) {
     .order("created_at", { ascending: false });
 
   return (
-    <DashboardThemeWrapper>
+    <DashboardThemeWrapper locale={locale}>
       <Sidebar
         locale={locale}
         classes={(classes as Class[]) || []}
         profileName={profile?.full_name ?? null}
+        userEmail={session.user.email ?? null}
       />
       <main className="flex-1 overflow-auto">{children}</main>
     </DashboardThemeWrapper>

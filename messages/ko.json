@@ -86,7 +86,10 @@
     "passwordNotStored": "비밀번호는 저장되지 않습니다. 재발급하면 새 비밀번호가 표시됩니다.",
     "showCodeAndQr": "코드 및 QR 표시",
     "copyCode": "코드 복사",
-    "close": "닫기"
+    "close": "닫기",
+    "edit": "편집",
+    "save": "저장",
+    "editClass": "수업 편집"
   },
   "monitoring": {
     "title": "Monitoring",

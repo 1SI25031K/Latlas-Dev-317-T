@@ -86,7 +86,10 @@
     "passwordNotStored": "Password is not stored. Regenerate to see a new password.",
     "showCodeAndQr": "Show code and QR",
     "copyCode": "Copy code",
-    "close": "Close"
+    "close": "Close",
+    "edit": "Edit",
+    "save": "Save",
+    "editClass": "Edit class"
   },
   "monitoring": {
     "title": "Monitoring",

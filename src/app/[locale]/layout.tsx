@@ -32,7 +32,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <NextIntlClientProvider messages={messages}>
       <div
-        className={`${geistSans.variable} ${geistMono.variable} font-sans`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen w-full font-sans`}
         style={{ background: "#F5F5F7" }}
       >
         {children}

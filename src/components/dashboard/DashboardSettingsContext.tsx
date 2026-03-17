@@ -144,7 +144,7 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
         data-theme={resolvedTheme}
         data-font-size={fontSize}
         data-locale={locale}
-        className="flex h-screen overflow-hidden dashboard-theme-root"
+        className="flex h-screen w-full overflow-hidden dashboard-theme-root"
         style={{
           background: bg,
           color: textColor,

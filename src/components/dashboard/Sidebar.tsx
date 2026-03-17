@@ -3,32 +3,18 @@
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import type { Class } from "@/types/database";
-import {
-  Home,
-  Book,
-  Activity,
-  Settings,
-  User,
-  LogOut,
-} from "iconoir-react";
-import { createClient } from "@/lib/supabase/client";
+import { Home, Book, Activity, Settings } from "iconoir-react";
 import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
 
 type SidebarProps = {
   locale: string;
   classes: Class[];
-  profileName: string | null;
-  userEmail: string | null;
-  avatarUrl?: string | null;
 };
 
-export function Sidebar({ locale, classes, profileName, userEmail, avatarUrl }: SidebarProps) {
+export function Sidebar({ locale, classes }: SidebarProps) {
   const t = useTranslations("dashboard");
   const pathname = usePathname();
-  const supabase = createClient();
   const { iconAnimation } = useDashboardSettings();
-
-  const accountName = profileName || userEmail || t("profile");
 
   const iconWrap = (sizeClass: string, hoverClass: string, children: React.ReactNode) => (
     <span
@@ -41,11 +27,6 @@ export function Sidebar({ locale, classes, profileName, userEmail, avatarUrl }: 
       {children}
     </span>
   );
-
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    window.location.href = `/${locale}/login`;
-  }
 
   const navBase =
     "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors";
@@ -61,46 +42,14 @@ export function Sidebar({ locale, classes, profileName, userEmail, avatarUrl }: 
   }
 
   return (
-    <aside
-      className="flex h-full w-64 flex-col border-r"
+    <div
+      className="flex h-full w-full flex-col"
       style={{
         backgroundColor: "var(--dashboard-sidebar)",
-        borderColor: "var(--dashboard-border)",
         color: "var(--dashboard-text)",
       }}
     >
-      {/* Account block (GitHub-style) */}
-      <div className="border-b p-3" style={{ borderColor: "var(--dashboard-border)" }}>
-        <div className="flex items-center gap-3">
-          <div
-            className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full border"
-            style={{
-              backgroundColor: "var(--dashboard-card)",
-              borderColor: "var(--dashboard-border)",
-            }}
-          >
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt=""
-                className="h-8 w-8 object-cover"
-              />
-            ) : (
-              iconWrap("h-4 w-4", "", <User className="h-4 w-4" style={{ color: "var(--dashboard-text-muted)" }} />)
-            )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>
-              {accountName}
-            </p>
-            <p className="text-xs" style={{ color: "var(--dashboard-text-muted)" }}>
-              {t("accountSubtitle")}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-1 flex-col gap-0.5 p-2">
+      <div className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-2">
         <Link href="/dashboard" className={`group ${navClass("/dashboard", true)}`} style={{ color: "var(--dashboard-text)" }}>
           {iconWrap("h-5 w-5", "group-hover:scale-110", <Home className="h-5 w-5" />)}
           {t("home")}
@@ -154,17 +103,6 @@ export function Sidebar({ locale, classes, profileName, userEmail, avatarUrl }: 
         </Link>
       </div>
 
-      <div className="border-t p-3" style={{ borderColor: "var(--dashboard-border)" }}>
-        <button
-          type="button"
-          onClick={handleSignOut}
-          className="group flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium hover:opacity-90"
-          style={{ color: "var(--dashboard-text-muted)" }}
-        >
-          {iconWrap("h-4 w-4", "group-hover:translate-x-0.5", <LogOut className="h-4 w-4" />)}
-          {t("signOut")}
-        </button>
-      </div>
-    </aside>
+    </div>
   );
 }

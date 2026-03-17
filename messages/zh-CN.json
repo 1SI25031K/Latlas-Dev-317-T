@@ -86,7 +86,10 @@
     "passwordNotStored": "未保存密码。重新生成后可查看新密码。",
     "showCodeAndQr": "显示代码与二维码",
     "copyCode": "复制代码",
-    "close": "关闭"
+    "close": "关闭",
+    "edit": "编辑",
+    "save": "保存",
+    "editClass": "编辑班级"
   },
   "monitoring": {
     "title": "Monitoring",

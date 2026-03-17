@@ -108,3 +108,60 @@ export async function regenerateClassPassword(
   }
   return { password };
 }
+
+export type UpdateClassPayload = {
+  name?: string;
+  description?: string | null;
+  icon_id?: string | null;
+  color_hex?: string | null;
+  schedule?: ClassSchedule | null;
+};
+
+export type UpdateClassResult = { error?: string };
+
+export async function updateClass(
+  classId: string,
+  payload: UpdateClassPayload
+): Promise<UpdateClassResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+
+  const { data: row, error: fetchError } = await supabase
+    .from("classes")
+    .select("id, teacher_id")
+    .eq("id", classId)
+    .single();
+
+  if (fetchError || !row) {
+    return { error: fetchError?.message ?? "Class not found" };
+  }
+  if ((row.teacher_id as string) !== user.id) {
+    return { error: "Forbidden" };
+  }
+
+  const updates: Record<string, unknown> = {};
+  if (payload.name !== undefined) updates.name = payload.name.trim();
+  if (payload.description !== undefined) updates.description = payload.description?.trim() || null;
+  if (payload.icon_id !== undefined) updates.icon_id = payload.icon_id || null;
+  if (payload.color_hex !== undefined) updates.color_hex = payload.color_hex || null;
+  if (payload.schedule !== undefined) updates.schedule = payload.schedule;
+
+  if (Object.keys(updates).length === 0) {
+    return {};
+  }
+
+  const { error: updateError } = await supabase
+    .from("classes")
+    .update(updates)
+    .eq("id", classId);
+
+  if (updateError) {
+    return { error: updateError.message };
+  }
+  return {};
+}

@@ -86,7 +86,10 @@
     "passwordNotStored": "パスワードは保存されていません。再発行すると新しいパスワードが表示されます。",
     "showCodeAndQr": "コードとQRを表示",
     "copyCode": "コードをコピー",
-    "close": "閉じる"
+    "close": "閉じる",
+    "edit": "編集",
+    "save": "保存",
+    "editClass": "クラスを編集"
   },
   "monitoring": {
     "title": "モニタリング",

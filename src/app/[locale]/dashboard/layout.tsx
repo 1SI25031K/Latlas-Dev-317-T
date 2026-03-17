@@ -2,6 +2,8 @@ import { setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/dashboard/Sidebar";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { DashboardThemeWrapper } from "@/components/dashboard/DashboardSettingsContext";
 import { DashboardOnboardingOverlay } from "@/components/dashboard/DashboardOnboardingOverlay";
 import { DashboardMfaGate } from "@/components/dashboard/DashboardMfaGate";
@@ -39,18 +41,25 @@ export default async function DashboardLayout({ children, params }: Props) {
 
   const needsOnboarding = !profile?.onboarding_completed_at;
 
+  const classList = (classes as Class[]) || [];
+
   return (
     <DashboardThemeWrapper locale={locale}>
       <DashboardMfaGate>
         <DashboardOnboardingOverlay needsOnboarding={needsOnboarding} locale={locale}>
-          <Sidebar
-          locale={locale}
-          classes={(classes as Class[]) || []}
-          profileName={profile?.full_name ?? null}
-          userEmail={session.user.email ?? null}
-          avatarUrl={profile?.avatar_url ?? null}
-        />
-        <main className="flex-1 overflow-auto">{children}</main>
+          <div className="flex h-full min-h-screen w-full flex-col">
+            <DashboardHeader
+              locale={locale}
+              profileName={profile?.full_name ?? null}
+              userEmail={session.user.email ?? null}
+              avatarUrl={profile?.avatar_url ?? null}
+            />
+            <DashboardShell
+              sidebar={<Sidebar locale={locale} classes={classList} />}
+            >
+              {children}
+            </DashboardShell>
+          </div>
         </DashboardOnboardingOverlay>
       </DashboardMfaGate>
     </DashboardThemeWrapper>

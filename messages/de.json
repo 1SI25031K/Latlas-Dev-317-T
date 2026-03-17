@@ -86,7 +86,10 @@
     "passwordNotStored": "Das Passwort wird nicht gespeichert. Neu erstellen, um ein neues Passwort anzuzeigen.",
     "showCodeAndQr": "Code und QR anzeigen",
     "copyCode": "Code kopieren",
-    "close": "Schließen"
+    "close": "Schließen",
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "editClass": "Klasse bearbeiten"
   },
   "monitoring": {
     "title": "Monitoring",

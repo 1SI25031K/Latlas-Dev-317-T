@@ -86,7 +86,10 @@
     "passwordNotStored": "Le mot de passe n'est pas stocké. Régénérez pour afficher un nouveau mot de passe.",
     "showCodeAndQr": "Afficher le code et le QR",
     "copyCode": "Copier le code",
-    "close": "Fermer"
+    "close": "Fermer",
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "editClass": "Modifier la classe"
   },
   "monitoring": {
     "title": "Monitoring",

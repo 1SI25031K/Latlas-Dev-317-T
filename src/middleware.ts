@@ -38,7 +38,7 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const locale = pathname.split("/")[1];
-  const isLocale = routing.locales.includes(locale);
+  const isLocale = (routing.locales as readonly string[]).includes(locale);
   const basePath = isLocale ? pathname.slice(locale.length + 1) || "/" : pathname;
   const isDashboard =
     basePath === "/dashboard" || basePath.startsWith("/dashboard/");

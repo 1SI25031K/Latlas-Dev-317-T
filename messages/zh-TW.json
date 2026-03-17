@@ -86,7 +86,10 @@
     "passwordNotStored": "未儲存密碼。重新產生後可查看新密碼。",
     "showCodeAndQr": "顯示代碼與QR碼",
     "copyCode": "複製代碼",
-    "close": "關閉"
+    "close": "關閉",
+    "edit": "編輯",
+    "save": "儲存",
+    "editClass": "編輯班級"
   },
   "monitoring": {
     "title": "Monitoring",

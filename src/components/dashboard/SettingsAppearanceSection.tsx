@@ -23,7 +23,8 @@ const FONT_SIZE_KEYS: Record<FontSizeId, string> = {
 
 export function SettingsAppearanceSection() {
   const t = useTranslations("settings");
-  const { theme, fontSize, setTheme, setFontSize } = useDashboardSettings();
+  const { theme, fontSize, iconAnimation, setTheme, setFontSize, setIconAnimation } =
+    useDashboardSettings();
 
   return (
     <>
@@ -54,7 +55,7 @@ export function SettingsAppearanceSection() {
                 onClick={() => setTheme(id)}
                 className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
                   theme === id
-                    ? "border-blue-500 bg-blue-500/10 text-blue-400 ring-1 ring-blue-500"
+                    ? "border-green-500 bg-green-500/10 text-green-400 ring-1 ring-green-500"
                     : "border-[var(--dashboard-border)] bg-[var(--dashboard-card)] hover:opacity-90"
                 }`}
                 style={{
@@ -71,25 +72,38 @@ export function SettingsAppearanceSection() {
           <h3 className="text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>
             {t("fontSize")}
           </h3>
-          <div className="mt-2 flex gap-2">
-            {FONT_SIZE_IDS.map((id) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setFontSize(id)}
-                className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
-                  fontSize === id
-                    ? "border-blue-500 bg-blue-500/10 text-blue-400 ring-1 ring-blue-500"
-                    : "border-[var(--dashboard-border)] bg-[var(--dashboard-card)] hover:opacity-90"
-                }`}
-                style={{
-                  color: fontSize === id ? undefined : "var(--dashboard-text)",
-                }}
-              >
-                {t(FONT_SIZE_KEYS[id])}
-              </button>
-            ))}
+          <div className="mt-2 flex items-center gap-3">
+            <input
+              type="range"
+              min={0}
+              max={2}
+              step={1}
+              value={FONT_SIZE_IDS.indexOf(fontSize)}
+              onChange={(e) => setFontSize(FONT_SIZE_IDS[Number(e.target.value)])}
+              className="h-2 w-32 flex-shrink-0 accent-green-500"
+            />
+            <span className="text-sm" style={{ color: "var(--dashboard-text-muted)" }}>
+              {t(FONT_SIZE_KEYS[fontSize])}
+            </span>
           </div>
+        </div>
+
+        <div className="mt-6">
+          <h3 className="text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>
+            {t("iconAnimations")}
+          </h3>
+          <label className="mt-2 flex cursor-pointer items-center gap-2">
+            <input
+              type="checkbox"
+              checked={iconAnimation}
+              onChange={(e) => setIconAnimation(e.target.checked)}
+              className="h-4 w-4 rounded border accent-green-500"
+              style={{ borderColor: "var(--dashboard-border)" }}
+            />
+            <span className="text-sm" style={{ color: "var(--dashboard-text)" }}>
+              {t("iconAnimationsDescription")}
+            </span>
+          </label>
         </div>
       </section>
     </>

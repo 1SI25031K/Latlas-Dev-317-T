@@ -13,6 +13,7 @@ import {
   THEME_BG,
   DEFAULT_THEME,
   DEFAULT_FONT_SIZE,
+  DEFAULT_ICON_ANIMATION,
   STORAGE_KEYS,
   type ThemeId,
   type FontSizeId,
@@ -23,8 +24,10 @@ type DashboardSettingsState = {
   theme: ThemeId;
   resolvedTheme: ResolvedThemeId;
   fontSize: FontSizeId;
+  iconAnimation: boolean;
   setTheme: (v: ThemeId) => void;
   setFontSize: (v: FontSizeId) => void;
+  setIconAnimation: (v: boolean) => void;
 };
 
 const DashboardSettingsContext = createContext<DashboardSettingsState | null>(
@@ -43,6 +46,14 @@ function readFontSize(): FontSizeId {
   const v = localStorage.getItem(STORAGE_KEYS.fontSize);
   if (v === "small" || v === "medium" || v === "large") return v;
   return DEFAULT_FONT_SIZE;
+}
+
+function readIconAnimation(): boolean {
+  if (typeof window === "undefined") return DEFAULT_ICON_ANIMATION;
+  const v = localStorage.getItem(STORAGE_KEYS.iconAnimation);
+  if (v === "false") return false;
+  if (v === "true") return true;
+  return DEFAULT_ICON_ANIMATION;
 }
 
 function getResolvedTheme(theme: ThemeId): ResolvedThemeId {
@@ -71,10 +82,12 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
   const [theme, setThemeState] = useState<ThemeId>(DEFAULT_THEME);
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedThemeId>("light");
   const [fontSize, setFontSizeState] = useState<FontSizeId>(DEFAULT_FONT_SIZE);
+  const [iconAnimation, setIconAnimationState] = useState<boolean>(DEFAULT_ICON_ANIMATION);
 
   useEffect(() => {
     setThemeState(readTheme());
     setFontSizeState(readFontSize());
+    setIconAnimationState(readIconAnimation());
   }, []);
 
   useEffect(() => {
@@ -102,15 +115,24 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
     } catch {}
   }, []);
 
+  const setIconAnimation = useCallback((v: boolean) => {
+    setIconAnimationState(v);
+    try {
+      localStorage.setItem(STORAGE_KEYS.iconAnimation, v ? "true" : "false");
+    } catch {}
+  }, []);
+
   const value = useMemo(
     () => ({
       theme,
       resolvedTheme,
       fontSize,
+      iconAnimation,
       setTheme,
       setFontSize,
+      setIconAnimation,
     }),
-    [theme, resolvedTheme, fontSize, setTheme, setFontSize]
+    [theme, resolvedTheme, fontSize, iconAnimation, setTheme, setFontSize, setIconAnimation]
   );
 
   const bg = THEME_BG[resolvedTheme];

@@ -56,10 +56,17 @@
     "themeSystem": "システム",
     "fontSizeSmall": "小",
     "fontSizeMedium": "中",
-    "fontSizeLarge": "大"
+    "fontSizeLarge": "大",
+    "iconAnimations": "アイコンアニメーション",
+    "iconAnimationsDescription": "ホバー時にアイコンをアニメーションする"
   },
   "locale": {
     "ja": "日本語",
-    "en": "English"
+    "en": "English",
+    "zh-CN": "简体中文",
+    "zh-TW": "繁體中文",
+    "ko": "한국어",
+    "fr": "Français",
+    "de": "Deutsch"
   }
 }

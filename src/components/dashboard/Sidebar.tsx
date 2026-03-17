@@ -5,13 +5,14 @@ import { Link, usePathname } from "@/i18n/navigation";
 import type { Class } from "@/types/database";
 import {
   Home,
-  BookOpen,
+  Book,
   Activity,
   Settings,
   User,
   LogOut,
-} from "lucide-react";
+} from "iconoir-react";
 import { createClient } from "@/lib/supabase/client";
+import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
 
 type SidebarProps = {
   locale: string;
@@ -24,9 +25,21 @@ export function Sidebar({ locale, classes, profileName, userEmail }: SidebarProp
   const t = useTranslations("dashboard");
   const pathname = usePathname();
   const supabase = createClient();
+  const { iconAnimation } = useDashboardSettings();
 
   const accountName = profileName || userEmail || t("profile");
-  const isHome = pathname === "/dashboard";
+
+  const iconWrap = (sizeClass: string, hoverClass: string, children: React.ReactNode) => (
+    <span
+      className={
+        iconAnimation
+          ? `inline-flex shrink-0 items-center justify-center ${sizeClass} transition-transform duration-200 ease-out ${hoverClass}`
+          : `inline-flex shrink-0 items-center justify-center ${sizeClass}`
+      }
+    >
+      {children}
+    </span>
+  );
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -65,7 +78,7 @@ export function Sidebar({ locale, classes, profileName, userEmail }: SidebarProp
               borderColor: "var(--dashboard-border)",
             }}
           >
-            <User className="h-4 w-4" style={{ color: "var(--dashboard-text-muted)" }} />
+            {iconWrap("h-4 w-4", "", <User className="h-4 w-4" style={{ color: "var(--dashboard-text-muted)" }} />)}
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>
@@ -79,8 +92,8 @@ export function Sidebar({ locale, classes, profileName, userEmail }: SidebarProp
       </div>
 
       <div className="flex flex-1 flex-col gap-0.5 p-2">
-        <Link href="/dashboard" className={navClass("/dashboard", true)} style={{ color: "var(--dashboard-text)" }}>
-          <Home className="h-5 w-5 shrink-0" />
+        <Link href="/dashboard" className={`group ${navClass("/dashboard", true)}`} style={{ color: "var(--dashboard-text)" }}>
+          {iconWrap("h-5 w-5", "group-hover:scale-110", <Home className="h-5 w-5" />)}
           {t("home")}
         </Link>
 
@@ -97,10 +110,10 @@ export function Sidebar({ locale, classes, profileName, userEmail }: SidebarProp
           <Link
             key={c.id}
             href="/dashboard"
-            className={`${navBase} ${navInactive}`}
+            className={`group ${navBase} ${navInactive}`}
             style={{ color: "var(--dashboard-text)" }}
           >
-            <BookOpen className="h-4 w-4 shrink-0" style={{ color: "var(--dashboard-text-muted)" }} />
+            {iconWrap("h-4 w-4", "group-hover:scale-105", <Book className="h-4 w-4" style={{ color: "var(--dashboard-text-muted)" }} />)}
             <span className="truncate">{c.name}</span>
           </Link>
         ))}
@@ -116,18 +129,18 @@ export function Sidebar({ locale, classes, profileName, userEmail }: SidebarProp
 
         <Link
           href="/dashboard/monitoring"
-          className={navClass("/dashboard/monitoring")}
+          className={`group ${navClass("/dashboard/monitoring")}`}
           style={{ color: "var(--dashboard-text)" }}
         >
-          <Activity className="h-5 w-5 shrink-0" />
+          {iconWrap("h-5 w-5", "group-hover:scale-110", <Activity className="h-5 w-5" />)}
           {t("monitoring")}
         </Link>
         <Link
           href="/dashboard/settings"
-          className={navClass("/dashboard/settings")}
+          className={`group ${navClass("/dashboard/settings")}`}
           style={{ color: "var(--dashboard-text)" }}
         >
-          <Settings className="h-5 w-5 shrink-0" />
+          {iconWrap("h-5 w-5", "group-hover:rotate-90", <Settings className="h-5 w-5" />)}
           {t("settings")}
         </Link>
       </div>
@@ -136,10 +149,10 @@ export function Sidebar({ locale, classes, profileName, userEmail }: SidebarProp
         <button
           type="button"
           onClick={handleSignOut}
-          className="flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium hover:opacity-90"
+          className="group flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium hover:opacity-90"
           style={{ color: "var(--dashboard-text-muted)" }}
         >
-          <LogOut className="h-4 w-4" />
+          {iconWrap("h-4 w-4", "group-hover:translate-x-0.5", <LogOut className="h-4 w-4" />)}
           Sign out
         </button>
       </div>

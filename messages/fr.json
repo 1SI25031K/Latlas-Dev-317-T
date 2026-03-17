@@ -57,8 +57,8 @@
     "fontSizeSmall": "Small",
     "fontSizeMedium": "Medium",
     "fontSizeLarge": "Large",
-    "iconAnimations": "Icon animations",
-    "iconAnimationsDescription": "Animate icons on hover"
+    "iconAnimations": "Animation des icônes",
+    "iconAnimationsDescription": "Animer les icônes au survol"
   },
   "locale": {
     "ja": "日本語",

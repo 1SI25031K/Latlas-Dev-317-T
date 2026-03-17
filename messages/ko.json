@@ -57,8 +57,8 @@
     "fontSizeSmall": "Small",
     "fontSizeMedium": "Medium",
     "fontSizeLarge": "Large",
-    "iconAnimations": "Icon animations",
-    "iconAnimationsDescription": "Animate icons on hover"
+    "iconAnimations": "아이콘 애니메이션",
+    "iconAnimationsDescription": "마우스를 올리면 아이콘 애니메이션 재생"
   },
   "locale": {
     "ja": "日本語",

@@ -14,7 +14,10 @@ export type FontSizeId = (typeof FONT_SIZE_IDS)[number];
 export const STORAGE_KEYS = {
   theme: "latlas-theme",
   fontSize: "latlas-font-size",
+  iconAnimation: "latlas-icon-animation",
 } as const;
+
+export const DEFAULT_ICON_ANIMATION = true;
 
 export const DEFAULT_THEME: ThemeId = "system";
 export const DEFAULT_FONT_SIZE: FontSizeId = "medium";

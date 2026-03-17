@@ -13,6 +13,19 @@ export type Profile = {
   share_avatar_with_students: boolean;
 };
 
+/** 0=Sun, 1=Mon, ... 6=Sat */
+export type ClassScheduleSlot = {
+  dayOfWeek: number;
+  startTime: string; // "HH:mm"
+  endTime: string;   // "HH:mm"
+};
+
+export type ClassSchedule = {
+  slots: ClassScheduleSlot[];
+  termStart?: string; // "YYYY-MM-DD"
+  termEnd?: string;   // "YYYY-MM-DD"
+};
+
 export type Class = {
   id: string;
   name: string;
@@ -20,6 +33,10 @@ export type Class = {
   access_code: string;
   password_hash: string;
   created_at: string;
+  schedule?: ClassSchedule | null;
+  icon_id?: string | null;
+  color_hex?: string | null;
+  description?: string | null;
 };
 
 export type ClassInsert = Omit<Class, "id" | "created_at"> & {

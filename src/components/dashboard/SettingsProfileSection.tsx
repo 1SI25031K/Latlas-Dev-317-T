@@ -6,6 +6,7 @@ import imageCompression from "browser-image-compression";
 import { createClient } from "@/lib/supabase/client";
 import { updateProfileFromSettings } from "@/app/actions/profile";
 import { User, EditPencil } from "iconoir-react";
+import { PROFILE_TITLE_IDS, PROFILE_TITLE_EMPTY, PROFILE_TITLE_SETTINGS_KEYS } from "@/lib/profile-title-options";
 
 const AVATAR_BUCKET = "avatars";
 const AVATAR_MAX_WIDTH = 400;
@@ -288,20 +289,31 @@ export function SettingsProfileSection({ profile }: SettingsProfileSectionProps)
                 <label htmlFor="sheet_title" className="text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>
                   {t("profileTitle")}
                 </label>
-                <input
+                <select
                   id="sheet_title"
                   name="title"
-                  type="text"
-                  defaultValue={profile?.title ?? ""}
                   disabled={!canUpdate}
-                  placeholder={t("profileTitlePlaceholder")}
+                  defaultValue={
+                    profile?.title && PROFILE_TITLE_IDS.includes(profile.title as typeof PROFILE_TITLE_IDS[number])
+                      ? profile.title
+                      : profile?.title
+                        ? "other"
+                        : PROFILE_TITLE_EMPTY
+                  }
                   className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
                   style={{
                     borderColor: "var(--dashboard-border)",
                     backgroundColor: "var(--dashboard-card)",
                     color: "var(--dashboard-text)",
                   }}
-                />
+                >
+                  <option value={PROFILE_TITLE_EMPTY}>{t("profileTitlePlaceholder")}</option>
+                  {PROFILE_TITLE_IDS.map((id) => (
+                    <option key={id} value={id}>
+                      {t(PROFILE_TITLE_SETTINGS_KEYS[id])}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label htmlFor="sheet_department" className="text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>

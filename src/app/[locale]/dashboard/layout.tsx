@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { DashboardThemeWrapper } from "@/components/dashboard/DashboardSettingsContext";
 import { DashboardOnboardingOverlay } from "@/components/dashboard/DashboardOnboardingOverlay";
+import { DashboardMfaGate } from "@/components/dashboard/DashboardMfaGate";
 import type { Class } from "@/types/database";
 
 type Props = {
@@ -40,8 +41,9 @@ export default async function DashboardLayout({ children, params }: Props) {
 
   return (
     <DashboardThemeWrapper locale={locale}>
-      <DashboardOnboardingOverlay needsOnboarding={needsOnboarding} locale={locale}>
-        <Sidebar
+      <DashboardMfaGate>
+        <DashboardOnboardingOverlay needsOnboarding={needsOnboarding} locale={locale}>
+          <Sidebar
           locale={locale}
           classes={(classes as Class[]) || []}
           profileName={profile?.full_name ?? null}
@@ -49,7 +51,8 @@ export default async function DashboardLayout({ children, params }: Props) {
           avatarUrl={profile?.avatar_url ?? null}
         />
         <main className="flex-1 overflow-auto">{children}</main>
-      </DashboardOnboardingOverlay>
+        </DashboardOnboardingOverlay>
+      </DashboardMfaGate>
     </DashboardThemeWrapper>
   );
 }

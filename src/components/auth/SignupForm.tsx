@@ -12,35 +12,59 @@ export function SignupForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
     const supabase = createClient();
+    const redirectTo =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/auth/callback`
+        : undefined;
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName || undefined } },
+      options: {
+        emailRedirectTo: redirectTo,
+      },
     });
+    setLoading(false);
     if (signUpError) {
       setError(signUpError.message);
-      setLoading(false);
       return;
     }
-    if (data.user) {
-      await ensureProfile(
-        data.user.id,
-        data.user.email ?? undefined,
-        fullName || null
-      );
+    if (data.user && !signUpError) {
+      if (data.session) {
+        await ensureProfile(
+          data.user.id,
+          data.user.email ?? undefined,
+          null
+        );
+        router.refresh();
+        router.push("/dashboard");
+      } else {
+        setEmailSent(true);
+      }
     }
-    setLoading(false);
-    router.refresh();
-    router.push("/dashboard");
+  }
+
+  if (emailSent) {
+    return (
+      <div className="flex w-full max-w-sm flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-semibold text-gray-900">{t("signupTitle")}</h2>
+        <p className="text-sm text-gray-700">{t("checkEmailMessage")}</p>
+        <p className="text-center text-sm text-gray-600">
+          {t("hasAccount")}{" "}
+          <Link href="/login" className="font-medium text-blue-600 hover:underline">
+            {t("goToLogin")}
+          </Link>
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -52,19 +76,6 @@ export function SignupForm() {
       {error && (
         <p className="rounded-lg bg-red-50 p-2 text-sm text-red-700">{error}</p>
       )}
-      <div className="flex flex-col gap-2">
-        <label htmlFor="fullName" className="text-sm font-medium text-gray-700">
-          {t("fullName")}
-        </label>
-        <input
-          id="fullName"
-          type="text"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-          autoComplete="name"
-        />
-      </div>
       <div className="flex flex-col gap-2">
         <label htmlFor="email" className="text-sm font-medium text-gray-700">
           {t("email")}

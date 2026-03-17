@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import imageCompression from "browser-image-compression";
 import { createClient } from "@/lib/supabase/client";
 import { completeOnboarding } from "@/app/actions/onboarding";
+import { PROFILE_TITLE_IDS, PROFILE_TITLE_EMPTY, PROFILE_TITLE_ONBOARDING_KEYS } from "@/lib/profile-title-options";
 
 const AVATAR_BUCKET = "avatars";
 const AVATAR_MAX_WIDTH = 400;
@@ -108,13 +109,18 @@ export function OnboardingForm({ locale }: OnboardingFormProps) {
         <label htmlFor="title" className="text-sm font-medium text-gray-700">
           {t("titleLabel")}
         </label>
-        <input
+        <select
           id="title"
           name="title"
-          type="text"
-          placeholder={t("titlePlaceholder")}
           className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
-        />
+        >
+          <option value={PROFILE_TITLE_EMPTY}>{t("titlePlaceholder")}</option>
+          {PROFILE_TITLE_IDS.map((id) => (
+            <option key={id} value={id}>
+              {t(PROFILE_TITLE_ONBOARDING_KEYS[id])}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="flex flex-col gap-2">
         <label htmlFor="department" className="text-sm font-medium text-gray-700">

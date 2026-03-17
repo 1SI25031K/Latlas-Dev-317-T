@@ -25,7 +25,11 @@ CREATE TABLE IF NOT EXISTS classes (
   teacher_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   access_code TEXT NOT NULL,
   password_hash TEXT NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  schedule JSONB,
+  icon_id TEXT,
+  color_hex TEXT,
+  description TEXT
 );
 
 -- RLS: teachers manage own classes

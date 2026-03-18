@@ -6,8 +6,40 @@ import { getBingWallpaperUrl } from "@/lib/bing-wallpaper";
 
 type Props = { children: React.ReactNode };
 
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const v = hex.trim();
+  if (!v.startsWith("#")) return null;
+  if (v.length === 4) {
+    const r = parseInt(v[1] + v[1], 16);
+    const g = parseInt(v[2] + v[2], 16);
+    const b = parseInt(v[3] + v[3], 16);
+    return { r, g, b };
+  }
+  if (v.length !== 7) return null;
+  const r = parseInt(v.slice(1, 3), 16);
+  const g = parseInt(v.slice(3, 5), 16);
+  const b = parseInt(v.slice(5, 7), 16);
+  if ([r, g, b].some((x) => Number.isNaN(x))) return null;
+  return { r, g, b };
+}
+
+function relativeLuminance(rgb: { r: number; g: number; b: number }): number {
+  // WCAG relative luminance
+  const srgb = [rgb.r, rgb.g, rgb.b].map((c) => c / 255);
+  const linear = srgb.map((c) =>
+    c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+  );
+  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+}
+
+function isLightColor(hex: string): boolean {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return true;
+  return relativeLuminance(rgb) > 0.5;
+}
+
 export function DashboardMainWithWallpaper({ children }: Props) {
-  const { backgroundMode, backgroundColor } = useDashboardSettings();
+  const { backgroundMode, backgroundColor, resolvedTheme } = useDashboardSettings();
   const [dailyUrl, setDailyUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,12 +60,38 @@ export function DashboardMainWithWallpaper({ children }: Props) {
     return <>{children}</>;
   }
 
-  const contentTextShadow =
-    "0 1px 2px rgba(0,0,0,0.65), 0 0 8px rgba(255,255,255,0.25)";
+  const overlayOpacity = 0.4;
+  const dailyOverlayColor =
+    resolvedTheme === "light"
+      ? `rgba(255,255,255,${overlayOpacity})`
+      : `rgba(0,0,0,${overlayOpacity})`;
+
+  // Background-dependent text vars (override children inline styles via CSS vars)
+  const dailyText = resolvedTheme === "light"
+    ? { text: "#171717", muted: "#6b7280" }
+    : { text: "#c9d1d9", muted: "#8b949e" };
+
+  const solidIsLight = isLightColor(backgroundColor);
+  const solidText = solidIsLight
+    ? { text: "#171717", muted: "#6b7280" }
+    : { text: "#c9d1d9", muted: "#8b949e" };
+
+  const textVars =
+    backgroundMode === "daily"
+      ? { "--dashboard-text": dailyText.text, "--dashboard-text-muted": dailyText.muted }
+      : { "--dashboard-text": solidText.text, "--dashboard-text-muted": solidText.muted };
+
+  const useDarkText = backgroundMode === "daily" ? resolvedTheme === "light" : solidIsLight;
+  const contentTextShadow = useDarkText
+    ? "0 1px 2px rgba(255,255,255,0.85), 0 0 8px rgba(0,0,0,0.08)"
+    : "0 1px 2px rgba(0,0,0,0.75), 0 0 8px rgba(255,255,255,0.22)";
 
   if (backgroundMode === "daily") {
     return (
-      <div className="relative min-h-full w-full">
+      <div
+        className="relative min-h-full w-full"
+        style={textVars as React.CSSProperties}
+      >
         {dailyUrl && (
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -42,13 +100,11 @@ export function DashboardMainWithWallpaper({ children }: Props) {
           />
         )}
         <div
-          className="absolute inset-0 bg-black/40"
+          className="absolute inset-0"
+          style={{ backgroundColor: dailyOverlayColor }}
           aria-hidden
         />
-        <div
-          className="relative z-10 min-h-full"
-          style={{ textShadow: contentTextShadow }}
-        >
+        <div className="relative z-10 min-h-full" style={{ textShadow: contentTextShadow }}>
           {children}
         </div>
       </div>
@@ -56,16 +112,18 @@ export function DashboardMainWithWallpaper({ children }: Props) {
   }
 
   return (
-    <div className="relative min-h-full w-full" style={{ backgroundColor }}>
+    <div
+      className="relative min-h-full w-full"
+      style={{ backgroundColor, ...(textVars as React.CSSProperties) }}
+    >
       <div
         className="absolute inset-0"
-        style={{ backgroundColor: "rgba(0,0,0,0.32)" }}
+        style={{
+          backgroundColor: solidIsLight ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)",
+        }}
         aria-hidden
       />
-      <div
-        className="relative z-10 min-h-full"
-        style={{ textShadow: contentTextShadow }}
-      >
+      <div className="relative z-10 min-h-full" style={{ textShadow: contentTextShadow }}>
         {children}
       </div>
     </div>

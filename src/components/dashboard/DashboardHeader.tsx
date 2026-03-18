@@ -123,15 +123,15 @@ export function DashboardHeader({
           style={{
             backgroundColor: "var(--dashboard-bg)",
             borderColor: "var(--dashboard-border)",
-            color: "var(--dashboard-text-muted)",
+            color: "var(--dashboard-text)",
           }}
           aria-label="Menu"
           aria-pressed={sidebarCollapsed}
         >
           <span className="flex flex-col gap-1">
-            <span className="block h-0.5 w-5 rounded-full bg-current" />
-            <span className="block h-0.5 w-5 rounded-full bg-current" />
-            <span className="block h-0.5 w-5 rounded-full bg-current" />
+            <span className="block h-1 w-5 rounded-full bg-current" />
+            <span className="block h-1 w-5 rounded-full bg-current" />
+            <span className="block h-1 w-5 rounded-full bg-current" />
           </span>
         </button>
         <span className="text-lg font-semibold" style={{ color: "var(--dashboard-text)" }}>
@@ -169,7 +169,7 @@ export function DashboardHeader({
               }}
               onMouseDown={(e) => e.stopPropagation()}
             >
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 {BACKGROUND_COLORS.map((c) => {
                   const selected = backgroundMode === "solid" && backgroundColor === c.hex;
                   return (

@@ -37,7 +37,9 @@
     "signOut": "退出登录",
     "classes": "Classes",
     "showMore": "Show more",
+    "showAllClasses": "显示全部",
     "createClass": "Create class",
+    "messages": "消息",
     "monitoring": "Monitoring",
     "settings": "Settings",
     "profile": "Profile",
@@ -153,6 +155,11 @@
     "deleteNameMustMatch": "输入完全相同的名称后可进行验证。",
     "openQrInNewWindow": "在新窗口中放大显示",
     "regenerateQr": "更新二维码"
+  },
+  "messagesPage": {
+    "title": "消息",
+    "subtitle": "与学生聊天。",
+    "placeholder": "消息功能将在后续更新中提供。"
   },
   "monitoring": {
     "title": "Monitoring",

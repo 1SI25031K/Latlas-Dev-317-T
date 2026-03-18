@@ -62,6 +62,7 @@ export function DashboardHeader({
     if (pathname === "/dashboard" || pathname === "/dashboard/") return t("home");
     if (pathname.startsWith("/dashboard/settings")) return t("settings");
     if (pathname.startsWith("/dashboard/monitoring")) return t("monitoring");
+    if (pathname.startsWith("/dashboard/messages")) return t("messages");
     return t("home");
   }
 

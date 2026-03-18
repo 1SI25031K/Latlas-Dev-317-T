@@ -73,6 +73,16 @@ export function ClassDetailModal({
   const [slots, setSlots] = useState<ClassScheduleSlot[]>([emptySlot()]);
   const [termStart, setTermStart] = useState("");
   const [termEnd, setTermEnd] = useState("");
+
+  const ICON_CELL = 36;
+  const ICONS_PER_COL = 3;
+  const iconColumns = useMemo(() => {
+    const cols: ClassIconId[][] = [];
+    for (let i = 0; i < CLASS_ICON_IDS.length; i += ICONS_PER_COL) {
+      cols.push(CLASS_ICON_IDS.slice(i, i + ICONS_PER_COL) as ClassIconId[]);
+    }
+    return cols;
+  }, []);
   const [deleteTotpFactorId, setDeleteTotpFactorId] = useState<string | null>(null);
   const [deleteWebauthnFactorId, setDeleteWebauthnFactorId] = useState<string | null>(null);
   const [deleteFactorsLoading, setDeleteFactorsLoading] = useState(false);
@@ -363,27 +373,39 @@ export function ClassDetailModal({
                 style={inputStyle}
               />
             </div>
-            <div>
+            <div className="w-full min-w-0">
               <span className="text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>{t("icon")}</span>
-              <div className="mt-2 flex max-w-[calc(3*2.5rem+2*0.5rem)] flex-nowrap gap-2 overflow-x-auto pb-2">
-                {CLASS_ICON_IDS.map((id) => {
-                  const Icon = CLASS_ICON_MAP[id];
-                  const selected = iconId === id;
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setIconId(id)}
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-colors"
-                      style={{
-                        borderColor: selected ? colorHex : "var(--dashboard-border)",
-                        backgroundColor: selected ? `${colorHex}20` : "var(--dashboard-bg)",
-                      }}
-                    >
-                      <Icon size={20} style={{ color: selected ? colorHex : "var(--dashboard-text-muted)" }} />
-                    </button>
-                  );
-                })}
+              <div className="mt-2 w-full min-w-0 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5">
+                <div className="flex w-max flex-row gap-2">
+                  {iconColumns.map((col, ci) => (
+                    <div key={ci} className="flex flex-col gap-2">
+                      {col.map((id) => {
+                        const Icon = CLASS_ICON_MAP[id];
+                        const selected = iconId === id;
+                        return (
+                          <button
+                            key={id}
+                            type="button"
+                            onClick={() => setIconId(id)}
+                            className="flex shrink-0 items-center justify-center rounded-xl border transition-colors"
+                            style={{
+                              width: ICON_CELL,
+                              height: ICON_CELL,
+                              minWidth: ICON_CELL,
+                              borderColor: selected ? colorHex : "var(--dashboard-border)",
+                              backgroundColor: selected ? `${colorHex}20` : "var(--dashboard-bg)",
+                            }}
+                          >
+                            <Icon
+                              size={20}
+                              style={{ color: selected ? colorHex : "var(--dashboard-text-muted)" }}
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div>

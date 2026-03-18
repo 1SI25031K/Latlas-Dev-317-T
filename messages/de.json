@@ -37,7 +37,9 @@
     "signOut": "Abmelden",
     "classes": "Classes",
     "showMore": "Show more",
+    "showAllClasses": "Alle anzeigen",
     "createClass": "Create class",
+    "messages": "Messages",
     "monitoring": "Monitoring",
     "settings": "Settings",
     "profile": "Profile",
@@ -153,6 +155,11 @@
     "deleteNameMustMatch": "Geben Sie den exakten Klassennamen ein, um fortzufahren.",
     "openQrInNewWindow": "Groß in neuem Fenster öffnen",
     "regenerateQr": "QR-Code erneuern"
+  },
+  "messagesPage": {
+    "title": "Messages",
+    "subtitle": "Chat with students.",
+    "placeholder": "Messaging will be available in a future update."
   },
   "monitoring": {
     "title": "Monitoring",

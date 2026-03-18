@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import type { Class } from "@/types/database";
-import { Home, Book, Activity, Settings } from "iconoir-react";
+import { Home, Book, Activity, Settings, ChatLines } from "iconoir-react";
 import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
+
+const CLASS_SIDEBAR_LIMIT = 7;
 
 type SidebarProps = {
   locale: string;
@@ -15,6 +18,7 @@ export function Sidebar({ locale, classes }: SidebarProps) {
   const t = useTranslations("dashboard");
   const pathname = usePathname();
   const { iconAnimation, sidebarCollapsed } = useDashboardSettings();
+  const [showAllClasses, setShowAllClasses] = useState(false);
 
   const iconWrap = (sizeClass: string, hoverClass: string, children: React.ReactNode) => (
     <span
@@ -56,6 +60,23 @@ export function Sidebar({ locale, classes }: SidebarProps) {
           {!sidebarCollapsed && t("home")}
         </Link>
 
+        <Link
+          href="/dashboard/messages"
+          className={`group ${navClass("/dashboard/messages")}`}
+          style={{ color: "var(--dashboard-text)" }}
+        >
+          {iconWrap("h-5 w-5", "group-hover:scale-110", <ChatLines className="h-5 w-5" />)}
+          {!sidebarCollapsed && t("messages")}
+        </Link>
+        <Link
+          href="/dashboard/monitoring"
+          className={`group ${navClass("/dashboard/monitoring")}`}
+          style={{ color: "var(--dashboard-text)" }}
+        >
+          {iconWrap("h-5 w-5", "group-hover:scale-110", <Activity className="h-5 w-5" />)}
+          {!sidebarCollapsed && t("monitoring")}
+        </Link>
+
         {!sidebarCollapsed && (
           <>
             <div className="my-2 border-t" style={{ borderColor: "var(--dashboard-border)" }} />
@@ -67,7 +88,7 @@ export function Sidebar({ locale, classes }: SidebarProps) {
                 {t("classes")}
               </span>
             </div>
-            {classes.slice(0, 8).map((c) => (
+            {(showAllClasses ? classes : classes.slice(0, CLASS_SIDEBAR_LIMIT)).map((c) => (
               <Link
                 key={c.id}
                 href="/dashboard"
@@ -82,26 +103,19 @@ export function Sidebar({ locale, classes }: SidebarProps) {
                 <span className="truncate">{c.name}</span>
               </Link>
             ))}
-            {classes.length > 8 && (
-              <span
-                className="px-3 py-1.5 text-xs"
+            {classes.length > CLASS_SIDEBAR_LIMIT && !showAllClasses && (
+              <button
+                type="button"
+                onClick={() => setShowAllClasses(true)}
+                className={`w-full rounded-2xl px-3 py-2 text-left text-xs font-medium transition-opacity hover:opacity-90 ${navInactive}`}
                 style={{ color: "var(--dashboard-text-muted)" }}
               >
-                {t("showMore")}
-              </span>
+                {t("showAllClasses")}
+              </button>
             )}
             <div className="my-2 border-t" style={{ borderColor: "var(--dashboard-border)" }} />
           </>
         )}
-
-        <Link
-          href="/dashboard/monitoring"
-          className={`group ${navClass("/dashboard/monitoring")}`}
-          style={{ color: "var(--dashboard-text)" }}
-        >
-          {iconWrap("h-5 w-5", "group-hover:scale-110", <Activity className="h-5 w-5" />)}
-          {!sidebarCollapsed && t("monitoring")}
-        </Link>
         <Link
           href="/dashboard/settings"
           className={`group ${navClass("/dashboard/settings")}`}

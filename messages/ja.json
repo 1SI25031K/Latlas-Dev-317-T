@@ -37,7 +37,9 @@
     "signOut": "サインアウト",
     "classes": "クラス一覧",
     "showMore": "さらに表示",
+    "showAllClasses": "すべて表示",
     "createClass": "クラスを追加",
+    "messages": "メッセージ",
     "monitoring": "モニタリング",
     "settings": "設定",
     "profile": "プロフィール",
@@ -153,6 +155,11 @@
     "deleteNameMustMatch": "クラス名が一致すると、二段階認証に進めます。",
     "openQrInNewWindow": "別のウィンドウで大きく表示",
     "regenerateQr": "QRコードを更新"
+  },
+  "messagesPage": {
+    "title": "メッセージ",
+    "subtitle": "生徒とチャットできます。",
+    "placeholder": "メッセージ機能は今後の更新で利用できる予定です。"
   },
   "monitoring": {
     "title": "モニタリング",

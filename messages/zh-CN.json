@@ -165,7 +165,6 @@
   },
   "timerPage": {
     "title": "计时器",
-    "subtitle": "运行时顶栏显示剩余时间。",
     "presets": "快捷",
     "minutes": "{n} 分钟",
     "customMinutes": "分钟",
@@ -178,7 +177,6 @@
   },
   "stopwatchPage": {
     "title": "秒表",
-    "subtitle": "运行时顶栏显示经过时间。",
     "start": "开始",
     "pause": "暂停",
     "resume": "继续",

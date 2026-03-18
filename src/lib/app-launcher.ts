@@ -229,16 +229,28 @@ function parseConfig(raw: string | null): LauncherConfig | null {
   }
 }
 
+const LATLAS_ACCOUNT_ITEM: LauncherItem = { kind: "builtin", id: "latlas_account" };
+
+/** Latlas Account は常に先頭1件のみ（移動・削除不可） */
+export function ensureLatlasAccountFirst(items: LauncherItem[]): LauncherItem[] {
+  const rest = items.filter(
+    (i) => !(i.kind === "builtin" && i.id === "latlas_account")
+  );
+  return [LATLAS_ACCOUNT_ITEM, ...rest];
+}
+
 export function readLauncherConfig(): LauncherConfig {
   if (typeof window === "undefined") {
-    return { items: [...DEFAULT_LAUNCHER_ITEMS] };
+    return { items: ensureLatlasAccountFirst([...DEFAULT_LAUNCHER_ITEMS]) };
   }
   const parsed = parseConfig(localStorage.getItem(STORAGE_KEY_APP_LAUNCHER));
-  return parsed ?? { items: [...DEFAULT_LAUNCHER_ITEMS] };
+  const raw = parsed ?? { items: [...DEFAULT_LAUNCHER_ITEMS] };
+  return { items: ensureLatlasAccountFirst(raw.items) };
 }
 
 export function writeLauncherConfig(config: LauncherConfig): void {
-  localStorage.setItem(STORAGE_KEY_APP_LAUNCHER, JSON.stringify(config));
+  const normalized = { items: ensureLatlasAccountFirst(config.items) };
+  localStorage.setItem(STORAGE_KEY_APP_LAUNCHER, JSON.stringify(normalized));
 }
 
 export function normalizeUrl(url: string): string | null {

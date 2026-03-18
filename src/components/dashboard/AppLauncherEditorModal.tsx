@@ -20,6 +20,7 @@ import {
   removeItemAt,
   writeLauncherConfig,
   readLauncherConfig,
+  ensureLatlasAccountFirst,
   LATLAS_GENERIC_SHORTCUT,
   resolveBrandIconColor,
   type BuiltinLauncherId,
@@ -50,7 +51,13 @@ export function AppLauncherEditorModal({ open, onClose, onSaved, avatarUrl }: Pr
   const t = useTranslations("dashboard.appLauncher");
   const { resolvedTheme } = useDashboardSettings();
   const isDark = resolvedTheme === "dark";
-  const [items, setItems] = useState<LauncherItem[]>([]);
+  const [items, setItems] = useState<LauncherItem[]>(() =>
+    ensureLatlasAccountFirst(
+      typeof window !== "undefined"
+        ? readLauncherConfig().items
+        : [...DEFAULT_LAUNCHER_ITEMS]
+    )
+  );
   const [url, setUrl] = useState("");
   const [name, setName] = useState("");
   const [genericSelected, setGenericSelected] = useState(true);
@@ -69,7 +76,7 @@ export function AppLauncherEditorModal({ open, onClose, onSaved, avatarUrl }: Pr
 
   useEffect(() => {
     if (!open) return;
-    setItems([...readLauncherConfig().items]);
+    setItems(ensureLatlasAccountFirst(readLauncherConfig().items));
     setUrl("");
     setName("");
     setGenericSelected(true);
@@ -237,13 +244,13 @@ export function AppLauncherEditorModal({ open, onClose, onSaved, avatarUrl }: Pr
       setError(t("needOneItem"));
       return;
     }
-    writeLauncherConfig({ items });
+    writeLauncherConfig({ items: ensureLatlasAccountFirst(items) });
     onSaved();
     onClose();
   }
 
   function handleReset() {
-    setItems([...DEFAULT_LAUNCHER_ITEMS]);
+    setItems(ensureLatlasAccountFirst([...DEFAULT_LAUNCHER_ITEMS]));
     setError(null);
   }
 
@@ -318,60 +325,73 @@ export function AppLauncherEditorModal({ open, onClose, onSaved, avatarUrl }: Pr
         </div>
 
         <ul className="mt-4 space-y-2">
-          {items.map((item, index) => (
-            <li
-              key={item.kind === "custom" ? item.cid : item.id}
-              data-editor-launcher-cid={item.kind === "custom" ? item.cid : undefined}
-              className="flex items-center gap-2 rounded-2xl border px-2 py-2 text-sm"
-              style={{ borderColor: "var(--dashboard-border)" }}
-            >
-              {rowLeadingIcon(item)}
-              <div className="min-w-0 flex-1 truncate">
-                <span className="font-medium">{itemLabel(item)}</span>
-                {item.kind === "custom" && (
-                  <span
-                    className="ml-2 truncate text-xs"
-                    style={{ color: "var(--dashboard-text-muted)" }}
+          <li
+            className="flex items-center gap-2 rounded-2xl border px-2 py-2 text-sm"
+            style={{
+              borderColor: "var(--dashboard-border)",
+              backgroundColor: "var(--dashboard-nav-active-bg)",
+            }}
+          >
+            {rowLeadingIcon(items[0])}
+            <div className="min-w-0 flex-1 truncate">
+              <span className="font-medium">{itemLabel(items[0])}</span>
+              <span
+                className="ml-2 text-xs"
+                style={{ color: "var(--dashboard-text-muted)" }}
+              >
+                ({t("latlasAccountFixed")})
+              </span>
+            </div>
+          </li>
+          {items.slice(1).map((item, i) => {
+            const index = i + 1;
+            return (
+              <li
+                key={item.kind === "custom" ? item.cid : item.id}
+                data-editor-launcher-cid={item.kind === "custom" ? item.cid : undefined}
+                className="flex items-center gap-2 rounded-2xl border px-2 py-2 text-sm"
+                style={{ borderColor: "var(--dashboard-border)" }}
+              >
+                {rowLeadingIcon(item)}
+                <div className="min-w-0 flex-1 truncate">
+                  <span className="font-medium">{itemLabel(item)}</span>
+                </div>
+                <div className="flex shrink-0 gap-1">
+                  <button
+                    type="button"
+                    className="rounded-xl px-2 py-1 text-xs hover:opacity-80"
+                    style={{ backgroundColor: "var(--dashboard-nav-active-bg)" }}
+                    onClick={() => setItems((prev) => moveItem(prev, index, -1))}
+                    disabled={index <= 1}
+                    aria-label={t("moveUp")}
                   >
-                    {item.url}
-                  </span>
-                )}
-              </div>
-              <div className="flex shrink-0 gap-1">
-                <button
-                  type="button"
-                  className="rounded-xl px-2 py-1 text-xs hover:opacity-80"
-                  style={{ backgroundColor: "var(--dashboard-nav-active-bg)" }}
-                  onClick={() => setItems((prev) => moveItem(prev, index, -1))}
-                  disabled={index === 0}
-                  aria-label={t("moveUp")}
-                >
-                  ↑
-                </button>
-                <button
-                  type="button"
-                  className="rounded-xl px-2 py-1 text-xs hover:opacity-80"
-                  style={{ backgroundColor: "var(--dashboard-nav-active-bg)" }}
-                  onClick={() => setItems((prev) => moveItem(prev, index, 1))}
-                  disabled={index === items.length - 1}
-                  aria-label={t("moveDown")}
-                >
-                  ↓
-                </button>
-                <button
-                  type="button"
-                  className="rounded-xl px-2 py-1 text-xs text-red-600 hover:opacity-80"
-                  onClick={() => {
-                    setItems((prev) => removeItemAt(prev, index));
-                    setError(null);
-                  }}
-                  aria-label={t("remove")}
-                >
-                  {t("remove")}
-                </button>
-              </div>
-            </li>
-          ))}
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-xl px-2 py-1 text-xs hover:opacity-80"
+                    style={{ backgroundColor: "var(--dashboard-nav-active-bg)" }}
+                    onClick={() => setItems((prev) => moveItem(prev, index, 1))}
+                    disabled={index === items.length - 1}
+                    aria-label={t("moveDown")}
+                  >
+                    ↓
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-xl px-2 py-1 text-xs text-red-600 hover:opacity-80"
+                    onClick={() => {
+                      setItems((prev) => removeItemAt(prev, index));
+                      setError(null);
+                    }}
+                    aria-label={t("remove")}
+                  >
+                    {t("remove")}
+                  </button>
+                </div>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="mt-5 border-t pt-4" style={{ borderColor: "var(--dashboard-border)" }}>

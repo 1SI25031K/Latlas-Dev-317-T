@@ -80,6 +80,7 @@
       "moveUp": "上へ移動",
       "moveDown": "下へ移動",
       "remove": "削除",
+      "latlasAccountFixed": "先頭固定",
       "needOneItem": "1件以上必要です。",
       "invalidUrlOrName": "有効なURLと表示名を入力してください。",
       "builtin_latlas_account": "Latlas Account",
@@ -165,10 +166,14 @@
   },
   "timerPage": {
     "title": "タイマー",
-    "subtitle": "動作中はメニューバーに残り時間が表示されます。",
     "presets": "すぐセット",
+    "seconds": "{n} 秒",
     "minutes": "{n} 分",
-    "customMinutes": "分",
+    "hmsTitle": "時間を指定（時・分・秒）",
+    "hours": "時",
+    "minutesShort": "分",
+    "secondsShort": "秒",
+    "applyHms": "反映",
     "start": "開始",
     "pause": "一時停止",
     "resume": "再開",
@@ -178,13 +183,14 @@
   },
   "stopwatchPage": {
     "title": "ストップウォッチ",
-    "subtitle": "動作中はメニューバーに経過時間が表示されます。",
     "start": "開始",
     "pause": "一時停止",
     "resume": "再開",
     "lap": "ラップ",
     "reset": "リセット",
-    "lapN": "ラップ {n}"
+    "lapN": "ラップ {n}",
+    "copyLap": "コピー",
+    "removeLap": "削除"
   },
   "monitoring": {
     "title": "モニタリング",

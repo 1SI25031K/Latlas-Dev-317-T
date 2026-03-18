@@ -17,9 +17,9 @@ import { AppLauncherGrid } from "@/components/dashboard/AppLauncherGrid";
 import { AppLauncherEditorModal } from "@/components/dashboard/AppLauncherEditorModal";
 import { HeaderClock } from "@/components/dashboard/HeaderClock";
 import {
-  useDashboardTimer,
-  formatDurationMs,
-} from "@/components/dashboard/DashboardTimerContext";
+  HeaderStopwatchRingLink,
+  HeaderTimerRingLink,
+} from "@/components/dashboard/HeaderChronoRings";
 
 type DashboardHeaderProps = {
   locale: string;
@@ -48,6 +48,7 @@ export function DashboardHeader({
   const {
     sidebarCollapsed,
     setSidebarCollapsed,
+    resolvedTheme,
   } = useDashboardSettings();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -60,12 +61,7 @@ export function DashboardHeader({
   const [launcherFixed, setLauncherFixed] = useState<{ top: number; right: number } | null>(null);
 
   const supabase = createClient();
-  const {
-    timerChipActive,
-    timerDisplayMs,
-    swChipActive,
-    swElapsedMs,
-  } = useDashboardTimer();
+  const isDarkHeader = resolvedTheme === "dark";
 
   const [headerWide, setHeaderWide] = useState(false);
   useEffect(() => {
@@ -204,38 +200,10 @@ export function DashboardHeader({
       </div>
 
       <div className="relative z-20 flex max-w-[min(42vw,14rem)] shrink-0 items-center gap-1.5 sm:gap-2 md:max-w-none">
-        {headerWide && (timerChipActive || swChipActive) && (
-          <div className="flex min-w-0 items-center gap-1">
-            {timerChipActive && (
-              <Link
-                href="/dashboard/timer"
-                className="truncate rounded-xl border px-2 py-1 text-xs font-semibold tabular-nums transition-opacity hover:opacity-90"
-                style={{
-                  borderColor: "var(--dashboard-border)",
-                  backgroundColor: "var(--dashboard-card)",
-                  color: "var(--dashboard-text)",
-                  maxWidth: "4.5rem",
-                }}
-                title={t("timer")}
-              >
-                {formatDurationMs(timerDisplayMs)}
-              </Link>
-            )}
-            {swChipActive && (
-              <Link
-                href="/dashboard/stopwatch"
-                className="truncate rounded-xl border px-2 py-1 text-xs font-semibold tabular-nums transition-opacity hover:opacity-90"
-                style={{
-                  borderColor: "var(--dashboard-border)",
-                  backgroundColor: "var(--dashboard-card)",
-                  color: "var(--dashboard-text)",
-                  maxWidth: "4.5rem",
-                }}
-                title={t("stopwatch")}
-              >
-                {formatDurationMs(swElapsedMs)}
-              </Link>
-            )}
+        {headerWide && (
+          <div className="flex min-w-0 items-center gap-1.5">
+            <HeaderTimerRingLink isDark={isDarkHeader} title={t("timer")} />
+            <HeaderStopwatchRingLink isDark={isDarkHeader} title={t("stopwatch")} />
           </div>
         )}
         <button

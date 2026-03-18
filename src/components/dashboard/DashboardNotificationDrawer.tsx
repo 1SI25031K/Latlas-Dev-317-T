@@ -72,12 +72,12 @@ export function DashboardNotificationDrawer({
         onMouseDown={onClose}
       />
 
-      <div className="pointer-events-none absolute right-0 top-0 h-full max-w-[92vw] w-[360px] overflow-hidden">
+      <div className="pointer-events-none absolute right-0 top-0 h-full max-h-[100dvh] max-w-[92vw] w-[360px] min-h-0 overflow-hidden">
         <div
           role="dialog"
           aria-modal="true"
           aria-labelledby="notification-drawer-title"
-          className="pointer-events-auto flex h-full flex-col border-l shadow-[-6px_0_24px_rgba(0,0,0,0.08)]"
+          className="pointer-events-auto flex h-full max-h-[100dvh] min-h-0 flex-col border-l shadow-[-6px_0_24px_rgba(0,0,0,0.08)]"
           onMouseDown={(e) => e.stopPropagation()}
           style={{
             transform: visible ? "translateX(0)" : "translateX(100%)",
@@ -97,7 +97,7 @@ export function DashboardNotificationDrawer({
             <DashboardCloseButton onClick={onClose} aria-label={tCommon("close")} />
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto p-4">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">
             {sorted.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <p className="text-sm font-medium" style={{ color: "var(--dashboard-text-muted)" }}>

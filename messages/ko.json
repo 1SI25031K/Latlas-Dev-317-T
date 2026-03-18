@@ -165,7 +165,6 @@
   },
   "timerPage": {
     "title": "타이머",
-    "subtitle": "실행 중에는 메뉴 바에 남은 시간이 표시됩니다.",
     "presets": "빠른 설정",
     "minutes": "{n}분",
     "customMinutes": "분",
@@ -178,7 +177,6 @@
   },
   "stopwatchPage": {
     "title": "스톱워치",
-    "subtitle": "실행 중에는 메뉴 바에 경과 시간이 표시됩니다.",
     "start": "시작",
     "pause": "일시정지",
     "resume": "재개",

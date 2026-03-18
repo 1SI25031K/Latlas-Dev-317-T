@@ -34,6 +34,8 @@ type DashboardTimerContextValue = {
   timerResume: () => void;
   timerReset: () => void;
   timerChipActive: boolean;
+  /** Denominator for header ring (set when countdown segment starts) */
+  timerSessionTotalMs: number;
   swStatus: StopwatchStatus;
   swElapsedMs: number;
   swLaps: number[];
@@ -42,6 +44,7 @@ type DashboardTimerContextValue = {
   swResume: () => void;
   swReset: () => void;
   swLap: () => void;
+  swRemoveLapAt: (index: number) => void;
   swChipActive: boolean;
 };
 
@@ -56,6 +59,9 @@ export function DashboardTimerProvider({ children }: { children: ReactNode }) {
   const [timerStatus, setTimerStatus] = useState<TimerStatus>("idle");
   const [timerEndAt, setTimerEndAt] = useState<number | null>(null);
   const [timerRemainingMs, setTimerRemainingMs] = useState(
+    DEFAULT_TIMER_DURATION_MS
+  );
+  const [timerSessionTotalMs, setTimerSessionTotalMs] = useState(
     DEFAULT_TIMER_DURATION_MS
   );
 
@@ -110,7 +116,10 @@ export function DashboardTimerProvider({ children }: { children: ReactNode }) {
     (ms: number) => {
       const capped = Math.max(1000, Math.min(ms, 24 * 60 * 60 * 1000));
       setTimerDurationMsState(capped);
-      if (timerStatus === "idle") setTimerRemainingMs(capped);
+      if (timerStatus === "idle") {
+        setTimerRemainingMs(capped);
+        setTimerSessionTotalMs(capped);
+      }
     },
     [timerStatus]
   );
@@ -124,6 +133,7 @@ export function DashboardTimerProvider({ children }: { children: ReactNode }) {
           ? timerDurationMs
           : timerDurationMs;
     if (ms <= 0) return;
+    setTimerSessionTotalMs(ms);
     setTimerEndAt(Date.now() + ms);
     setTimerStatus("running");
   }, [timerStatus, timerRemainingMs, timerDurationMs]);
@@ -138,6 +148,7 @@ export function DashboardTimerProvider({ children }: { children: ReactNode }) {
   const timerResume = useCallback(() => {
     if (timerStatus !== "paused") return;
     if (timerRemainingMs <= 0) return;
+    setTimerSessionTotalMs(timerRemainingMs);
     setTimerEndAt(Date.now() + timerRemainingMs);
     setTimerStatus("running");
   }, [timerStatus, timerRemainingMs]);
@@ -146,6 +157,7 @@ export function DashboardTimerProvider({ children }: { children: ReactNode }) {
     setTimerStatus("idle");
     setTimerEndAt(null);
     setTimerRemainingMs(timerDurationMs);
+    setTimerSessionTotalMs(timerDurationMs);
   }, [timerDurationMs]);
 
   const swStart = useCallback(() => {
@@ -185,6 +197,10 @@ export function DashboardTimerProvider({ children }: { children: ReactNode }) {
     setSwLaps((laps) => [...laps, elapsed]);
   }, [swStatus, swSegmentStart, swAccumulatedMs]);
 
+  const swRemoveLapAt = useCallback((index: number) => {
+    setSwLaps((laps) => laps.filter((_, i) => i !== index));
+  }, []);
+
   const value = useMemo(
     () => ({
       timerStatus,
@@ -196,6 +212,7 @@ export function DashboardTimerProvider({ children }: { children: ReactNode }) {
       timerResume,
       timerReset,
       timerChipActive,
+      timerSessionTotalMs,
       swStatus,
       swElapsedMs,
       swLaps,
@@ -204,6 +221,7 @@ export function DashboardTimerProvider({ children }: { children: ReactNode }) {
       swResume,
       swReset,
       swLap,
+      swRemoveLapAt,
       swChipActive,
     }),
     [
@@ -216,6 +234,7 @@ export function DashboardTimerProvider({ children }: { children: ReactNode }) {
       timerResume,
       timerReset,
       timerChipActive,
+      timerSessionTotalMs,
       swStatus,
       swElapsedMs,
       swLaps,
@@ -224,6 +243,7 @@ export function DashboardTimerProvider({ children }: { children: ReactNode }) {
       swResume,
       swReset,
       swLap,
+      swRemoveLapAt,
       swChipActive,
     ]
   );

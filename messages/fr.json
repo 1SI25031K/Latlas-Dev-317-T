@@ -80,6 +80,7 @@
       "moveUp": "Up",
       "moveDown": "Down",
       "remove": "Remove",
+      "latlasAccountFixed": "fixé en haut",
       "needOneItem": "At least one item required.",
       "invalidUrlOrName": "Valid URL and name required.",
       "builtin_latlas_account": "Latlas Account",
@@ -165,10 +166,14 @@
   },
   "timerPage": {
     "title": "Minuteur",
-    "subtitle": "Temps restant dans la barre pendant le compte à rebours.",
     "presets": "Raccourcis",
+    "seconds": "{n} s",
     "minutes": "{n} min",
-    "customMinutes": "Minutes",
+    "hmsTitle": "Durée (h / min / s)",
+    "hours": "h",
+    "minutesShort": "min",
+    "secondsShort": "s",
+    "applyHms": "Appliquer",
     "start": "Démarrer",
     "pause": "Pause",
     "resume": "Reprendre",
@@ -178,13 +183,14 @@
   },
   "stopwatchPage": {
     "title": "Chronomètre",
-    "subtitle": "Temps écoulé dans la barre.",
     "start": "Démarrer",
     "pause": "Pause",
     "resume": "Reprendre",
     "lap": "Tour",
     "reset": "Réinitialiser",
-    "lapN": "Tour {n}"
+    "lapN": "Tour {n}",
+    "copyLap": "Copier",
+    "removeLap": "Supprimer"
   },
   "monitoring": {
     "title": "Monitoring",

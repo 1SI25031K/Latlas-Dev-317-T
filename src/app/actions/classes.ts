@@ -4,6 +4,19 @@ import { createClient } from "@/lib/supabase/server";
 import { generateAccessCode, generateRandomPassword, hashPassword } from "@/lib/utils";
 import { ensureProfile } from "@/app/actions/auth";
 import type { ClassSchedule } from "@/types/database";
+import {
+  isClassTermEnded,
+  isTermEndValidForServer,
+} from "@/lib/class-term";
+
+function scheduleTermEndError(schedule: ClassSchedule | null | undefined): string | null {
+  const te = schedule?.termEnd?.trim();
+  if (!te) return null;
+  if (!isTermEndValidForServer(te)) {
+    return "Invalid term end date";
+  }
+  return null;
+}
 
 export type CreateClassPayload = {
   name: string;
@@ -35,6 +48,11 @@ export async function createClass(payload: CreateClassPayload): Promise<CreateCl
     user.email ?? undefined,
     (user.user_metadata?.full_name as string) ?? null
   );
+
+  const termErr = scheduleTermEndError(payload.schedule ?? undefined);
+  if (termErr) {
+    return { error: termErr };
+  }
 
   const accessCode = generateAccessCode(6);
   const password = generateRandomPassword(10);
@@ -84,7 +102,7 @@ export async function regenerateClassPassword(
 
   const { data: row, error: fetchError } = await supabase
     .from("classes")
-    .select("id, teacher_id")
+    .select("id, teacher_id, schedule")
     .eq("id", classId)
     .single();
 
@@ -93,6 +111,9 @@ export async function regenerateClassPassword(
   }
   if ((row.teacher_id as string) !== user.id) {
     return { error: "Forbidden" };
+  }
+  if (isClassTermEnded(row.schedule as ClassSchedule | null)) {
+    return { error: "Class term has ended" };
   }
 
   const password = generateRandomPassword(10);
@@ -128,7 +149,7 @@ export async function regenerateClassAccessCode(
 
   const { data: row, error: fetchError } = await supabase
     .from("classes")
-    .select("id, teacher_id")
+    .select("id, teacher_id, schedule")
     .eq("id", classId)
     .single();
 
@@ -137,6 +158,9 @@ export async function regenerateClassAccessCode(
   }
   if ((row.teacher_id as string) !== user.id) {
     return { error: "Forbidden" };
+  }
+  if (isClassTermEnded(row.schedule as ClassSchedule | null)) {
+    return { error: "Class term has ended" };
   }
 
   const accessCode = generateAccessCode(6);
@@ -181,7 +205,7 @@ export async function updateClass(
 
   const { data: row, error: fetchError } = await supabase
     .from("classes")
-    .select("id, teacher_id")
+    .select("id, teacher_id, schedule")
     .eq("id", classId)
     .single();
 
@@ -190,6 +214,18 @@ export async function updateClass(
   }
   if ((row.teacher_id as string) !== user.id) {
     return { error: "Forbidden" };
+  }
+  if (isClassTermEnded(row.schedule as ClassSchedule | null)) {
+    return { error: "Class term has ended" };
+  }
+
+  const mergedSchedule: ClassSchedule | null | undefined =
+    payload.schedule !== undefined
+      ? payload.schedule
+      : (row.schedule as ClassSchedule | null);
+  const termErr = scheduleTermEndError(mergedSchedule ?? undefined);
+  if (termErr) {
+    return { error: termErr };
   }
 
   const updates: Record<string, unknown> = {};

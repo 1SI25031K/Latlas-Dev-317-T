@@ -11,8 +11,9 @@ import {
   headerClockGoogleFontHrefs,
   type HeaderClockFontId,
 } from "@/lib/header-clock";
+import { DASHBOARD_DRAWER_ANIM_MS } from "@/lib/dashboard-drawer-anim";
 
-const ANIM_MS = 220;
+const ANIM_MS = DASHBOARD_DRAWER_ANIM_MS;
 
 type DashboardCustomizeDrawerProps = {
   open: boolean;
@@ -281,6 +282,12 @@ export function DashboardCustomizeDrawer({
                   const selected =
                     backgroundMode === "solid" &&
                     (backgroundColor === c.hex || backgroundColor === appliedHex);
+                  const lum =
+                    (parseInt(appliedHex.slice(1, 3), 16) * 299 +
+                      parseInt(appliedHex.slice(3, 5), 16) * 587 +
+                      parseInt(appliedHex.slice(5, 7), 16) * 114) /
+                    1000;
+                  const checkColor = lum > 140 ? "#111" : "#fff";
                   return (
                     <button
                       key={c.hex}
@@ -289,14 +296,20 @@ export function DashboardCustomizeDrawer({
                         setBackgroundColor(appliedHex);
                         setBackgroundMode("solid");
                       }}
-                      className="h-12 w-12 shrink-0 rounded-full border transition-transform hover:scale-110"
+                      className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border text-sm font-bold transition-transform hover:scale-110"
                       style={{
                         backgroundColor: appliedHex,
                         borderColor: selected ? "var(--dashboard-text)" : "var(--dashboard-border)",
                       }}
                       aria-label={c.label}
                       aria-pressed={selected}
-                    />
+                    >
+                      {selected ? (
+                        <span className="drop-shadow-sm" style={{ color: checkColor }}>
+                          ✓
+                        </span>
+                      ) : null}
+                    </button>
                   );
                 })}
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import imageCompression from "browser-image-compression";
 import { createClient } from "@/lib/supabase/client";
@@ -16,6 +17,7 @@ type OnboardingFormProps = {
 };
 
 export function OnboardingForm({ locale }: OnboardingFormProps) {
+  const router = useRouter();
   const t = useTranslations("onboarding");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -75,8 +77,18 @@ export function OnboardingForm({ locale }: OnboardingFormProps) {
     if (avatarUrl) formData.set("avatar_url", avatarUrl);
     try {
       const result = await completeOnboarding(formData);
-      if (result?.error) {
+      if (result && "error" in result) {
         setError(result.error);
+        return;
+      }
+      if (result && "authRequired" in result) {
+        router.push(`/${locale}/login`);
+        return;
+      }
+      if (result && "ok" in result && result.ok) {
+        // フル読み込みでレイアウトの profile を確実に再取得（refresh+push だけだとオーバーレイが残る環境がある）
+        window.location.assign(`/${locale}/dashboard`);
+        return;
       }
     } finally {
       setPending(false);

@@ -1,9 +1,16 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 
-export async function completeOnboarding(formData: FormData) {
+export type CompleteOnboardingResult =
+  | { ok: true }
+  | { error: string }
+  | { authRequired: true };
+
+export async function completeOnboarding(
+  formData: FormData
+): Promise<CompleteOnboardingResult> {
   const locale = (formData.get("locale") as string) || "ja";
   const supabase = await createClient();
   const {
@@ -11,7 +18,7 @@ export async function completeOnboarding(formData: FormData) {
   } = await supabase.auth.getSession();
 
   if (!session?.user.id) {
-    redirect(`/${locale}/login`);
+    return { authRequired: true };
   }
 
   const full_name = (formData.get("full_name") as string)?.trim() || null;
@@ -37,5 +44,7 @@ export async function completeOnboarding(formData: FormData) {
     return { error: error.message };
   }
 
-  redirect(`/${locale}/dashboard`);
+  revalidatePath(`/${locale}/dashboard`, "layout");
+  revalidatePath(`/${locale}/onboarding`);
+  return { ok: true };
 }

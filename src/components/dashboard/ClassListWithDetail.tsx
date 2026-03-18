@@ -11,25 +11,13 @@ import {
   getNextOccurrence,
   formatNextOccurrence,
 } from "@/lib/next-class-occurrence";
+import { isClassTermEnded } from "@/lib/class-term";
 
 const UPCOMING_LIMIT = 6;
 
 type ClassListWithDetailProps = {
   classes: Class[];
 };
-
-function localDateYMD(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function isTermEnded(schedule: Class["schedule"], now: Date): boolean {
-  const te = schedule?.termEnd?.trim();
-  if (!te) return false;
-  return te < localDateYMD(now);
-}
 
 export function ClassListWithDetail({ classes }: ClassListWithDetailProps) {
   const t = useTranslations("dashboard");
@@ -53,7 +41,7 @@ export function ClassListWithDetail({ classes }: ClassListWithDetailProps) {
     const active: Class[] = [];
     const ended: Class[] = [];
     for (const c of classes) {
-      if (isTermEnded(c.schedule, now)) ended.push(c);
+      if (isClassTermEnded(c.schedule, now)) ended.push(c);
       else active.push(c);
     }
     return { activeClasses: active, endedClasses: ended };

@@ -16,6 +16,7 @@ import {
 import { ClassCalendarLinks } from "@/components/dashboard/ClassCalendarLinks";
 import { ClassJoinQrCode } from "@/components/dashboard/ClassJoinQrCode";
 import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
+import { isTermEndDateValid, localDateYMD } from "@/lib/class-term";
 
 const DAY_NAMES = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
 const PRESET_COLORS = [
@@ -64,7 +65,13 @@ export function CreateClassForm() {
     return cols;
   }, []);
 
-  const ANIM_MS = 220;
+  const minTermEndDate = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return localDateYMD(d);
+  }, []);
+
+  const ANIM_MS = 360;
 
   function handleClose() {
     if (pendingListRefreshRef.current) {
@@ -115,6 +122,11 @@ export function CreateClassForm() {
     e.preventDefault();
     setError(null);
     setCreated(null);
+    const te = termEnd.trim();
+    if (te && !isTermEndDateValid(te)) {
+      setError(t("termEndMustBeFuture"));
+      return;
+    }
     setLoading(true);
     const schedule: ClassSchedule | null =
       slots.length > 0
@@ -180,9 +192,11 @@ export function CreateClassForm() {
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className="dashboard-theme-root fixed inset-0 z-[100]"
+            className="dashboard-theme-root fixed inset-0 z-[100] flex items-center justify-center p-4"
             data-theme={resolvedTheme}
             style={{ isolation: "isolate" }}
+            onClick={handleClose}
+            role="presentation"
           >
             <div
               className="absolute inset-0 bg-black/40 transition-opacity"
@@ -191,26 +205,21 @@ export function CreateClassForm() {
                 transitionDuration: `${ANIM_MS}ms`,
               }}
               aria-hidden
-              onClick={handleClose}
             />
-            <div className="pointer-events-none fixed inset-0 flex items-end justify-center">
-              <div
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="create-class-title"
-                className="pointer-events-auto flex max-h-[min(92vh,720px)] w-full max-w-lg flex-col rounded-t-2xl border-x border-t shadow-2xl sm:rounded-t-3xl"
-                style={{
-                  ...cardStyle,
-                  transform: visible ? "translateY(0)" : "translateY(100%)",
-                  transition: `transform ${ANIM_MS}ms ease-out`,
-                  overscrollBehavior: "contain",
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div
-                  className="max-h-[min(92vh,720px)] overflow-y-auto overscroll-contain p-6 pb-8"
-                  onClick={(e) => e.stopPropagation()}
-                >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="create-class-title"
+              className="relative z-10 max-h-[90vh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl border p-6 shadow-lg"
+              style={{
+                ...cardStyle,
+                opacity: visible ? 1 : 0,
+                transform: visible ? "translateY(0)" : "translateY(40px)",
+                transition: `opacity ${ANIM_MS}ms ease-out, transform ${ANIM_MS}ms ease-out`,
+                overscrollBehavior: "contain",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
                   <h3
                     id="create-class-title"
                     className="text-lg font-semibold"
@@ -423,6 +432,7 @@ export function CreateClassForm() {
                         <input
                           type="date"
                           value={termEnd}
+                          min={minTermEndDate}
                           onChange={(e) => setTermEnd(e.target.value)}
                           className="mt-0.5 w-full rounded-lg border px-2 py-1.5 text-sm"
                           style={inputStyle}
@@ -485,8 +495,6 @@ export function CreateClassForm() {
                 ) : null}
               </div>
             </form>
-                </div>
-              </div>
             </div>
           </div>,
           document.body

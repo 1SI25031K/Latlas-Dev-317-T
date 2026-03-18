@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS profiles (
   avatar_url TEXT,
   onboarding_completed_at TIMESTAMPTZ,
   profile_updated_at TIMESTAMPTZ,
-  share_avatar_with_students BOOLEAN NOT NULL DEFAULT false
+  share_avatar_with_students BOOLEAN NOT NULL DEFAULT false,
+  dashboard_ui_settings JSONB
 );
 
 -- Classes

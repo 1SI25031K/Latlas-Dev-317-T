@@ -21,6 +21,7 @@ import {
   type ClassIconId,
 } from "@/lib/class-icon-options";
 import { DashboardCloseButton } from "@/components/dashboard/DashboardCloseButton";
+import { isClassTermEnded } from "@/lib/class-term";
 
 const DAY_NAMES = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
 const PRESET_COLORS = [
@@ -94,6 +95,7 @@ export function ClassDetailModal({
     () => (classId ? classes.find((c) => c.id === classId) : undefined),
     [classId, classes],
   );
+  const isExpired = Boolean(classItem && isClassTermEnded(classItem.schedule));
 
   useEffect(() => {
     if (classId == null) return;
@@ -103,8 +105,12 @@ export function ClassDetailModal({
   }, [classId, initialDeleteConfirm]);
 
   useEffect(() => {
-    if (initialEditMode && classId) setEditing(true);
-  }, [classId, initialEditMode]);
+    if (initialEditMode && classId && !isExpired) setEditing(true);
+  }, [classId, initialEditMode, isExpired]);
+
+  useEffect(() => {
+    if (isExpired) setEditing(false);
+  }, [isExpired]);
 
   useEffect(() => {
     if (!editing || !classItem) return;
@@ -321,7 +327,7 @@ export function ClassDetailModal({
             {editing ? t("editClass") : classItem.name}
           </h2>
           <div className="flex shrink-0 items-center gap-1">
-            {!editing && (
+            {!editing && !isExpired && (
               <button
                 type="button"
                 onClick={() => setEditing(true)}
@@ -339,7 +345,7 @@ export function ClassDetailModal({
           </div>
         </div>
 
-        {editing ? (
+        {editing && !isExpired ? (
           <form onSubmit={handleSaveEdit} className="mt-4 flex flex-col gap-4">
             {editError && (
               <p className="rounded-lg bg-red-500/20 p-2 text-sm text-red-400">{editError}</p>
@@ -617,6 +623,31 @@ export function ClassDetailModal({
                   </button>
                 </div>
               </div>
+            ) : isExpired ? (
+              <>
+                <p className="rounded-lg border p-3 text-sm" style={{ borderColor: "var(--dashboard-border)", color: "var(--dashboard-text-muted)" }}>
+                  {t("expiredReadOnly")}
+                </p>
+                <div>
+                  <p className="text-sm font-medium" style={mutedStyle}>{t("accessCode")}</p>
+                  <p className="mt-0.5 text-sm line-through opacity-50" aria-disabled>
+                    {t("expiredNoJoin")}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium" style={mutedStyle}>{t("qrCode")}</p>
+                  <p className="mt-1 text-sm" style={mutedStyle}>{t("expiredNoJoin")}</p>
+                </div>
+                <div className="border-t pt-4" style={{ borderColor: "var(--dashboard-border)" }}>
+                  <button
+                    type="button"
+                    onClick={() => setDeleteConfirm(true)}
+                    className="rounded-2xl border border-red-500/50 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-500/10"
+                  >
+                    {t("deleteClass")}
+                  </button>
+                </div>
+              </>
             ) : (
               <>
                 <div>

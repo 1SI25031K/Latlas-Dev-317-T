@@ -5,7 +5,9 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -31,6 +33,13 @@ import {
   type BackgroundMode,
 } from "@/lib/theme-constants";
 import { clampClockFontId, type HeaderClockFontId } from "@/lib/header-clock";
+import {
+  parseDashboardUiSettings,
+  mergeDashboardUiState,
+  mergeDashboardUiStateForHydration,
+  applyDashboardUiSettingsToStorage,
+} from "@/lib/dashboard-ui-settings";
+import { persistDashboardUiSettings } from "@/app/actions/dashboard-ui-settings";
 
 type DashboardSettingsState = {
   theme: ThemeId;
@@ -98,8 +107,6 @@ function readBackgroundMode(): BackgroundMode {
   if (v && BACKGROUND_MODES.includes(v as BackgroundMode)) {
     return v as BackgroundMode;
   }
-
-  // legacy migration: wallpaperOn(true) => daily, otherwise theme
   return readWallpaperOnLegacy() ? "daily" : "theme";
 }
 
@@ -177,46 +184,143 @@ export function useDashboardSettings() {
 type DashboardThemeWrapperProps = {
   children: ReactNode;
   locale?: string;
+  /** Raw JSON from profiles.dashboard_ui_settings */
+  initialDashboardUiSettings?: unknown;
 };
 
-export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrapperProps) {
-  const [theme, setThemeState] = useState<ThemeId>(DEFAULT_THEME);
-  const [resolvedTheme, setResolvedTheme] = useState<ResolvedThemeId>("light");
+const PERSIST_DEBOUNCE_MS = 500;
+const PERSIST_READY_MS = 400;
+
+export function DashboardThemeWrapper({
+  children,
+  locale,
+  initialDashboardUiSettings,
+}: DashboardThemeWrapperProps) {
+  const parsedServer = useMemo(
+    () => parseDashboardUiSettings(initialDashboardUiSettings),
+    [initialDashboardUiSettings]
+  );
+
+  const initialMerged = useMemo(
+    () => mergeDashboardUiStateForHydration(parsedServer),
+    [parsedServer]
+  );
+
+  function hydrationResolvedTheme(t: ThemeId): ResolvedThemeId {
+    if (t === "light" || t === "dark") return t;
+    return "light";
+  }
+
+  const [theme, setThemeState] = useState<ThemeId>(initialMerged.theme);
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedThemeId>(() =>
+    hydrationResolvedTheme(initialMerged.theme)
+  );
   const [fontSize, setFontSizeState] = useState<FontSizeId>(DEFAULT_FONT_SIZE);
-  const [iconAnimation, setIconAnimationState] = useState<boolean>(DEFAULT_ICON_ANIMATION);
-  const [backgroundMode, setBackgroundModeState] = useState<BackgroundMode>(DEFAULT_BACKGROUND_MODE);
-  const [backgroundColor, setBackgroundColorState] = useState<string>(DEFAULT_SOLID_BACKGROUND_COLOR);
-  const [sidebarCollapsed, setSidebarCollapsedState] = useState<boolean>(DEFAULT_SIDEBAR_COLLAPSED);
-  const [clockFontId, setClockFontIdState] = useState<HeaderClockFontId>(DEFAULT_HEADER_CLOCK_FONT_ID);
-  const [clock24Hour, setClock24HourState] = useState<boolean>(DEFAULT_HEADER_CLOCK_24_HOUR);
-  const [clockShowSeconds, setClockShowSecondsState] = useState<boolean>(DEFAULT_HEADER_CLOCK_SHOW_SECONDS);
-  const [clockLarge, setClockLargeState] = useState<boolean>(DEFAULT_HEADER_CLOCK_LARGE);
-  const [clockVisible, setClockVisibleState] = useState<boolean>(DEFAULT_HEADER_CLOCK_VISIBLE);
+  const [iconAnimation, setIconAnimationState] =
+    useState<boolean>(DEFAULT_ICON_ANIMATION);
+  const [backgroundMode, setBackgroundModeState] = useState<BackgroundMode>(
+    initialMerged.backgroundMode
+  );
+  const [backgroundColor, setBackgroundColorState] = useState<string>(
+    initialMerged.backgroundColor
+  );
+  const [sidebarCollapsed, setSidebarCollapsedState] =
+    useState<boolean>(DEFAULT_SIDEBAR_COLLAPSED);
+  const [clockFontId, setClockFontIdState] = useState<HeaderClockFontId>(
+    initialMerged.clockFontId
+  );
+  const [clock24Hour, setClock24HourState] = useState<boolean>(
+    initialMerged.clock24Hour
+  );
+  const [clockShowSeconds, setClockShowSecondsState] = useState<boolean>(
+    initialMerged.clockShowSeconds
+  );
+  const [clockLarge, setClockLargeState] = useState<boolean>(
+    initialMerged.clockLarge
+  );
+  const [clockVisible, setClockVisibleState] = useState<boolean>(
+    initialMerged.clockVisible
+  );
+
+  const persistReadyRef = useRef(false);
+  const persistTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useLayoutEffect(() => {
+    if (parsedServer) {
+      applyDashboardUiSettingsToStorage(parsedServer);
+      setResolvedTheme(
+        getResolvedTheme(mergeDashboardUiStateForHydration(parsedServer).theme)
+      );
+    } else {
+      const m = mergeDashboardUiState(null);
+      setThemeState(m.theme);
+      setBackgroundModeState(m.backgroundMode);
+      setBackgroundColorState(m.backgroundColor);
+      setClockFontIdState(m.clockFontId);
+      setClock24HourState(m.clock24Hour);
+      setClockShowSecondsState(m.clockShowSeconds);
+      setClockLargeState(m.clockLarge);
+      setClockVisibleState(m.clockVisible);
+      setResolvedTheme(getResolvedTheme(m.theme));
+    }
+  }, [parsedServer]);
 
   useEffect(() => {
-    setThemeState(readTheme());
     setFontSizeState(readFontSize());
     setIconAnimationState(readIconAnimation());
-    setBackgroundModeState(readBackgroundMode());
-    setBackgroundColorState(readBackgroundColor());
     setSidebarCollapsedState(readSidebarCollapsed());
-    setClockFontIdState(readClockFontId());
-    setClock24HourState(readClock24Hour());
-    setClockShowSecondsState(readClockShowSeconds());
-    setClockLargeState(readClockLarge());
-    setClockVisibleState(readClockVisible());
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      persistReadyRef.current = true;
+    }, PERSIST_READY_MS);
+    return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {
     const resolved = getResolvedTheme(theme);
     setResolvedTheme(resolved);
-
     if (theme !== "system") return;
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const handler = () => setResolvedTheme(getResolvedTheme("system"));
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
   }, [theme]);
+
+  const queuePersist = useCallback(() => {
+    if (!persistReadyRef.current) return;
+    if (persistTimerRef.current) clearTimeout(persistTimerRef.current);
+    persistTimerRef.current = setTimeout(() => {
+      persistTimerRef.current = null;
+      void persistDashboardUiSettings({
+        theme,
+        backgroundMode,
+        backgroundColor,
+        clockFontId,
+        clock24Hour,
+        clockShowSeconds,
+        clockLarge,
+        clockVisible,
+      });
+    }, PERSIST_DEBOUNCE_MS);
+  }, [
+    theme,
+    backgroundMode,
+    backgroundColor,
+    clockFontId,
+    clock24Hour,
+    clockShowSeconds,
+    clockLarge,
+    clockVisible,
+  ]);
+
+  useEffect(() => {
+    queuePersist();
+    return () => {
+      if (persistTimerRef.current) clearTimeout(persistTimerRef.current);
+    };
+  }, [queuePersist]);
 
   const setTheme = useCallback((v: ThemeId) => {
     setThemeState(v);

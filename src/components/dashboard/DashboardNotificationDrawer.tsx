@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { DashboardCloseButton } from "@/components/dashboard/DashboardCloseButton";
+import { DASHBOARD_DRAWER_ANIM_MS } from "@/lib/dashboard-drawer-anim";
 
-const ANIM_MS = 220;
+const ANIM_MS = DASHBOARD_DRAWER_ANIM_MS;
 
 export type DashboardNotification = {
   id: string;

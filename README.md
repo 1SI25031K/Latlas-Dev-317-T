@@ -32,6 +32,15 @@ cp .env.local.example .env.local
 
 Supabase ダッシュボードの SQL Editor で `supabase/schema.sql` を実行し、`profiles` と `classes` テーブルおよび RLS を作成してください。
 
+**ダッシュボードのテーマ等を端末間で同期する場合**（任意）: 次を SQL Editor で 1 回実行します（`profiles` に JSON カラムを追加します）。
+
+```sql
+ALTER TABLE profiles
+  ADD COLUMN IF NOT EXISTS dashboard_ui_settings JSONB;
+```
+
+または `supabase/migrations/20250318000000_dashboard_ui_settings.sql` と同じ内容です。未適用でもアプリは動作しますが、カスタマイズ設定のクラウド保存は行われません。
+
 ### 4. 開発サーバー
 
 ```bash

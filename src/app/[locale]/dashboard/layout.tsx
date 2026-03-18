@@ -34,6 +34,19 @@ export default async function DashboardLayout({ children, params }: Props) {
     .eq("id", session.user.id)
     .single();
 
+  let dashboardUiSettings: unknown = null;
+  if (profile) {
+    const { data: settingsRow, error: settingsErr } = await supabase
+      .from("profiles")
+      .select("dashboard_ui_settings")
+      .eq("id", session.user.id)
+      .maybeSingle();
+    if (!settingsErr && settingsRow) {
+      dashboardUiSettings =
+        (settingsRow as { dashboard_ui_settings?: unknown }).dashboard_ui_settings ?? null;
+    }
+  }
+
   const { data: classes = [] } = await supabase
     .from("classes")
     .select("*")
@@ -45,7 +58,10 @@ export default async function DashboardLayout({ children, params }: Props) {
   const classList = (classes as Class[]) || [];
 
   return (
-    <DashboardThemeWrapper locale={locale}>
+    <DashboardThemeWrapper
+      locale={locale}
+      initialDashboardUiSettings={dashboardUiSettings}
+    >
       <DashboardMfaGate>
         <DashboardOnboardingOverlay needsOnboarding={needsOnboarding} locale={locale}>
           <DashboardTimerProvider>

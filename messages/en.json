@@ -45,7 +45,42 @@
     "greeting": "Good afternoon, {name}!",
     "upcomingClasses": "Classes starting soon",
     "wallpaper": "Daily wallpaper",
-    "dailyWallpaper": "Daily image"
+    "dailyWallpaper": "Daily image",
+    "notificationsAria": "Notifications",
+    "notifications": {
+      "title": "Notifications",
+      "empty": "No notifications yet",
+      "hint": "Important updates and announcements will appear here.",
+      "close": "Close"
+    },
+    "appLauncher": {
+      "edit": "Edit shortcuts",
+      "title": "App launcher",
+      "description": "Reorder (↑↓), remove items, or add shortcuts with URL, name, and icon.",
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "reset": "Reset to defaults",
+      "addShortcut": "Add shortcut",
+      "addButton": "Add to list",
+      "url": "URL",
+      "name": "Display name",
+      "icon": "Icon",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "remove": "Remove",
+      "needOneItem": "At least one item is required.",
+      "invalidUrlOrName": "Enter a valid URL and display name.",
+      "builtin_latlas_account": "Latlas Account",
+      "builtin_latlas_data": "Latlas Data",
+      "builtin_google_drive": "Google Drive",
+      "builtin_onedrive": "OneDrive",
+      "builtin_google_calendar": "Google Calendar",
+      "builtin_outlook": "Outlook",
+      "builtin_google_classroom": "Google Classroom",
+      "builtin_teams": "Microsoft Teams",
+      "builtin_slack": "Slack"
+    }
   },
   "class": {
     "name": "Class name",

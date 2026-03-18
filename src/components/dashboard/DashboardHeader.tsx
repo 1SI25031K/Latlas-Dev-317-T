@@ -3,19 +3,18 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { User, Settings, LogOut, EditPencil } from "iconoir-react";
-import {
-  HardDrive,
-  Cloud,
-  CalendarDays,
-  Mail,
-  GraduationCap,
-  Users,
-  BookOpen,
-} from "lucide-react";
+import { User, Settings, LogOut, EditPencil, Bell } from "iconoir-react";
 import { createClient } from "@/lib/supabase/client";
 import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
 import { DashboardCustomizeDrawer } from "@/components/dashboard/DashboardCustomizeDrawer";
+import { DashboardNotificationDrawer } from "@/components/dashboard/DashboardNotificationDrawer";
+import {
+  readLauncherConfig,
+  DEFAULT_LAUNCHER_ITEMS,
+  type LauncherConfig,
+} from "@/lib/app-launcher";
+import { AppLauncherGrid } from "@/components/dashboard/AppLauncherGrid";
+import { AppLauncherEditorModal } from "@/components/dashboard/AppLauncherEditorModal";
 
 type DashboardHeaderProps = {
   locale: string;
@@ -31,7 +30,16 @@ export function DashboardHeader({
   avatarUrl,
 }: DashboardHeaderProps) {
   const t = useTranslations("dashboard");
+  const tLauncher = useTranslations("dashboard.appLauncher");
   const pathname = usePathname();
+  const [launcherCfg, setLauncherCfg] = useState<LauncherConfig>(() => ({
+    items: [...DEFAULT_LAUNCHER_ITEMS],
+  }));
+  const [appLauncherEditOpen, setAppLauncherEditOpen] = useState(false);
+
+  useEffect(() => {
+    setLauncherCfg(readLauncherConfig());
+  }, []);
   const {
     sidebarCollapsed,
     setSidebarCollapsed,
@@ -39,6 +47,9 @@ export function DashboardHeader({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [customizeOpen, setCustomizeOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [appsOpen, setAppsOpen] = useState(false);
+  const appsRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
   const accountName = profileName || userEmail || t("profile");
@@ -70,7 +81,45 @@ export function DashboardHeader({
   useEffect(() => {
     if (!customizeOpen) return;
     setDropdownOpen(false);
+    setNotificationsOpen(false);
   }, [customizeOpen]);
+
+  useEffect(() => {
+    if (!notificationsOpen) return;
+    setDropdownOpen(false);
+  }, [notificationsOpen]);
+
+  useEffect(() => {
+    if (!appsOpen) return;
+    setDropdownOpen(false);
+    setNotificationsOpen(false);
+  }, [appsOpen]);
+
+  useEffect(() => {
+    if (notificationsOpen) {
+      setCustomizeOpen(false);
+      setAppsOpen(false);
+    }
+  }, [notificationsOpen]);
+
+  useEffect(() => {
+    if (!appsOpen) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (appsRef.current && !appsRef.current.contains(event.target as Node)) {
+        setAppsOpen(false);
+      }
+    }
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") setAppsOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [appsOpen]);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -91,10 +140,8 @@ export function DashboardHeader({
         <button
           type="button"
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="flex h-10 w-10 items-center justify-center rounded-2xl border transition-opacity hover:opacity-90"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl transition-opacity hover:opacity-90"
           style={{
-            backgroundColor: "var(--dashboard-bg)",
-            borderColor: "var(--dashboard-border)",
             color: "var(--dashboard-text)",
           }}
           aria-label="Menu"
@@ -116,12 +163,12 @@ export function DashboardHeader({
           type="button"
           onClick={() => {
             setDropdownOpen(false);
+            setAppsOpen(false);
+            setNotificationsOpen(false);
             setCustomizeOpen((o) => !o);
           }}
-          className="flex h-10 w-10 items-center justify-center rounded-2xl border transition-opacity hover:opacity-90"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl transition-opacity hover:opacity-90"
           style={{
-            backgroundColor: "var(--dashboard-bg)",
-            borderColor: "var(--dashboard-border)",
             color: customizeOpen ? "var(--dashboard-text)" : "var(--dashboard-text-muted)",
           }}
           aria-label="Customize"
@@ -129,6 +176,79 @@ export function DashboardHeader({
         >
           <EditPencil className="h-5 w-5" />
         </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setDropdownOpen(false);
+            setCustomizeOpen(false);
+            setAppsOpen(false);
+            setNotificationsOpen((o) => !o);
+          }}
+          className="flex h-10 w-10 items-center justify-center rounded-2xl transition-opacity hover:opacity-90"
+          style={{
+            color: notificationsOpen ? "var(--dashboard-text)" : "var(--dashboard-text-muted)",
+          }}
+          aria-label={t("notificationsAria")}
+          aria-pressed={notificationsOpen}
+        >
+          <Bell className="h-5 w-5" />
+        </button>
+
+        {/* 9-dot launcher */}
+        <div className="relative" ref={appsRef}>
+          <button
+            type="button"
+            onClick={() => {
+              setDropdownOpen(false);
+              setNotificationsOpen(false);
+              setAppsOpen((o) => !o);
+              setCustomizeOpen(false);
+            }}
+            className="flex h-10 w-10 items-center justify-center rounded-2xl transition-opacity hover:opacity-90"
+            style={{
+              color: appsOpen ? "var(--dashboard-text)" : "var(--dashboard-text-muted)",
+            }}
+            aria-label="Apps"
+            aria-pressed={appsOpen}
+          >
+            <span className="grid h-5 w-5 grid-cols-3 gap-[2px]">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <span key={i} className="block h-1 w-1 rounded-full bg-current" />
+              ))}
+            </span>
+          </button>
+
+          {appsOpen && (
+            <div
+              className="absolute right-0 top-full z-40 mt-1 w-[300px] max-w-[92vw] rounded-2xl border bg-transparent p-4 shadow-lg"
+              style={{
+                backgroundColor: "var(--dashboard-card)",
+                borderColor: "var(--dashboard-border)",
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              <div className="max-h-[min(72vh,520px)] overflow-y-auto overflow-x-hidden">
+                <AppLauncherGrid
+                  items={launcherCfg.items}
+                  avatarUrl={avatarUrl}
+                  onNavigate={() => setAppsOpen(false)}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setAppLauncherEditOpen(true)}
+                className="mt-3 w-full rounded-2xl border py-2.5 text-xs font-medium transition-opacity hover:opacity-90"
+                style={{
+                  borderColor: "var(--dashboard-border)",
+                  color: "var(--dashboard-text)",
+                }}
+              >
+                {tLauncher("edit")}
+              </button>
+            </div>
+          )}
+        </div>
 
         <div className="relative" ref={dropdownRef}>
           <button
@@ -221,141 +341,21 @@ export function DashboardHeader({
                 {t("signOut")}
               </button>
             </div>
-
-            {/* Google Home 3x3 launcher (app shortcuts) */}
-            <div className="mt-3 px-4">
-              <div
-                className="mb-2 h-[1px]"
-                style={{ backgroundColor: "var(--dashboard-border)" }}
-                aria-hidden
-              />
-              <div className="grid grid-cols-3 gap-2">
-                {/* row0 col2 must be Account; row0 col1 must be Data access */}
-
-                {/* row0 col0: Drive */}
-                <a
-                  href="https://drive.google.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
-                  style={{ borderColor: "var(--dashboard-border)" }}
-                  aria-label="Google Drive"
-                >
-                  <HardDrive className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
-                </a>
-
-                {/* row0 col1: Data access (disabled until route is decided) */}
-                <button
-                  type="button"
-                  disabled
-                  className="flex aspect-square items-center justify-center rounded-2xl border opacity-50"
-                  style={{
-                    borderColor: "var(--dashboard-border)",
-                    color: "var(--dashboard-text-muted)",
-                    cursor: "not-allowed",
-                  }}
-                  aria-label="Data access (disabled)"
-                >
-                  <BookOpen className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
-                </button>
-
-                {/* row0 col2: Account */}
-                <Link
-                  href="/dashboard/settings"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
-                  style={{ borderColor: "var(--dashboard-border)" }}
-                  aria-label="Account"
-                >
-                  <User className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
-                </Link>
-
-                {/* row1 col0: OneDrive */}
-                <a
-                  href="https://onedrive.live.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
-                  style={{ borderColor: "var(--dashboard-border)" }}
-                  aria-label="OneDrive"
-                >
-                  <Cloud className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
-                </a>
-
-                {/* row1 col1: Google Calendar */}
-                <a
-                  href="https://calendar.google.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
-                  style={{ borderColor: "var(--dashboard-border)" }}
-                  aria-label="Google Calendar"
-                >
-                  <CalendarDays className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
-                </a>
-
-                {/* row1 col2: Outlook */}
-                <a
-                  href="https://outlook.office.com/calendar/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
-                  style={{ borderColor: "var(--dashboard-border)" }}
-                  aria-label="Outlook"
-                >
-                  <Mail className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
-                </a>
-
-                {/* row2 col0: Google Classroom */}
-                <a
-                  href="https://classroom.google.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
-                  style={{ borderColor: "var(--dashboard-border)" }}
-                  aria-label="Google Classroom"
-                >
-                  <GraduationCap className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
-                </a>
-
-                {/* row2 col1: Microsoft Teams */}
-                <a
-                  href="https://teams.microsoft.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
-                  style={{ borderColor: "var(--dashboard-border)" }}
-                  aria-label="Microsoft Teams"
-                >
-                  <Users className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
-                </a>
-
-                {/* row2 col2: Moodle */}
-                <a
-                  href="https://moodle.s.kyushu-u.ac.jp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
-                  style={{ borderColor: "var(--dashboard-border)" }}
-                  aria-label="Moodle"
-                >
-                  <BookOpen className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
-                </a>
-              </div>
-            </div>
           </div>
         )}
         </div>
       </div>
       </header>
       <DashboardCustomizeDrawer open={customizeOpen} onClose={() => setCustomizeOpen(false)} />
+      <DashboardNotificationDrawer
+        open={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+      />
+      <AppLauncherEditorModal
+        open={appLauncherEditOpen}
+        onClose={() => setAppLauncherEditOpen(false)}
+        onSaved={() => setLauncherCfg(readLauncherConfig())}
+      />
     </>
   );
 }

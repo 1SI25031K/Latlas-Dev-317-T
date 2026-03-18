@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClass } from "@/app/actions/classes";
@@ -14,6 +15,7 @@ import {
 } from "@/lib/class-icon-options";
 import { ClassCalendarLinks } from "@/components/dashboard/ClassCalendarLinks";
 import { ClassJoinQrCode } from "@/components/dashboard/ClassJoinQrCode";
+import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
 
 const DAY_NAMES = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
 const PRESET_COLORS = [
@@ -37,7 +39,10 @@ export function CreateClassForm() {
   const router = useRouter();
   const t = useTranslations("class");
   const tDash = useTranslations("dashboard");
+  const { resolvedTheme } = useDashboardSettings();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -48,6 +53,37 @@ export function CreateClassForm() {
   const [termStart, setTermStart] = useState("");
   const [termEnd, setTermEnd] = useState("");
   const [created, setCreated] = useState<CreatedState | null>(null);
+
+  const ANIM_MS = 220;
+
+  function handleClose() {
+    setOpen(false);
+    setCreated(null);
+  }
+
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      setVisible(false);
+      requestAnimationFrame(() => setVisible(true));
+      return;
+    }
+
+    setVisible(false);
+    const timer = window.setTimeout(() => {
+      setMounted(false);
+    }, ANIM_MS);
+    return () => window.clearTimeout(timer);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   function addSlot() {
     setSlots((s) => [...s, emptySlot()]);
@@ -127,19 +163,48 @@ export function CreateClassForm() {
         {tDash("createClass")}
       </button>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-30 flex items-center justify-center bg-black/30 p-4"
-          onClick={() => setOpen(false)}
-        >
+      {mounted &&
+        typeof document !== "undefined" &&
+        createPortal(
           <div
-            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border p-6 shadow-lg"
-            style={cardStyle}
-            onClick={(e) => e.stopPropagation()}
+            className="dashboard-theme-root fixed inset-0 z-[100]"
+            data-theme={resolvedTheme}
+            style={{ isolation: "isolate" }}
           >
-            <h3 className="text-lg font-semibold" style={{ color: "var(--dashboard-text)" }}>
-              {t("createTitle")}
-            </h3>
+            <div
+              className="absolute inset-0 bg-black/40 transition-opacity"
+              style={{
+                opacity: visible ? 1 : 0,
+                transitionDuration: `${ANIM_MS}ms`,
+              }}
+              aria-hidden
+              onClick={handleClose}
+            />
+            <div className="pointer-events-none fixed inset-0 flex items-end justify-center">
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="create-class-title"
+                className="pointer-events-auto flex max-h-[min(92vh,720px)] w-full max-w-lg flex-col rounded-t-2xl border-x border-t shadow-2xl sm:rounded-t-3xl"
+                style={{
+                  ...cardStyle,
+                  transform: visible ? "translateY(0)" : "translateY(100%)",
+                  transition: `transform ${ANIM_MS}ms ease-out`,
+                  overscrollBehavior: "contain",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div
+                  className="max-h-[min(92vh,720px)] overflow-y-auto overscroll-contain p-6 pb-8"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h3
+                    id="create-class-title"
+                    className="text-lg font-semibold"
+                    style={{ color: "var(--dashboard-text)" }}
+                  >
+                    {t("createTitle")}
+                  </h3>
             <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-4">
               {error && (
                 <p className="rounded-lg bg-red-500/20 p-2 text-sm text-red-400">{error}</p>
@@ -374,8 +439,7 @@ export function CreateClassForm() {
                 <button
                   type="button"
                   onClick={() => {
-                    setOpen(false);
-                    setCreated(null);
+                    handleClose();
                   }}
                   className="rounded-2xl border px-4 py-2 hover:opacity-90"
                   style={{
@@ -396,9 +460,12 @@ export function CreateClassForm() {
                 ) : null}
               </div>
             </form>
-          </div>
-        </div>
-      )}
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

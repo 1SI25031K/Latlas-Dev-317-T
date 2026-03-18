@@ -73,6 +73,7 @@ export function DashboardShell({ sidebar, children }: DashboardShellProps) {
         className="flex shrink-0 flex-col"
         style={{
           width: `${effectiveWidth}px`,
+          transition: "width 200ms ease-out",
           backgroundColor: "var(--dashboard-sidebar)",
           borderRight: "1px solid var(--dashboard-border)",
         }}

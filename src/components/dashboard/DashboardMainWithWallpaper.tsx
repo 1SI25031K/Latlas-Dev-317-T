@@ -38,6 +38,19 @@ function isLightColor(hex: string): boolean {
   return relativeLuminance(rgb) > 0.5;
 }
 
+const SOFTEN_WHITE_RATIO = 0.7;
+
+function softenHex(hex: string): string {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return hex;
+  const inv = 1 - SOFTEN_WHITE_RATIO;
+  const r = Math.round(rgb.r * inv + 255 * SOFTEN_WHITE_RATIO);
+  const g = Math.round(rgb.g * inv + 255 * SOFTEN_WHITE_RATIO);
+  const b = Math.round(rgb.b * inv + 255 * SOFTEN_WHITE_RATIO);
+  const toHex = (n: number) => n.toString(16).padStart(2, "0");
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
 export function DashboardMainWithWallpaper({ children }: Props) {
   const { backgroundMode, backgroundColor, resolvedTheme } = useDashboardSettings();
   const [dailyUrl, setDailyUrl] = useState<string | null>(null);
@@ -71,7 +84,8 @@ export function DashboardMainWithWallpaper({ children }: Props) {
     ? { text: "#171717", muted: "#6b7280" }
     : { text: "#c9d1d9", muted: "#8b949e" };
 
-  const solidIsLight = isLightColor(backgroundColor);
+  const solidAppliedHex = backgroundMode === "solid" ? softenHex(backgroundColor) : backgroundColor;
+  const solidIsLight = isLightColor(solidAppliedHex);
   const solidText = solidIsLight
     ? { text: "#171717", muted: "#6b7280" }
     : { text: "#c9d1d9", muted: "#8b949e" };
@@ -82,9 +96,9 @@ export function DashboardMainWithWallpaper({ children }: Props) {
       : { "--dashboard-text": solidText.text, "--dashboard-text-muted": solidText.muted };
 
   const useDarkText = backgroundMode === "daily" ? resolvedTheme === "light" : solidIsLight;
-  const contentTextShadow = useDarkText
-    ? "0 1px 2px rgba(255,255,255,0.85), 0 0 8px rgba(0,0,0,0.08)"
-    : "0 1px 2px rgba(0,0,0,0.75), 0 0 8px rgba(255,255,255,0.22)";
+  // text-shadow can make the whole UI look "blurred" on top of photos.
+  // We disable it to restore crisp text.
+  const contentTextShadow = "none";
 
   if (backgroundMode === "daily") {
     return (
@@ -114,7 +128,7 @@ export function DashboardMainWithWallpaper({ children }: Props) {
   return (
     <div
       className="relative min-h-full w-full"
-      style={{ backgroundColor, ...(textVars as React.CSSProperties) }}
+      style={{ backgroundColor: solidAppliedHex, ...(textVars as React.CSSProperties) }}
     >
       <div
         className="absolute inset-0"

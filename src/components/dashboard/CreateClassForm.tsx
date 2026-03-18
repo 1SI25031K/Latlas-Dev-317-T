@@ -122,7 +122,7 @@ export function CreateClassForm() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-2xl bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700"
+        className="rounded-full bg-green-600 px-5 py-2.5 font-medium text-white hover:bg-green-700"
       >
         {tDash("createClass")}
       </button>

@@ -3,9 +3,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { User, Settings, LogOut, MediaImage } from "iconoir-react";
+import { User, Settings, LogOut, EditPencil } from "iconoir-react";
 import { createClient } from "@/lib/supabase/client";
 import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
+import { DashboardCustomizeDrawer } from "@/components/dashboard/DashboardCustomizeDrawer";
 
 type DashboardHeaderProps = {
   locale: string;
@@ -23,39 +24,15 @@ export function DashboardHeader({
   const t = useTranslations("dashboard");
   const pathname = usePathname();
   const {
-    backgroundMode,
-    backgroundColor,
-    setBackgroundMode,
-    setBackgroundColor,
     sidebarCollapsed,
     setSidebarCollapsed,
   } = useDashboardSettings();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [bgPickerOpen, setBgPickerOpen] = useState(false);
-  const bgPickerRef = useRef<HTMLDivElement>(null);
+  const [customizeOpen, setCustomizeOpen] = useState(false);
   const supabase = createClient();
 
   const accountName = profileName || userEmail || t("profile");
-
-  const BACKGROUND_COLORS: Array<{ label: string; hex: string }> = [
-    { label: "Blue", hex: "#3B82F6" },
-    { label: "Purple", hex: "#A855F7" },
-    { label: "Pink", hex: "#EC4899" },
-    { label: "Red", hex: "#EF4444" },
-    { label: "Orange", hex: "#F97316" },
-    { label: "Yellow", hex: "#FBBF24" },
-    { label: "Green", hex: "#10B981" },
-    { label: "Mint", hex: "#2DD4BF" },
-    { label: "Teal", hex: "#0D9488" },
-    { label: "Cyan", hex: "#06B6D4" },
-    { label: "Indigo", hex: "#6366F1" },
-    { label: "Brown", hex: "#78716C" },
-    { label: "Gray", hex: "#6B7280" },
-    { label: "Slate", hex: "#475569" },
-    { label: "Zinc", hex: "#71717A" },
-    { label: "Rose", hex: "#FB7185" },
-  ];
 
   function getPageLabel(): string {
     if (pathname === "/dashboard" || pathname === "/dashboard/") return t("home");
@@ -82,24 +59,9 @@ export function DashboardHeader({
   }, []);
 
   useEffect(() => {
-    if (!bgPickerOpen) return;
-
-    function handleClickOutside(event: MouseEvent) {
-      if (bgPickerRef.current && !bgPickerRef.current.contains(event.target as Node)) {
-        setBgPickerOpen(false);
-      }
-    }
-    function handleEscape(e: KeyboardEvent) {
-      if (e.key === "Escape") setBgPickerOpen(false);
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleEscape);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, [bgPickerOpen]);
+    if (!customizeOpen) return;
+    setDropdownOpen(false);
+  }, [customizeOpen]);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -107,14 +69,15 @@ export function DashboardHeader({
   }
 
   return (
-    <header
-      className="flex h-16 shrink-0 items-center justify-between border-b px-5"
-      style={{
-        backgroundColor: "var(--dashboard-card)",
-        borderColor: "var(--dashboard-border)",
-        color: "var(--dashboard-text)",
-      }}
-    >
+    <>
+      <header
+        className="flex h-16 shrink-0 items-center justify-between border-b px-5"
+        style={{
+          backgroundColor: "var(--dashboard-card)",
+          borderColor: "var(--dashboard-border)",
+          color: "var(--dashboard-text)",
+        }}
+      >
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -140,77 +103,23 @@ export function DashboardHeader({
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="relative" ref={bgPickerRef}>
-          <button
-            type="button"
-            onClick={() => {
-              setDropdownOpen(false);
-              setBgPickerOpen((o) => !o);
-            }}
-            className="flex h-10 w-10 items-center justify-center rounded-2xl border transition-opacity hover:opacity-90"
-            style={{
-              backgroundColor: backgroundMode === "theme" ? "var(--dashboard-bg)" : "var(--dashboard-border)",
-              borderColor: "var(--dashboard-border)",
-              color: "var(--dashboard-text-muted)",
-            }}
-            aria-label={t("wallpaper")}
-            aria-pressed={backgroundMode !== "theme"}
-            aria-expanded={bgPickerOpen}
-          >
-            <MediaImage className="h-5 w-5" />
-          </button>
-
-          {bgPickerOpen && (
-            <div
-              className="absolute right-0 top-full z-40 mt-1 w-56 rounded-2xl border p-3 shadow-lg"
-              style={{
-                backgroundColor: "var(--dashboard-card)",
-                borderColor: "var(--dashboard-border)",
-              }}
-              onMouseDown={(e) => e.stopPropagation()}
-            >
-              <div className="grid grid-cols-4 gap-2">
-                {BACKGROUND_COLORS.map((c) => {
-                  const selected = backgroundMode === "solid" && backgroundColor === c.hex;
-                  return (
-                    <button
-                      key={c.hex}
-                      type="button"
-                      onClick={() => {
-                        setBackgroundColor(c.hex);
-                        setBackgroundMode("solid");
-                        setBgPickerOpen(false);
-                      }}
-                      className="h-8 w-8 rounded-2xl border transition-transform hover:scale-110"
-                      style={{
-                        backgroundColor: c.hex,
-                        borderColor: selected ? "var(--dashboard-text)" : "var(--dashboard-border)",
-                      }}
-                      aria-label={c.label}
-                      aria-pressed={selected}
-                    />
-                  );
-                })}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setBackgroundMode("daily");
-                  setBgPickerOpen(false);
-                }}
-                className="mt-3 w-full rounded-2xl border px-3 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50"
-                style={{
-                  borderColor: "var(--dashboard-border)",
-                  color: "var(--dashboard-text)",
-                  backgroundColor: backgroundMode === "daily" ? "var(--dashboard-border)" : "transparent",
-                }}
-              >
-                {t("dailyWallpaper")}
-              </button>
-            </div>
-          )}
-        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setDropdownOpen(false);
+            setCustomizeOpen((o) => !o);
+          }}
+          className="flex h-10 w-10 items-center justify-center rounded-2xl border transition-opacity hover:opacity-90"
+          style={{
+            backgroundColor: "var(--dashboard-bg)",
+            borderColor: "var(--dashboard-border)",
+            color: customizeOpen ? "var(--dashboard-text)" : "var(--dashboard-text-muted)",
+          }}
+          aria-label="Customize"
+          aria-pressed={customizeOpen}
+        >
+          <EditPencil className="h-5 w-5" />
+        </button>
 
         <div className="relative" ref={dropdownRef}>
           <button
@@ -234,54 +143,81 @@ export function DashboardHeader({
 
         {dropdownOpen && (
           <div
-            className="absolute right-0 top-full z-30 mt-1 min-w-[180px] rounded-2xl border py-1 shadow-lg"
+            className="absolute right-0 top-full z-30 mt-1 w-[260px] rounded-2xl border py-2 shadow-lg"
             style={{
               backgroundColor: "var(--dashboard-card)",
               borderColor: "var(--dashboard-border)",
             }}
           >
-            <div className="border-b px-3 py-2" style={{ borderColor: "var(--dashboard-border)" }}>
-              <p className="truncate text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>
-                {accountName}
-              </p>
-              <p className="text-xs" style={{ color: "var(--dashboard-text-muted)" }}>
-                {t("accountSubtitle")}
-              </p>
+            <div className="px-4 pb-3">
+              <div
+                className="rounded-2xl border p-4"
+                style={{ borderColor: "var(--dashboard-border)", backgroundColor: "var(--dashboard-bg)" }}
+              >
+                <div className="flex flex-col items-center gap-2 text-center">
+                  <div
+                    className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border"
+                    style={{
+                      borderColor: "var(--dashboard-border)",
+                      backgroundColor: "var(--dashboard-card)",
+                    }}
+                  >
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <User className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
+                    )}
+                  </div>
+                  <p className="text-sm font-semibold" style={{ color: "var(--dashboard-text)" }}>
+                    {accountName}
+                  </p>
+                  {userEmail && (
+                    <p className="truncate text-xs" style={{ color: "var(--dashboard-text-muted)" }}>
+                      {userEmail}
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
-            <Link
-              href="/dashboard/settings"
-              onClick={() => setDropdownOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 text-sm hover:opacity-90"
-              style={{ color: "var(--dashboard-text)" }}
-            >
-              <User className="h-5 w-5" style={{ color: "var(--dashboard-text-muted)" }} />
-              {t("profile")}
-            </Link>
-            <Link
-              href="/dashboard/settings"
-              onClick={() => setDropdownOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 text-sm hover:opacity-90"
-              style={{ color: "var(--dashboard-text)" }}
-            >
-              <Settings className="h-4 w-4" style={{ color: "var(--dashboard-text-muted)" }} />
-              {t("settings")}
-            </Link>
-            <button
-              type="button"
-              onClick={() => {
-                setDropdownOpen(false);
-                handleSignOut();
-              }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:opacity-90"
-              style={{ color: "var(--dashboard-text-muted)" }}
-            >
-              <LogOut className="h-4 w-4" />
-              {t("signOut")}
-            </button>
+
+            <div className="mt-1 flex flex-col gap-1">
+              <Link
+                href="/dashboard/settings"
+                onClick={() => setDropdownOpen(false)}
+                className="flex items-center gap-2 rounded-2xl px-4 py-2 text-sm hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
+                style={{ color: "var(--dashboard-text)" }}
+              >
+                <User className="h-5 w-5" style={{ color: "var(--dashboard-text-muted)" }} />
+                {t("profile")}
+              </Link>
+              <Link
+                href="/dashboard/settings"
+                onClick={() => setDropdownOpen(false)}
+                className="flex items-center gap-2 rounded-2xl px-4 py-2 text-sm hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
+                style={{ color: "var(--dashboard-text)" }}
+              >
+                <Settings className="h-4 w-4" style={{ color: "var(--dashboard-text-muted)" }} />
+                {t("settings")}
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setDropdownOpen(false);
+                  handleSignOut();
+                }}
+                className="flex w-full items-center gap-2 rounded-2xl px-4 py-2 text-left text-sm hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
+                style={{ color: "var(--dashboard-text-muted)" }}
+              >
+                <LogOut className="h-4 w-4" />
+                {t("signOut")}
+              </button>
+            </div>
           </div>
         )}
         </div>
       </div>
-    </header>
+      </header>
+      <DashboardCustomizeDrawer open={customizeOpen} onClose={() => setCustomizeOpen(false)} />
+    </>
   );
 }

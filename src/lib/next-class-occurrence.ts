@@ -68,10 +68,15 @@ export function formatNextOccurrence(
   const next = getNextOccurrence(schedule, fromDate);
   if (!next) return null;
   const weekday = new Intl.DateTimeFormat(locale, { weekday: "short" }).format(next);
+  const date = new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(next);
   const time = next.toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
   });
-  return `${weekday} ${time}`;
+  return `${weekday} ${date} ${time}`;
 }

@@ -4,6 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
 import { DashboardCloseButton } from "@/components/dashboard/DashboardCloseButton";
+import {
+  HEADER_CLOCK_FONT_COUNT,
+  headerClockIsCompactFont,
+  headerClockFontFamily,
+  headerClockGoogleFontHrefs,
+  type HeaderClockFontId,
+} from "@/lib/header-clock";
 
 const ANIM_MS = 220;
 
@@ -55,6 +62,42 @@ function softenHex(hex: string): string {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
+function ClockSettingRow({
+  label,
+  checked,
+  onToggle,
+}: {
+  label: string;
+  checked: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="mt-4 flex items-center justify-between gap-3">
+      <span className="text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>
+        {label}
+      </span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        onClick={onToggle}
+        className="relative h-8 w-14 shrink-0 rounded-full border transition-colors"
+        style={{
+          borderColor: "var(--dashboard-border)",
+          backgroundColor: checked ? "rgb(34 197 94)" : "var(--dashboard-bg)",
+        }}
+      >
+        <span
+          className="absolute top-0.5 block h-6 w-6 rounded-full bg-white shadow transition-transform"
+          style={{
+            transform: checked ? "translateX(1.5rem)" : "translateX(0.125rem)",
+          }}
+        />
+      </button>
+    </div>
+  );
+}
+
 export function DashboardCustomizeDrawer({
   open,
   onClose,
@@ -70,6 +113,14 @@ export function DashboardCustomizeDrawer({
     setBackgroundMode,
     backgroundColor,
     setBackgroundColor,
+    clockFontId,
+    setClockFontId,
+    clock24Hour,
+    setClock24Hour,
+    clockShowSeconds,
+    setClockShowSeconds,
+    clockLarge,
+    setClockLarge,
   } = useDashboardSettings();
 
   const [mounted, setMounted] = useState(open);
@@ -112,6 +163,19 @@ export function DashboardCustomizeDrawer({
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [mounted, onClose]);
+
+  useEffect(() => {
+    if (!open) return;
+    headerClockGoogleFontHrefs().forEach((href, i) => {
+      const id = `latlas-header-clock-fonts-${i}`;
+      if (document.getElementById(id)) return;
+      const link = document.createElement("link");
+      link.id = id;
+      link.rel = "stylesheet";
+      link.href = href;
+      document.head.appendChild(link);
+    });
+  }, [open]);
 
   if (!mounted) return null;
 
@@ -248,6 +312,57 @@ export function DashboardCustomizeDrawer({
               >
                 {tDash("dailyWallpaper")}
               </button>
+            </div>
+
+            <div className="mt-6 border-t pt-5" style={{ borderColor: "var(--dashboard-border)" }}>
+              <div
+                className="text-xs font-medium uppercase tracking-wider"
+                style={{ color: "var(--dashboard-text-muted)" }}
+              >
+                {tSettings("headerClockSection")}
+              </div>
+              <div className="mt-3 flex flex-nowrap gap-2 overflow-x-auto pb-2 [scrollbar-width:thin]">
+                {Array.from({ length: HEADER_CLOCK_FONT_COUNT }, (_, i) => {
+                  const id = i as HeaderClockFontId;
+                  const selected = clockFontId === id;
+                  const compact = headerClockIsCompactFont(i);
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setClockFontId(id)}
+                      className="flex h-14 w-[4.75rem] min-w-[4.75rem] shrink-0 flex-col items-center justify-center rounded-xl border-2 px-1 text-base font-semibold tabular-nums transition-opacity hover:opacity-90"
+                      style={{
+                        fontFamily: headerClockFontFamily(id),
+                        fontSize: compact ? "0.6rem" : "0.85rem",
+                        borderColor: selected ? "var(--dashboard-text)" : "var(--dashboard-border)",
+                        backgroundColor: selected ? "var(--dashboard-nav-active-bg)" : "var(--dashboard-bg)",
+                        color: "var(--dashboard-text)",
+                      }}
+                      aria-pressed={selected}
+                      aria-label={tSettings("headerClockFontN", { n: i + 1 })}
+                    >
+                      9:41
+                    </button>
+                  );
+                })}
+              </div>
+
+              <ClockSettingRow
+                label={tSettings("headerClock24Hour")}
+                checked={clock24Hour}
+                onToggle={() => setClock24Hour(!clock24Hour)}
+              />
+              <ClockSettingRow
+                label={tSettings("headerClockShowSeconds")}
+                checked={clockShowSeconds}
+                onToggle={() => setClockShowSeconds(!clockShowSeconds)}
+              />
+              <ClockSettingRow
+                label={tSettings("headerClockLarge")}
+                checked={clockLarge}
+                onToggle={() => setClockLarge(!clockLarge)}
+              />
             </div>
           </div>
         </div>

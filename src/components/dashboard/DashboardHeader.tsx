@@ -15,6 +15,7 @@ import {
 } from "@/lib/app-launcher";
 import { AppLauncherGrid } from "@/components/dashboard/AppLauncherGrid";
 import { AppLauncherEditorModal } from "@/components/dashboard/AppLauncherEditorModal";
+import { HeaderClock } from "@/components/dashboard/HeaderClock";
 
 type DashboardHeaderProps = {
   locale: string;
@@ -151,14 +152,15 @@ export function DashboardHeader({
   return (
     <>
       <header
-        className="flex h-16 shrink-0 items-center justify-between border-b px-5"
+        className="relative flex h-16 shrink-0 items-center justify-between border-b px-5"
         style={{
           backgroundColor: "var(--dashboard-card)",
           borderColor: "var(--dashboard-border)",
           color: "var(--dashboard-text)",
         }}
       >
-      <div className="flex items-center gap-3">
+        <HeaderClock locale={locale} />
+      <div className="relative z-20 flex min-w-0 max-w-[42%] items-center gap-3 md:max-w-[38%]">
         <button
           type="button"
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -175,12 +177,12 @@ export function DashboardHeader({
             <span className="block h-1 w-5 rounded-full bg-current" />
           </span>
         </button>
-        <span className="text-lg font-semibold" style={{ color: "var(--dashboard-text)" }}>
+        <span className="truncate text-lg font-semibold" style={{ color: "var(--dashboard-text)" }}>
           {getPageLabel()}
         </span>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="relative z-20 flex shrink-0 items-center gap-2">
         <button
           type="button"
           onClick={() => {

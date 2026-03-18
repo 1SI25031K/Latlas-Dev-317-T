@@ -21,7 +21,16 @@ export const STORAGE_KEYS = {
   backgroundMode: "latlas-background-mode",
   backgroundColor: "latlas-background-color",
   sidebarCollapsed: "latlas-sidebar-collapsed",
+  headerClockFont: "latlas-header-clock-font",
+  headerClock24Hour: "latlas-header-clock-24-hour",
+  headerClockShowSeconds: "latlas-header-clock-show-seconds",
+  headerClockLarge: "latlas-header-clock-large",
 } as const;
+
+export const DEFAULT_HEADER_CLOCK_FONT_ID = 0;
+export const DEFAULT_HEADER_CLOCK_24_HOUR = true;
+export const DEFAULT_HEADER_CLOCK_SHOW_SECONDS = false;
+export const DEFAULT_HEADER_CLOCK_LARGE = false;
 
 export const DEFAULT_ICON_ANIMATION = true;
 export const DEFAULT_WALLPAPER_ON = false;

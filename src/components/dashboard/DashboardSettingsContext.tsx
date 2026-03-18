@@ -20,11 +20,16 @@ import {
   DEFAULT_SOLID_BACKGROUND_COLOR,
   DEFAULT_SIDEBAR_COLLAPSED,
   DEFAULT_WALLPAPER_ON,
+  DEFAULT_HEADER_CLOCK_FONT_ID,
+  DEFAULT_HEADER_CLOCK_24_HOUR,
+  DEFAULT_HEADER_CLOCK_SHOW_SECONDS,
+  DEFAULT_HEADER_CLOCK_LARGE,
   type ThemeId,
   type FontSizeId,
   type ResolvedThemeId,
   type BackgroundMode,
 } from "@/lib/theme-constants";
+import { clampClockFontId, type HeaderClockFontId } from "@/lib/header-clock";
 
 type DashboardSettingsState = {
   theme: ThemeId;
@@ -40,6 +45,14 @@ type DashboardSettingsState = {
   setBackgroundMode: (v: BackgroundMode) => void;
   setBackgroundColor: (v: string) => void;
   setSidebarCollapsed: (v: boolean) => void;
+  clockFontId: HeaderClockFontId;
+  setClockFontId: (v: HeaderClockFontId) => void;
+  clock24Hour: boolean;
+  setClock24Hour: (v: boolean) => void;
+  clockShowSeconds: boolean;
+  setClockShowSeconds: (v: boolean) => void;
+  clockLarge: boolean;
+  setClockLarge: (v: boolean) => void;
 };
 
 const DashboardSettingsContext = createContext<DashboardSettingsState | null>(
@@ -102,6 +115,37 @@ function readSidebarCollapsed(): boolean {
   return DEFAULT_SIDEBAR_COLLAPSED;
 }
 
+function readClockFontId(): HeaderClockFontId {
+  if (typeof window === "undefined") return DEFAULT_HEADER_CLOCK_FONT_ID;
+  const v = localStorage.getItem(STORAGE_KEYS.headerClockFont);
+  const n = v != null ? parseInt(v, 10) : NaN;
+  return Number.isFinite(n) ? clampClockFontId(n) : DEFAULT_HEADER_CLOCK_FONT_ID;
+}
+
+function readClock24Hour(): boolean {
+  if (typeof window === "undefined") return DEFAULT_HEADER_CLOCK_24_HOUR;
+  const v = localStorage.getItem(STORAGE_KEYS.headerClock24Hour);
+  if (v === "false") return false;
+  if (v === "true") return true;
+  return DEFAULT_HEADER_CLOCK_24_HOUR;
+}
+
+function readClockShowSeconds(): boolean {
+  if (typeof window === "undefined") return DEFAULT_HEADER_CLOCK_SHOW_SECONDS;
+  const v = localStorage.getItem(STORAGE_KEYS.headerClockShowSeconds);
+  if (v === "true") return true;
+  if (v === "false") return false;
+  return DEFAULT_HEADER_CLOCK_SHOW_SECONDS;
+}
+
+function readClockLarge(): boolean {
+  if (typeof window === "undefined") return DEFAULT_HEADER_CLOCK_LARGE;
+  const v = localStorage.getItem(STORAGE_KEYS.headerClockLarge);
+  if (v === "true") return true;
+  if (v === "false") return false;
+  return DEFAULT_HEADER_CLOCK_LARGE;
+}
+
 function getResolvedTheme(theme: ThemeId): ResolvedThemeId {
   if (theme === "light" || theme === "dark") return theme;
   if (typeof window === "undefined") return "light";
@@ -132,6 +176,10 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
   const [backgroundMode, setBackgroundModeState] = useState<BackgroundMode>(DEFAULT_BACKGROUND_MODE);
   const [backgroundColor, setBackgroundColorState] = useState<string>(DEFAULT_SOLID_BACKGROUND_COLOR);
   const [sidebarCollapsed, setSidebarCollapsedState] = useState<boolean>(DEFAULT_SIDEBAR_COLLAPSED);
+  const [clockFontId, setClockFontIdState] = useState<HeaderClockFontId>(DEFAULT_HEADER_CLOCK_FONT_ID);
+  const [clock24Hour, setClock24HourState] = useState<boolean>(DEFAULT_HEADER_CLOCK_24_HOUR);
+  const [clockShowSeconds, setClockShowSecondsState] = useState<boolean>(DEFAULT_HEADER_CLOCK_SHOW_SECONDS);
+  const [clockLarge, setClockLargeState] = useState<boolean>(DEFAULT_HEADER_CLOCK_LARGE);
 
   useEffect(() => {
     setThemeState(readTheme());
@@ -140,6 +188,10 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
     setBackgroundModeState(readBackgroundMode());
     setBackgroundColorState(readBackgroundColor());
     setSidebarCollapsedState(readSidebarCollapsed());
+    setClockFontIdState(readClockFontId());
+    setClock24HourState(readClock24Hour());
+    setClockShowSecondsState(readClockShowSeconds());
+    setClockLargeState(readClockLarge());
   }, []);
 
   useEffect(() => {
@@ -195,6 +247,34 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
     } catch {}
   }, []);
 
+  const setClockFontId = useCallback((v: HeaderClockFontId) => {
+    setClockFontIdState(v);
+    try {
+      localStorage.setItem(STORAGE_KEYS.headerClockFont, String(v));
+    } catch {}
+  }, []);
+
+  const setClock24Hour = useCallback((v: boolean) => {
+    setClock24HourState(v);
+    try {
+      localStorage.setItem(STORAGE_KEYS.headerClock24Hour, v ? "true" : "false");
+    } catch {}
+  }, []);
+
+  const setClockShowSeconds = useCallback((v: boolean) => {
+    setClockShowSecondsState(v);
+    try {
+      localStorage.setItem(STORAGE_KEYS.headerClockShowSeconds, v ? "true" : "false");
+    } catch {}
+  }, []);
+
+  const setClockLarge = useCallback((v: boolean) => {
+    setClockLargeState(v);
+    try {
+      localStorage.setItem(STORAGE_KEYS.headerClockLarge, v ? "true" : "false");
+    } catch {}
+  }, []);
+
   const value = useMemo(
     () => ({
       theme,
@@ -210,6 +290,14 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
       setBackgroundMode,
       setBackgroundColor,
       setSidebarCollapsed,
+      clockFontId,
+      setClockFontId,
+      clock24Hour,
+      setClock24Hour,
+      clockShowSeconds,
+      setClockShowSeconds,
+      clockLarge,
+      setClockLarge,
     }),
     [
       theme,
@@ -219,12 +307,20 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
       backgroundMode,
       backgroundColor,
       sidebarCollapsed,
+      clockFontId,
+      clock24Hour,
+      clockShowSeconds,
+      clockLarge,
       setTheme,
       setFontSize,
       setIconAnimation,
       setBackgroundMode,
       setBackgroundColor,
       setSidebarCollapsed,
+      setClockFontId,
+      setClock24Hour,
+      setClockShowSeconds,
+      setClockLarge,
     ]
   );
 

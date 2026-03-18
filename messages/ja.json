@@ -40,6 +40,8 @@
     "showAllClasses": "すべて表示",
     "createClass": "クラスを追加",
     "messages": "メッセージ",
+    "timer": "タイマー",
+    "stopwatch": "ストップウォッチ",
     "monitoring": "モニタリング",
     "settings": "設定",
     "profile": "プロフィール",
@@ -161,6 +163,29 @@
     "subtitle": "生徒とチャットできます。",
     "placeholder": "メッセージ機能は今後の更新で利用できる予定です。"
   },
+  "timerPage": {
+    "title": "タイマー",
+    "subtitle": "動作中はメニューバーに残り時間が表示されます。",
+    "presets": "すぐセット",
+    "minutes": "{n} 分",
+    "customMinutes": "分",
+    "start": "開始",
+    "pause": "一時停止",
+    "resume": "再開",
+    "reset": "リセット",
+    "finished": "終了しました",
+    "defaultDuration": "5 分（既定）"
+  },
+  "stopwatchPage": {
+    "title": "ストップウォッチ",
+    "subtitle": "動作中はメニューバーに経過時間が表示されます。",
+    "start": "開始",
+    "pause": "一時停止",
+    "resume": "再開",
+    "lap": "ラップ",
+    "reset": "リセット",
+    "lapN": "ラップ {n}"
+  },
   "monitoring": {
     "title": "モニタリング",
     "subtitle": "生徒のアクティビティを監視"
@@ -181,6 +206,7 @@
     "iconAnimations": "アイコンアニメーション",
     "iconAnimationsDescription": "ホバー時にアイコンをアニメーションする",
     "headerClockSection": "ヘッダー時計",
+    "headerClockVisible": "ヘッダーに時計を表示",
     "headerClock24Hour": "24時間表示",
     "headerClockShowSeconds": "秒を表示",
     "headerClockLarge": "時計を大きく",

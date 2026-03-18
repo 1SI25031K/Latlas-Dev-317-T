@@ -24,6 +24,7 @@ import {
   DEFAULT_HEADER_CLOCK_24_HOUR,
   DEFAULT_HEADER_CLOCK_SHOW_SECONDS,
   DEFAULT_HEADER_CLOCK_LARGE,
+  DEFAULT_HEADER_CLOCK_VISIBLE,
   type ThemeId,
   type FontSizeId,
   type ResolvedThemeId,
@@ -53,6 +54,8 @@ type DashboardSettingsState = {
   setClockShowSeconds: (v: boolean) => void;
   clockLarge: boolean;
   setClockLarge: (v: boolean) => void;
+  clockVisible: boolean;
+  setClockVisible: (v: boolean) => void;
 };
 
 const DashboardSettingsContext = createContext<DashboardSettingsState | null>(
@@ -146,6 +149,14 @@ function readClockLarge(): boolean {
   return DEFAULT_HEADER_CLOCK_LARGE;
 }
 
+function readClockVisible(): boolean {
+  if (typeof window === "undefined") return DEFAULT_HEADER_CLOCK_VISIBLE;
+  const v = localStorage.getItem(STORAGE_KEYS.headerClockVisible);
+  if (v === "false") return false;
+  if (v === "true") return true;
+  return DEFAULT_HEADER_CLOCK_VISIBLE;
+}
+
 function getResolvedTheme(theme: ThemeId): ResolvedThemeId {
   if (theme === "light" || theme === "dark") return theme;
   if (typeof window === "undefined") return "light";
@@ -180,6 +191,7 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
   const [clock24Hour, setClock24HourState] = useState<boolean>(DEFAULT_HEADER_CLOCK_24_HOUR);
   const [clockShowSeconds, setClockShowSecondsState] = useState<boolean>(DEFAULT_HEADER_CLOCK_SHOW_SECONDS);
   const [clockLarge, setClockLargeState] = useState<boolean>(DEFAULT_HEADER_CLOCK_LARGE);
+  const [clockVisible, setClockVisibleState] = useState<boolean>(DEFAULT_HEADER_CLOCK_VISIBLE);
 
   useEffect(() => {
     setThemeState(readTheme());
@@ -192,6 +204,7 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
     setClock24HourState(readClock24Hour());
     setClockShowSecondsState(readClockShowSeconds());
     setClockLargeState(readClockLarge());
+    setClockVisibleState(readClockVisible());
   }, []);
 
   useEffect(() => {
@@ -275,6 +288,13 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
     } catch {}
   }, []);
 
+  const setClockVisible = useCallback((v: boolean) => {
+    setClockVisibleState(v);
+    try {
+      localStorage.setItem(STORAGE_KEYS.headerClockVisible, v ? "true" : "false");
+    } catch {}
+  }, []);
+
   const value = useMemo(
     () => ({
       theme,
@@ -298,6 +318,8 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
       setClockShowSeconds,
       clockLarge,
       setClockLarge,
+      clockVisible,
+      setClockVisible,
     }),
     [
       theme,
@@ -311,6 +333,7 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
       clock24Hour,
       clockShowSeconds,
       clockLarge,
+      clockVisible,
       setTheme,
       setFontSize,
       setIconAnimation,
@@ -321,6 +344,7 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
       setClock24Hour,
       setClockShowSeconds,
       setClockLarge,
+      setClockVisible,
     ]
   );
 

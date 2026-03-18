@@ -40,6 +40,8 @@
     "showAllClasses": "Tout afficher",
     "createClass": "Create class",
     "messages": "Messages",
+    "timer": "Minuteur",
+    "stopwatch": "Chronomètre",
     "monitoring": "Monitoring",
     "settings": "Settings",
     "profile": "Profile",
@@ -161,6 +163,29 @@
     "subtitle": "Chat with students.",
     "placeholder": "Messaging will be available in a future update."
   },
+  "timerPage": {
+    "title": "Minuteur",
+    "subtitle": "Temps restant dans la barre pendant le compte à rebours.",
+    "presets": "Raccourcis",
+    "minutes": "{n} min",
+    "customMinutes": "Minutes",
+    "start": "Démarrer",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "reset": "Réinitialiser",
+    "finished": "Temps écoulé",
+    "defaultDuration": "5 min (défaut)"
+  },
+  "stopwatchPage": {
+    "title": "Chronomètre",
+    "subtitle": "Temps écoulé dans la barre.",
+    "start": "Démarrer",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "lap": "Tour",
+    "reset": "Réinitialiser",
+    "lapN": "Tour {n}"
+  },
   "monitoring": {
     "title": "Monitoring",
     "subtitle": "Monitor student activity"
@@ -181,6 +206,7 @@
     "iconAnimations": "Animation des icônes",
     "iconAnimationsDescription": "Animer les icônes au survol",
     "headerClockSection": "Horloge en-tête",
+    "headerClockVisible": "Afficher l’horloge dans l’en-tête",
     "headerClock24Hour": "Format 24 h",
     "headerClockShowSeconds": "Afficher les secondes",
     "headerClockLarge": "Horloge plus grande",

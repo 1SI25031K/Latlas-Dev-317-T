@@ -40,6 +40,8 @@
     "showAllClasses": "전체 보기",
     "createClass": "Create class",
     "messages": "메시지",
+    "timer": "타이머",
+    "stopwatch": "스톱워치",
     "monitoring": "Monitoring",
     "settings": "Settings",
     "profile": "Profile",
@@ -161,6 +163,29 @@
     "subtitle": "학생과 채팅할 수 있습니다.",
     "placeholder": "메시지 기능은 추후 업데이트에서 제공될 예정입니다."
   },
+  "timerPage": {
+    "title": "타이머",
+    "subtitle": "실행 중에는 메뉴 바에 남은 시간이 표시됩니다.",
+    "presets": "빠른 설정",
+    "minutes": "{n}분",
+    "customMinutes": "분",
+    "start": "시작",
+    "pause": "일시정지",
+    "resume": "재개",
+    "reset": "초기화",
+    "finished": "종료",
+    "defaultDuration": "5분 (기본)"
+  },
+  "stopwatchPage": {
+    "title": "스톱워치",
+    "subtitle": "실행 중에는 메뉴 바에 경과 시간이 표시됩니다.",
+    "start": "시작",
+    "pause": "일시정지",
+    "resume": "재개",
+    "lap": "랩",
+    "reset": "초기화",
+    "lapN": "랩 {n}"
+  },
   "monitoring": {
     "title": "Monitoring",
     "subtitle": "Monitor student activity"
@@ -181,6 +206,7 @@
     "iconAnimations": "아이콘 애니메이션",
     "iconAnimationsDescription": "마우스를 올리면 아이콘 애니메이션 재생",
     "headerClockSection": "헤더 시계",
+    "headerClockVisible": "헤더에 시계 표시",
     "headerClock24Hour": "24시간 표시",
     "headerClockShowSeconds": "초 표시",
     "headerClockLarge": "시계 크게",

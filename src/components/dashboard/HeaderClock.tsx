@@ -22,6 +22,7 @@ export function HeaderClock({ locale }: Props) {
     clock24Hour,
     clockShowSeconds,
     clockLarge,
+    clockVisible,
   } = useDashboardSettings();
   const [wide, setWide] = useState(false);
   const [now, setNow] = useState(() => new Date());
@@ -61,7 +62,7 @@ export function HeaderClock({ locale }: Props) {
     return () => window.clearInterval(t);
   }, []);
 
-  if (!wide) return null;
+  if (!wide || !clockVisible) return null;
 
   const color = getHeaderClockTextColor(resolvedTheme);
   const family = headerClockFontFamily(clockFontId);

@@ -40,6 +40,8 @@
     "showAllClasses": "Show all",
     "createClass": "Create class",
     "messages": "Messages",
+    "timer": "Timer",
+    "stopwatch": "Stopwatch",
     "monitoring": "Monitoring",
     "settings": "Settings",
     "profile": "Profile",
@@ -161,6 +163,29 @@
     "subtitle": "Chat with students in your classes.",
     "placeholder": "Messaging will be available in a future update."
   },
+  "timerPage": {
+    "title": "Timer",
+    "subtitle": "Countdown in the menu bar while running.",
+    "presets": "Quick set",
+    "minutes": "{n} min",
+    "customMinutes": "Minutes",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "reset": "Reset",
+    "finished": "Time’s up",
+    "defaultDuration": "5 min (default)"
+  },
+  "stopwatchPage": {
+    "title": "Stopwatch",
+    "subtitle": "Elapsed time in the menu bar while running.",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "lap": "Lap",
+    "reset": "Reset",
+    "lapN": "Lap {n}"
+  },
   "monitoring": {
     "title": "Monitoring",
     "subtitle": "Monitor student activity"
@@ -181,6 +206,7 @@
     "iconAnimations": "Icon animations",
     "iconAnimationsDescription": "Animate icons on hover",
     "headerClockSection": "Header clock",
+    "headerClockVisible": "Show clock in header",
     "headerClock24Hour": "24-hour time",
     "headerClockShowSeconds": "Show seconds",
     "headerClockLarge": "Larger clock",

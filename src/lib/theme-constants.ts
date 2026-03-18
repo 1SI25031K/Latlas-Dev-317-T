@@ -25,12 +25,14 @@ export const STORAGE_KEYS = {
   headerClock24Hour: "latlas-header-clock-24-hour",
   headerClockShowSeconds: "latlas-header-clock-show-seconds",
   headerClockLarge: "latlas-header-clock-large",
+  headerClockVisible: "latlas-header-clock-visible",
 } as const;
 
 export const DEFAULT_HEADER_CLOCK_FONT_ID = 0;
 export const DEFAULT_HEADER_CLOCK_24_HOUR = true;
 export const DEFAULT_HEADER_CLOCK_SHOW_SECONDS = false;
 export const DEFAULT_HEADER_CLOCK_LARGE = false;
+export const DEFAULT_HEADER_CLOCK_VISIBLE = true;
 
 export const DEFAULT_ICON_ANIMATION = true;
 export const DEFAULT_WALLPAPER_ON = false;

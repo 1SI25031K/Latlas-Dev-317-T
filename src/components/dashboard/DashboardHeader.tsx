@@ -16,6 +16,10 @@ import {
 import { AppLauncherGrid } from "@/components/dashboard/AppLauncherGrid";
 import { AppLauncherEditorModal } from "@/components/dashboard/AppLauncherEditorModal";
 import { HeaderClock } from "@/components/dashboard/HeaderClock";
+import {
+  useDashboardTimer,
+  formatDurationMs,
+} from "@/components/dashboard/DashboardTimerContext";
 
 type DashboardHeaderProps = {
   locale: string;
@@ -56,6 +60,21 @@ export function DashboardHeader({
   const [launcherFixed, setLauncherFixed] = useState<{ top: number; right: number } | null>(null);
 
   const supabase = createClient();
+  const {
+    timerChipActive,
+    timerDisplayMs,
+    swChipActive,
+    swElapsedMs,
+  } = useDashboardTimer();
+
+  const [headerWide, setHeaderWide] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1100px)");
+    const u = () => setHeaderWide(mq.matches);
+    u();
+    mq.addEventListener("change", u);
+    return () => mq.removeEventListener("change", u);
+  }, []);
 
   const accountName = profileName || userEmail || t("profile");
 
@@ -64,6 +83,8 @@ export function DashboardHeader({
     if (pathname.startsWith("/dashboard/settings")) return t("settings");
     if (pathname.startsWith("/dashboard/monitoring")) return t("monitoring");
     if (pathname.startsWith("/dashboard/messages")) return t("messages");
+    if (pathname.startsWith("/dashboard/timer")) return t("timer");
+    if (pathname.startsWith("/dashboard/stopwatch")) return t("stopwatch");
     return t("home");
   }
 
@@ -182,7 +203,41 @@ export function DashboardHeader({
         </span>
       </div>
 
-      <div className="relative z-20 flex shrink-0 items-center gap-2">
+      <div className="relative z-20 flex max-w-[min(42vw,14rem)] shrink-0 items-center gap-1.5 sm:gap-2 md:max-w-none">
+        {headerWide && (timerChipActive || swChipActive) && (
+          <div className="flex min-w-0 items-center gap-1">
+            {timerChipActive && (
+              <Link
+                href="/dashboard/timer"
+                className="truncate rounded-xl border px-2 py-1 text-xs font-semibold tabular-nums transition-opacity hover:opacity-90"
+                style={{
+                  borderColor: "var(--dashboard-border)",
+                  backgroundColor: "var(--dashboard-card)",
+                  color: "var(--dashboard-text)",
+                  maxWidth: "4.5rem",
+                }}
+                title={t("timer")}
+              >
+                {formatDurationMs(timerDisplayMs)}
+              </Link>
+            )}
+            {swChipActive && (
+              <Link
+                href="/dashboard/stopwatch"
+                className="truncate rounded-xl border px-2 py-1 text-xs font-semibold tabular-nums transition-opacity hover:opacity-90"
+                style={{
+                  borderColor: "var(--dashboard-border)",
+                  backgroundColor: "var(--dashboard-card)",
+                  color: "var(--dashboard-text)",
+                  maxWidth: "4.5rem",
+                }}
+                title={t("stopwatch")}
+              >
+                {formatDurationMs(swElapsedMs)}
+              </Link>
+            )}
+          </div>
+        )}
         <button
           type="button"
           onClick={() => {
@@ -192,7 +247,7 @@ export function DashboardHeader({
             setNotificationsOpen(false);
             setCustomizeOpen((o) => !o);
           }}
-          className="flex h-10 w-10 items-center justify-center rounded-2xl transition-opacity hover:opacity-90"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-opacity hover:opacity-90"
           style={{
             color: customizeOpen ? "var(--dashboard-text)" : "var(--dashboard-text-muted)",
           }}

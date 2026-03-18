@@ -4,7 +4,15 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import type { Class } from "@/types/database";
-import { Home, Book, Activity, Settings, ChatLines } from "iconoir-react";
+import {
+  Home,
+  Book,
+  Activity,
+  Settings,
+  ChatLines,
+  Timer,
+  ClockRotateRight,
+} from "iconoir-react";
 import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
 
 const CLASS_SIDEBAR_LIMIT = 7;
@@ -67,6 +75,26 @@ export function Sidebar({ locale, classes }: SidebarProps) {
         >
           {iconWrap("h-5 w-5", "group-hover:scale-110", <ChatLines className="h-5 w-5" />)}
           {!sidebarCollapsed && t("messages")}
+        </Link>
+        <Link
+          href="/dashboard/timer"
+          className={`group ${navClass("/dashboard/timer")}`}
+          style={{ color: "var(--dashboard-text)" }}
+        >
+          {iconWrap("h-5 w-5", "group-hover:scale-110", <Timer className="h-5 w-5" />)}
+          {!sidebarCollapsed && t("timer")}
+        </Link>
+        <Link
+          href="/dashboard/stopwatch"
+          className={`group ${navClass("/dashboard/stopwatch")}`}
+          style={{ color: "var(--dashboard-text)" }}
+        >
+          {iconWrap(
+            "h-5 w-5",
+            "group-hover:scale-110",
+            <ClockRotateRight className="h-5 w-5" />
+          )}
+          {!sidebarCollapsed && t("stopwatch")}
         </Link>
         <Link
           href="/dashboard/monitoring"

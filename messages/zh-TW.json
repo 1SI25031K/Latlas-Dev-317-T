@@ -40,6 +40,8 @@
     "showAllClasses": "顯示全部",
     "createClass": "Create class",
     "messages": "訊息",
+    "timer": "計時器",
+    "stopwatch": "碼表",
     "monitoring": "Monitoring",
     "settings": "Settings",
     "profile": "Profile",
@@ -161,6 +163,29 @@
     "subtitle": "與學生聊天。",
     "placeholder": "訊息功能將在後續更新中提供。"
   },
+  "timerPage": {
+    "title": "計時器",
+    "subtitle": "執行中時頂欄顯示剩餘時間。",
+    "presets": "快捷",
+    "minutes": "{n} 分鐘",
+    "customMinutes": "分鐘",
+    "start": "開始",
+    "pause": "暫停",
+    "resume": "繼續",
+    "reset": "重設",
+    "finished": "時間到",
+    "defaultDuration": "5 分鐘（預設）"
+  },
+  "stopwatchPage": {
+    "title": "碼表",
+    "subtitle": "執行中時頂欄顯示經過時間。",
+    "start": "開始",
+    "pause": "暫停",
+    "resume": "繼續",
+    "lap": "計次",
+    "reset": "重設",
+    "lapN": "計次 {n}"
+  },
   "monitoring": {
     "title": "Monitoring",
     "subtitle": "Monitor student activity"
@@ -181,6 +206,7 @@
     "iconAnimations": "圖示動畫",
     "iconAnimationsDescription": "懸停時播放圖示動畫",
     "headerClockSection": "頂欄時鐘",
+    "headerClockVisible": "在頂欄顯示時鐘",
     "headerClock24Hour": "24 小時制",
     "headerClockShowSeconds": "顯示秒",
     "headerClockLarge": "放大時鐘",

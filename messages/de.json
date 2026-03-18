@@ -40,6 +40,8 @@
     "showAllClasses": "Alle anzeigen",
     "createClass": "Create class",
     "messages": "Messages",
+    "timer": "Timer",
+    "stopwatch": "Stoppuhr",
     "monitoring": "Monitoring",
     "settings": "Settings",
     "profile": "Profile",
@@ -161,6 +163,29 @@
     "subtitle": "Chat with students.",
     "placeholder": "Messaging will be available in a future update."
   },
+  "timerPage": {
+    "title": "Timer",
+    "subtitle": "Restzeit erscheint in der Kopfzeile.",
+    "presets": "Schnellauswahl",
+    "minutes": "{n} Min",
+    "customMinutes": "Minuten",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Weiter",
+    "reset": "Zurücksetzen",
+    "finished": "Zeit abgelaufen",
+    "defaultDuration": "5 Min (Standard)"
+  },
+  "stopwatchPage": {
+    "title": "Stoppuhr",
+    "subtitle": "Zeit erscheint in der Kopfzeile.",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Weiter",
+    "lap": "Runde",
+    "reset": "Zurücksetzen",
+    "lapN": "Runde {n}"
+  },
   "monitoring": {
     "title": "Monitoring",
     "subtitle": "Monitor student activity"
@@ -181,6 +206,7 @@
     "iconAnimations": "Symbolanimationen",
     "iconAnimationsDescription": "Symbole beim Hover animieren",
     "headerClockSection": "Kopfzeile Uhr",
+    "headerClockVisible": "Uhr in Kopfzeile anzeigen",
     "headerClock24Hour": "24-Stunden-Zeit",
     "headerClockShowSeconds": "Sekunden anzeigen",
     "headerClockLarge": "Größere Uhr",

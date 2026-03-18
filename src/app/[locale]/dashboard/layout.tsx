@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/dashboard/Sidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { DashboardThemeWrapper } from "@/components/dashboard/DashboardSettingsContext";
+import { DashboardTimerProvider } from "@/components/dashboard/DashboardTimerContext";
 import { DashboardOnboardingOverlay } from "@/components/dashboard/DashboardOnboardingOverlay";
 import { DashboardMfaGate } from "@/components/dashboard/DashboardMfaGate";
 import type { Class } from "@/types/database";
@@ -47,19 +48,21 @@ export default async function DashboardLayout({ children, params }: Props) {
     <DashboardThemeWrapper locale={locale}>
       <DashboardMfaGate>
         <DashboardOnboardingOverlay needsOnboarding={needsOnboarding} locale={locale}>
-          <div className="flex h-full min-h-screen w-full flex-col">
-            <DashboardHeader
-              locale={locale}
-              profileName={profile?.full_name ?? null}
-              userEmail={session.user.email ?? null}
-              avatarUrl={profile?.avatar_url ?? null}
-            />
-            <DashboardShell
-              sidebar={<Sidebar locale={locale} classes={classList} />}
-            >
-              {children}
-            </DashboardShell>
-          </div>
+          <DashboardTimerProvider>
+            <div className="flex h-full min-h-screen w-full flex-col">
+              <DashboardHeader
+                locale={locale}
+                profileName={profile?.full_name ?? null}
+                userEmail={session.user.email ?? null}
+                avatarUrl={profile?.avatar_url ?? null}
+              />
+              <DashboardShell
+                sidebar={<Sidebar locale={locale} classes={classList} />}
+              >
+                {children}
+              </DashboardShell>
+            </div>
+          </DashboardTimerProvider>
         </DashboardOnboardingOverlay>
       </DashboardMfaGate>
     </DashboardThemeWrapper>

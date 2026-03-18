@@ -121,6 +121,8 @@ export function DashboardCustomizeDrawer({
     setClockShowSeconds,
     clockLarge,
     setClockLarge,
+    clockVisible,
+    setClockVisible,
   } = useDashboardSettings();
 
   const [mounted, setMounted] = useState(open);
@@ -321,6 +323,11 @@ export function DashboardCustomizeDrawer({
               >
                 {tSettings("headerClockSection")}
               </div>
+              <ClockSettingRow
+                label={tSettings("headerClockVisible")}
+                checked={clockVisible}
+                onToggle={() => setClockVisible(!clockVisible)}
+              />
               <div className="mt-3 flex flex-nowrap gap-2 overflow-x-auto pb-2 [scrollbar-width:thin]">
                 {Array.from({ length: HEADER_CLOCK_FONT_COUNT }, (_, i) => {
                   const id = i as HeaderClockFontId;
@@ -331,10 +338,10 @@ export function DashboardCustomizeDrawer({
                       key={i}
                       type="button"
                       onClick={() => setClockFontId(id)}
-                      className="flex h-14 w-[4.75rem] min-w-[4.75rem] shrink-0 flex-col items-center justify-center rounded-xl border-2 px-1 text-base font-semibold tabular-nums transition-opacity hover:opacity-90"
+                      className="flex h-16 w-[5.25rem] min-w-[5.25rem] shrink-0 flex-col items-center justify-center rounded-xl border-2 px-1 text-base font-semibold tabular-nums leading-none transition-opacity hover:opacity-90"
                       style={{
                         fontFamily: headerClockFontFamily(id),
-                        fontSize: compact ? "0.6rem" : "0.85rem",
+                        fontSize: compact ? "0.7rem" : "0.875rem",
                         borderColor: selected ? "var(--dashboard-text)" : "var(--dashboard-border)",
                         backgroundColor: selected ? "var(--dashboard-nav-active-bg)" : "var(--dashboard-bg)",
                         color: "var(--dashboard-text)",

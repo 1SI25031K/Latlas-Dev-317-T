@@ -4,6 +4,15 @@ import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { User, Settings, LogOut, EditPencil } from "iconoir-react";
+import {
+  HardDrive,
+  Cloud,
+  CalendarDays,
+  Mail,
+  GraduationCap,
+  Users,
+  BookOpen,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
 import { DashboardCustomizeDrawer } from "@/components/dashboard/DashboardCustomizeDrawer";
@@ -211,6 +220,135 @@ export function DashboardHeader({
                 <LogOut className="h-4 w-4" />
                 {t("signOut")}
               </button>
+            </div>
+
+            {/* Google Home 3x3 launcher (app shortcuts) */}
+            <div className="mt-3 px-4">
+              <div
+                className="mb-2 h-[1px]"
+                style={{ backgroundColor: "var(--dashboard-border)" }}
+                aria-hidden
+              />
+              <div className="grid grid-cols-3 gap-2">
+                {/* row0 col2 must be Account; row0 col1 must be Data access */}
+
+                {/* row0 col0: Drive */}
+                <a
+                  href="https://drive.google.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
+                  style={{ borderColor: "var(--dashboard-border)" }}
+                  aria-label="Google Drive"
+                >
+                  <HardDrive className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
+                </a>
+
+                {/* row0 col1: Data access (disabled until route is decided) */}
+                <button
+                  type="button"
+                  disabled
+                  className="flex aspect-square items-center justify-center rounded-2xl border opacity-50"
+                  style={{
+                    borderColor: "var(--dashboard-border)",
+                    color: "var(--dashboard-text-muted)",
+                    cursor: "not-allowed",
+                  }}
+                  aria-label="Data access (disabled)"
+                >
+                  <BookOpen className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
+                </button>
+
+                {/* row0 col2: Account */}
+                <Link
+                  href="/dashboard/settings"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
+                  style={{ borderColor: "var(--dashboard-border)" }}
+                  aria-label="Account"
+                >
+                  <User className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
+                </Link>
+
+                {/* row1 col0: OneDrive */}
+                <a
+                  href="https://onedrive.live.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
+                  style={{ borderColor: "var(--dashboard-border)" }}
+                  aria-label="OneDrive"
+                >
+                  <Cloud className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
+                </a>
+
+                {/* row1 col1: Google Calendar */}
+                <a
+                  href="https://calendar.google.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
+                  style={{ borderColor: "var(--dashboard-border)" }}
+                  aria-label="Google Calendar"
+                >
+                  <CalendarDays className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
+                </a>
+
+                {/* row1 col2: Outlook */}
+                <a
+                  href="https://outlook.office.com/calendar/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
+                  style={{ borderColor: "var(--dashboard-border)" }}
+                  aria-label="Outlook"
+                >
+                  <Mail className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
+                </a>
+
+                {/* row2 col0: Google Classroom */}
+                <a
+                  href="https://classroom.google.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
+                  style={{ borderColor: "var(--dashboard-border)" }}
+                  aria-label="Google Classroom"
+                >
+                  <GraduationCap className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
+                </a>
+
+                {/* row2 col1: Microsoft Teams */}
+                <a
+                  href="https://teams.microsoft.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
+                  style={{ borderColor: "var(--dashboard-border)" }}
+                  aria-label="Microsoft Teams"
+                >
+                  <Users className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
+                </a>
+
+                {/* row2 col2: Moodle */}
+                <a
+                  href="https://moodle.s.kyushu-u.ac.jp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex aspect-square items-center justify-center rounded-2xl border transition-opacity hover:opacity-90 hover:bg-[var(--dashboard-nav-active-bg)]"
+                  style={{ borderColor: "var(--dashboard-border)" }}
+                  aria-label="Moodle"
+                >
+                  <BookOpen className="h-6 w-6" style={{ color: "var(--dashboard-text-muted)" }} />
+                </a>
+              </div>
             </div>
           </div>
         )}

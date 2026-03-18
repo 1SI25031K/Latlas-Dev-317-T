@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { DashboardCloseButton } from "@/components/dashboard/DashboardCloseButton";
 
 const ANIM_MS = 220;
 
@@ -26,6 +27,7 @@ export function DashboardNotificationDrawer({
   notifications = [],
 }: DashboardNotificationDrawerProps) {
   const t = useTranslations("dashboard.notifications");
+  const tCommon = useTranslations("common");
   const locale = useLocale();
   const [mounted, setMounted] = useState(open);
   const [visible, setVisible] = useState(open);
@@ -92,19 +94,7 @@ export function DashboardNotificationDrawer({
             <h2 id="notification-drawer-title" className="text-sm font-semibold">
               {t("title")}
             </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex h-10 w-10 items-center justify-center rounded-2xl border transition-opacity hover:opacity-90"
-              style={{
-                borderColor: "var(--dashboard-border)",
-                backgroundColor: "transparent",
-                color: "var(--dashboard-text-muted)",
-              }}
-              aria-label={t("close")}
-            >
-              ×
-            </button>
+            <DashboardCloseButton onClick={onClose} aria-label={tCommon("close")} />
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto p-4">

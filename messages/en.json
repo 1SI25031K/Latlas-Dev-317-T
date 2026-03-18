@@ -1,7 +1,8 @@
 {
   "common": {
     "appName": "Latlas",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "close": "Close"
   },
   "auth": {
     "login": "Log in",
@@ -59,7 +60,7 @@
     "appLauncher": {
       "edit": "Edit shortcuts",
       "title": "App launcher",
-      "description": "Reorder (↑↓), remove items, or add shortcuts with URL, name, and icon.",
+      "description": "Reorder, remove, or tap a service icon to add it instantly. Add custom links with URL and display name below.",
       "save": "Save",
       "cancel": "Cancel",
       "close": "Close",
@@ -70,7 +71,8 @@
       "name": "Display name",
       "icon": "Icon",
       "genericIcon": "Link (neutral, no brand)",
-      "iconPickerHint": "Neutral link: enter URL and name yourself. Pick a service icon below to auto-fill URL and display name, then add with that icon.",
+      "presetTapHint": "Tap a service icon to add it immediately—it animates into the list. Each service can only be added once.",
+      "iconPickerHint": "For a custom link: enter URL and display name, then tap Add to list. The neutral link icon above is optional.",
       "moveUp": "Move up",
       "moveDown": "Move down",
       "remove": "Remove",

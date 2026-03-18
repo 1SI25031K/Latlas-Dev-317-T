@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
+import { DashboardCloseButton } from "@/components/dashboard/DashboardCloseButton";
 
 const ANIM_MS = 220;
 
@@ -60,6 +61,7 @@ export function DashboardCustomizeDrawer({
 }: DashboardCustomizeDrawerProps) {
   const tDash = useTranslations("dashboard");
   const tSettings = useTranslations("settings");
+  const tCommon = useTranslations("common");
 
   const {
     theme,
@@ -139,15 +141,7 @@ export function DashboardCustomizeDrawer({
             <div className="text-sm font-semibold" style={{ color: "var(--dashboard-text)" }}>
               テーマ
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex h-10 w-10 items-center justify-center rounded-2xl border transition-opacity hover:opacity-90"
-              style={{ borderColor: "var(--dashboard-border)", backgroundColor: "transparent", color: "var(--dashboard-text-muted)" }}
-              aria-label="Close"
-            >
-              ×
-            </button>
+            <DashboardCloseButton onClick={onClose} aria-label={tCommon("close")} />
           </div>
 
           <div className="p-4">

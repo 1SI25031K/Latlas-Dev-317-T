@@ -1,7 +1,8 @@
 {
   "common": {
     "appName": "Latlas",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "close": "닫기"
   },
   "auth": {
     "login": "Log in",
@@ -59,18 +60,19 @@
     "appLauncher": {
       "edit": "Edit shortcuts",
       "title": "App launcher",
-      "description": "Reorder, remove, or add shortcuts.",
+      "description": "순서 변경·삭제 또는 서비스 아이콘 탭으로 바로 추가. 아래에서 URL·이름으로 맞춤 링크 추가.",
       "save": "Save",
       "cancel": "Cancel",
       "close": "Close",
       "reset": "Reset to defaults",
       "addShortcut": "Add shortcut",
-      "addButton": "Add",
+      "addButton": "목록에 추가",
       "url": "URL",
       "name": "Name",
       "icon": "Icon",
       "genericIcon": "링크 (중립)",
-      "iconPickerHint": "중립 링크는 URL·이름을 직접 입력합니다. 아래 서비스 아이콘을 선택하면 URL과 이름이 자동 입력됩니다.",
+      "presetTapHint": "서비스 아이콘을 탭하면 바로 목록에 추가됩니다(애니메이션). 서비스당 하나만.",
+      "iconPickerHint": "직접 링크: URL과 표시 이름 입력 후 «목록에 추가». 위 중립 아이콘은 선택 사항.",
       "moveUp": "Up",
       "moveDown": "Down",
       "remove": "Remove",

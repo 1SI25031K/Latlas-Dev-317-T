@@ -14,10 +14,12 @@ import {
 import {
   type LauncherItem,
   BUILTIN_EXTERNAL_URL,
-  LAUNCHER_SI_ICONS,
   LATLAS_GENERIC_SHORTCUT,
+  resolveBrandIconColor,
   type BuiltinLauncherId,
 } from "@/lib/app-launcher";
+import { getLauncherIconMeta } from "@/lib/launcher-extra-icons";
+import { useDashboardSettings } from "@/components/dashboard/DashboardSettingsContext";
 
 const LAUNCHER_TILE =
   "flex w-full min-w-0 max-w-full flex-col items-center gap-2 rounded-2xl px-1.5 py-2.5 transition-opacity hover:opacity-90";
@@ -47,6 +49,8 @@ function Label({ children }: { children: ReactNode }) {
 
 export function AppLauncherGrid({ items, avatarUrl, onNavigate }: Props) {
   const t = useTranslations("dashboard.appLauncher");
+  const { resolvedTheme } = useDashboardSettings();
+  const isDark = resolvedTheme === "dark";
 
   function builtinLabel(id: BuiltinLauncherId): string {
     return t(`builtin_${id}` as Parameters<typeof t>[0]);
@@ -79,7 +83,7 @@ export function AppLauncherGrid({ items, avatarUrl, onNavigate }: Props) {
               </a>
             );
           }
-          const meta = LAUNCHER_SI_ICONS[item.iconKey];
+          const meta = getLauncherIconMeta(item.iconKey);
           if (!meta) {
             return (
               <a
@@ -99,6 +103,7 @@ export function AppLauncherGrid({ items, avatarUrl, onNavigate }: Props) {
             );
           }
           const Icon = meta.Icon;
+          const iconColor = resolveBrandIconColor(item.iconKey, item.color, isDark);
           return (
             <a
               key={item.cid}
@@ -110,7 +115,7 @@ export function AppLauncherGrid({ items, avatarUrl, onNavigate }: Props) {
               aria-label={item.name}
             >
               <div className={ICON_SHELL}>
-                <Icon size={24} color={item.color} className="shrink-0" />
+                <Icon size={24} color={iconColor} className="shrink-0" />
               </div>
               <Label>{item.name}</Label>
             </a>

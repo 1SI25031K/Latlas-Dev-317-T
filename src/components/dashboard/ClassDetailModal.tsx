@@ -20,6 +20,7 @@ import {
   DEFAULT_CLASS_COLOR_HEX,
   type ClassIconId,
 } from "@/lib/class-icon-options";
+import { DashboardCloseButton } from "@/components/dashboard/DashboardCloseButton";
 
 const DAY_NAMES = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
 const PRESET_COLORS = [
@@ -52,6 +53,7 @@ export function ClassDetailModal({
   initialDeleteConfirm = false,
 }: ClassDetailModalProps) {
   const t = useTranslations("class");
+  const tCommon = useTranslations("common");
   const locale = useLocale();
   const router = useRouter();
   const [regeneratedPassword, setRegeneratedPassword] = useState<string | null>(null);
@@ -323,15 +325,7 @@ export function ClassDetailModal({
                 {t("edit")}
               </button>
             )}
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded p-1 text-lg leading-none hover:opacity-80"
-              style={mutedStyle}
-              aria-label={t("close")}
-            >
-              ×
-            </button>
+            <DashboardCloseButton onClick={onClose} aria-label={tCommon("close")} />
           </div>
         </div>
 

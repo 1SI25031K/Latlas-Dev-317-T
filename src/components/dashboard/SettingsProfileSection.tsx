@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { updateProfileFromSettings } from "@/app/actions/profile";
 import { User, EditPencil } from "iconoir-react";
 import { PROFILE_TITLE_IDS, PROFILE_TITLE_EMPTY, PROFILE_TITLE_SETTINGS_KEYS } from "@/lib/profile-title-options";
+import { DashboardCloseButton } from "@/components/dashboard/DashboardCloseButton";
 
 const AVATAR_BUCKET = "avatars";
 const AVATAR_MAX_WIDTH = 400;
@@ -231,14 +232,10 @@ export function SettingsProfileSection({ profile }: SettingsProfileSectionProps)
           >
             <div className="sticky top-0 flex items-center justify-between border-b p-4" style={{ borderColor: "var(--dashboard-border)" }}>
               <h3 className="text-lg font-semibold">{t("profile")}</h3>
-              <button
-                type="button"
+              <DashboardCloseButton
                 onClick={() => setSheetOpen(false)}
-                className="rounded-lg px-3 py-1 text-sm hover:opacity-80"
-                style={{ color: "var(--dashboard-text-muted)" }}
-              >
-                {t("profileClose")}
-              </button>
+                aria-label={t("profileClose")}
+              />
             </div>
             <form onSubmit={handleSubmit} className="space-y-4 p-4">
               {error && (

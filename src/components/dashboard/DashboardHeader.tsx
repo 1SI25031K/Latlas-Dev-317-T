@@ -398,6 +398,7 @@ export function DashboardHeader({
         open={appLauncherEditOpen}
         onClose={() => setAppLauncherEditOpen(false)}
         onSaved={() => setLauncherCfg(readLauncherConfig())}
+        avatarUrl={avatarUrl}
       />
     </>
   );

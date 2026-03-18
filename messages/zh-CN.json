@@ -1,7 +1,8 @@
 {
   "common": {
     "appName": "Latlas",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "close": "关闭"
   },
   "auth": {
     "login": "Log in",
@@ -59,18 +60,19 @@
     "appLauncher": {
       "edit": "Edit shortcuts",
       "title": "App launcher",
-      "description": "Reorder, remove, or add shortcuts.",
+      "description": "调整顺序、删除，或点击服务图标立即添加。在下方用 URL 和名称添加自定义链接。",
       "save": "Save",
       "cancel": "Cancel",
       "close": "Close",
       "reset": "Reset to defaults",
       "addShortcut": "Add shortcut",
-      "addButton": "Add",
+      "addButton": "添加到列表",
       "url": "URL",
       "name": "Name",
       "icon": "Icon",
       "genericIcon": "链接（中立）",
-      "iconPickerHint": "中立链接需自行输入 URL 和名称。点击下方服务图标可自动填入 URL 和显示名。",
+      "presetTapHint": "点击服务图标即可立即加入列表（带动画）。每项服务仅可添加一次。",
+      "iconPickerHint": "自定义链接：输入 URL 和显示名后点「添加到列表」。上方中立图标可选。",
       "moveUp": "Up",
       "moveDown": "Down",
       "remove": "Remove",

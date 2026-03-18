@@ -1,7 +1,8 @@
 {
   "common": {
     "appName": "Latlas",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "close": "Fermer"
   },
   "auth": {
     "login": "Log in",
@@ -59,18 +60,19 @@
     "appLauncher": {
       "edit": "Edit shortcuts",
       "title": "App launcher",
-      "description": "Reorder, remove, or add shortcuts.",
+      "description": "Réorganiser, supprimer ou toucher une icône de service pour l’ajouter tout de suite. Liens personnalisés via URL et nom ci-dessous.",
       "save": "Save",
       "cancel": "Cancel",
       "close": "Close",
       "reset": "Reset to defaults",
       "addShortcut": "Add shortcut",
-      "addButton": "Add",
+      "addButton": "Ajouter à la liste",
       "url": "URL",
       "name": "Name",
       "icon": "Icon",
       "genericIcon": "Lien (neutre)",
-      "iconPickerHint": "Lien neutre : saisissez URL et nom. Choisissez une icône ci-dessous pour remplir automatiquement.",
+      "presetTapHint": "Touchez une icône : ajout immédiat avec animation. Un service une seule fois.",
+      "iconPickerHint": "Lien personnalisé : saisissez URL et nom, puis « Ajouter à la liste ». L’icône neutre en haut est facultative.",
       "moveUp": "Up",
       "moveDown": "Down",
       "remove": "Remove",

@@ -1,7 +1,8 @@
 {
   "common": {
     "appName": "Latlas",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "close": "Schließen"
   },
   "auth": {
     "login": "Log in",
@@ -59,18 +60,19 @@
     "appLauncher": {
       "edit": "Edit shortcuts",
       "title": "App launcher",
-      "description": "Reorder, remove, or add shortcuts.",
+      "description": "Sortieren, entfernen oder ein Dienst-Symbol tippen für sofortiges Hinzufügen. Eigene Links unten per URL und Name.",
       "save": "Save",
       "cancel": "Cancel",
       "close": "Close",
       "reset": "Reset to defaults",
       "addShortcut": "Add shortcut",
-      "addButton": "Add",
+      "addButton": "Zur Liste",
       "url": "URL",
       "name": "Name",
       "icon": "Icon",
       "genericIcon": "Link (neutral)",
-      "iconPickerHint": "Neutral: URL und Name selbst eingeben. Dienst-Symbol unten wählen, um URL und Namen automatisch zu füllen.",
+      "presetTapHint": "Dienst-Symbol tippen: sofort in der Liste (Animation). Jeder Dienst nur einmal.",
+      "iconPickerHint": "Eigener Link: URL und Anzeigename eingeben, dann „Zur Liste“. Neutrales Symbol oben optional.",
       "moveUp": "Up",
       "moveDown": "Down",
       "remove": "Remove",

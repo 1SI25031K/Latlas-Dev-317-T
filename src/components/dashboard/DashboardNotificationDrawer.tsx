@@ -70,14 +70,12 @@ export function DashboardNotificationDrawer({
         onMouseDown={onClose}
       />
 
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="notification-drawer-title"
-        className="absolute right-0 top-0 h-full max-w-[92vw] w-[360px] border-l bg-transparent"
-      >
+      <div className="pointer-events-none absolute right-0 top-0 h-full max-w-[92vw] w-[360px] overflow-hidden">
         <div
-          className="flex h-full flex-col"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="notification-drawer-title"
+          className="pointer-events-auto flex h-full flex-col border-l shadow-[-6px_0_24px_rgba(0,0,0,0.08)]"
           onMouseDown={(e) => e.stopPropagation()}
           style={{
             transform: visible ? "translateX(0)" : "translateX(100%)",

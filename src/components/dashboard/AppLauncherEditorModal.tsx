@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { Link2 } from "lucide-react";
 import {
-  type LauncherConfig,
   type LauncherItem,
   DEFAULT_LAUNCHER_ITEMS,
   CUSTOM_ICON_PRESETS,
@@ -13,6 +13,7 @@ import {
   writeLauncherConfig,
   readLauncherConfig,
   LAUNCHER_SI_ICONS,
+  LATLAS_GENERIC_SHORTCUT,
   type BuiltinLauncherId,
 } from "@/lib/app-launcher";
 
@@ -31,7 +32,7 @@ export function AppLauncherEditorModal({ open, onClose, onSaved }: Props) {
   const [items, setItems] = useState<LauncherItem[]>([]);
   const [url, setUrl] = useState("");
   const [name, setName] = useState("");
-  const [iconKey, setIconKey] = useState(CUSTOM_ICON_PRESETS[0]?.key ?? "SiGithub");
+  const [addIconKey, setAddIconKey] = useState<string>(LATLAS_GENERIC_SHORTCUT);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export function AppLauncherEditorModal({ open, onClose, onSaved }: Props) {
     setItems([...readLauncherConfig().items]);
     setUrl("");
     setName("");
-    setIconKey(CUSTOM_ICON_PRESETS[0]?.key ?? "SiGithub");
+    setAddIconKey(LATLAS_GENERIC_SHORTCUT);
     setError(null);
   }, [open]);
 
@@ -70,7 +71,7 @@ export function AppLauncherEditorModal({ open, onClose, onSaved }: Props) {
   }
 
   function handleAdd() {
-    const created = createCustomLauncherItem(url, name, iconKey);
+    const created = createCustomLauncherItem(url, name, addIconKey);
     if (!created) {
       setError(t("invalidUrlOrName"));
       return;
@@ -95,7 +96,7 @@ export function AppLauncherEditorModal({ open, onClose, onSaved }: Props) {
         onClick={onClose}
       />
       <div
-        className="relative z-10 max-h-[85vh] w-full max-w-md overflow-y-auto rounded-2xl border p-5 shadow-xl"
+        className="relative z-10 max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border p-5 shadow-xl sm:p-6"
         style={{
           backgroundColor: "var(--dashboard-card)",
           borderColor: "var(--dashboard-border)",
@@ -197,17 +198,38 @@ export function AppLauncherEditorModal({ open, onClose, onSaved }: Props) {
             />
           </label>
           <p className="mt-2 text-xs" style={{ color: "var(--dashboard-text-muted)" }}>
-            {t("icon")}
+            {t("iconPickerHint")}
           </p>
-          <div className="mt-2 grid max-h-36 grid-cols-6 gap-2 overflow-y-auto p-1">
+          <div className="mt-2 grid max-h-44 grid-cols-5 gap-2.5 overflow-y-auto p-1 sm:grid-cols-6">
+            <button
+              type="button"
+              onClick={() => setAddIconKey(LATLAS_GENERIC_SHORTCUT)}
+              className="flex aspect-square min-h-[2.75rem] w-full max-w-[3rem] items-center justify-center justify-self-center rounded-xl border-2 transition-opacity hover:opacity-90"
+              style={{
+                borderColor:
+                  addIconKey === LATLAS_GENERIC_SHORTCUT
+                    ? "var(--dashboard-text)"
+                    : "var(--dashboard-border)",
+                backgroundColor: "var(--dashboard-bg)",
+              }}
+              title={t("genericIcon")}
+              aria-label={t("genericIcon")}
+              aria-pressed={addIconKey === LATLAS_GENERIC_SHORTCUT}
+            >
+              <Link2 className="size-6 shrink-0" style={{ color: "var(--dashboard-text-muted)" }} />
+            </button>
             {CUSTOM_ICON_PRESETS.map((p) => {
-              const sel = iconKey === p.key;
+              const sel = addIconKey === p.key;
               return (
                 <button
                   key={p.key}
                   type="button"
-                  onClick={() => setIconKey(p.key)}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border-2 transition-opacity hover:opacity-90"
+                  onClick={() => {
+                    setAddIconKey(p.key);
+                    setUrl(p.defaultUrl);
+                    setName(p.label);
+                  }}
+                  className="flex aspect-square min-h-[2.75rem] w-full max-w-[3rem] items-center justify-center justify-self-center rounded-xl border-2 transition-opacity hover:opacity-90"
                   style={{
                     borderColor: sel ? "var(--dashboard-text)" : "var(--dashboard-border)",
                     backgroundColor: "var(--dashboard-bg)",
@@ -216,10 +238,10 @@ export function AppLauncherEditorModal({ open, onClose, onSaved }: Props) {
                   aria-label={p.label}
                   aria-pressed={sel}
                 >
-                  <span className="pointer-events-none inline-flex size-[22px] shrink-0 items-center justify-center">
+                  <span className="pointer-events-none inline-flex size-6 shrink-0 items-center justify-center sm:size-7">
                     {(() => {
                       const Ic = LAUNCHER_SI_ICONS[p.key]?.Icon;
-                      return Ic ? <Ic size={22} color={p.color} className="shrink-0" /> : null;
+                      return Ic ? <Ic size={24} color={p.color} className="shrink-0" /> : null;
                     })()}
                   </span>
                 </button>

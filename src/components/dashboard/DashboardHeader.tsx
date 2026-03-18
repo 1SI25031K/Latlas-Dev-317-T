@@ -50,6 +50,10 @@ export function DashboardHeader({
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [appsOpen, setAppsOpen] = useState(false);
   const appsRef = useRef<HTMLDivElement>(null);
+  const launcherBtnRef = useRef<HTMLButtonElement>(null);
+  const launcherPanelRef = useRef<HTMLDivElement>(null);
+  const [launcherFixed, setLauncherFixed] = useState<{ top: number; right: number } | null>(null);
+
   const supabase = createClient();
 
   const accountName = profileName || userEmail || t("profile");
@@ -99,25 +103,42 @@ export function DashboardHeader({
     if (notificationsOpen) {
       setCustomizeOpen(false);
       setAppsOpen(false);
+      setLauncherFixed(null);
     }
   }, [notificationsOpen]);
 
   useEffect(() => {
     if (!appsOpen) return;
 
+    function repositionLauncher() {
+      const el = launcherBtnRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setLauncherFixed({ top: r.bottom + 4, right: window.innerWidth - r.right });
+    }
+    repositionLauncher();
+    window.addEventListener("resize", repositionLauncher);
+    window.addEventListener("scroll", repositionLauncher, true);
+
     function handleClickOutside(event: MouseEvent) {
-      if (appsRef.current && !appsRef.current.contains(event.target as Node)) {
-        setAppsOpen(false);
-      }
+      const t = event.target as Node;
+      if (appsRef.current?.contains(t) || launcherPanelRef.current?.contains(t)) return;
+      setAppsOpen(false);
+      setLauncherFixed(null);
     }
     function handleEscape(e: KeyboardEvent) {
-      if (e.key === "Escape") setAppsOpen(false);
+      if (e.key === "Escape") {
+        setAppsOpen(false);
+        setLauncherFixed(null);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("resize", repositionLauncher);
+      window.removeEventListener("scroll", repositionLauncher, true);
     };
   }, [appsOpen]);
 
@@ -164,6 +185,7 @@ export function DashboardHeader({
           onClick={() => {
             setDropdownOpen(false);
             setAppsOpen(false);
+            setLauncherFixed(null);
             setNotificationsOpen(false);
             setCustomizeOpen((o) => !o);
           }}
@@ -183,6 +205,7 @@ export function DashboardHeader({
             setDropdownOpen(false);
             setCustomizeOpen(false);
             setAppsOpen(false);
+            setLauncherFixed(null);
             setNotificationsOpen((o) => !o);
           }}
           className="flex h-10 w-10 items-center justify-center rounded-2xl transition-opacity hover:opacity-90"
@@ -198,12 +221,24 @@ export function DashboardHeader({
         {/* 9-dot launcher */}
         <div className="relative" ref={appsRef}>
           <button
+            ref={launcherBtnRef}
             type="button"
             onClick={() => {
               setDropdownOpen(false);
               setNotificationsOpen(false);
-              setAppsOpen((o) => !o);
               setCustomizeOpen(false);
+              setAppsOpen((o) => {
+                if (o) {
+                  setLauncherFixed(null);
+                  return false;
+                }
+                const el = launcherBtnRef.current;
+                if (el) {
+                  const r = el.getBoundingClientRect();
+                  setLauncherFixed({ top: r.bottom + 4, right: window.innerWidth - r.right });
+                }
+                return true;
+              });
             }}
             className="flex h-10 w-10 items-center justify-center rounded-2xl transition-opacity hover:opacity-90"
             style={{
@@ -218,37 +253,45 @@ export function DashboardHeader({
               ))}
             </span>
           </button>
-
-          {appsOpen && (
-            <div
-              className="absolute right-0 top-full z-40 mt-1 w-[300px] max-w-[92vw] rounded-2xl border bg-transparent p-4 shadow-lg"
-              style={{
-                backgroundColor: "var(--dashboard-card)",
-                borderColor: "var(--dashboard-border)",
-              }}
-              onMouseDown={(e) => e.stopPropagation()}
-            >
-              <div className="max-h-[min(72vh,520px)] overflow-y-auto overflow-x-hidden">
-                <AppLauncherGrid
-                  items={launcherCfg.items}
-                  avatarUrl={avatarUrl}
-                  onNavigate={() => setAppsOpen(false)}
-                />
-              </div>
-              <button
-                type="button"
-                onClick={() => setAppLauncherEditOpen(true)}
-                className="mt-3 w-full rounded-2xl border py-2.5 text-xs font-medium transition-opacity hover:opacity-90"
-                style={{
-                  borderColor: "var(--dashboard-border)",
-                  color: "var(--dashboard-text)",
-                }}
-              >
-                {tLauncher("edit")}
-              </button>
-            </div>
-          )}
         </div>
+
+        {appsOpen && launcherFixed != null && (
+          <div
+            ref={launcherPanelRef}
+            className="fixed z-[200] rounded-2xl border p-5 shadow-lg"
+            style={{
+              top: launcherFixed.top,
+              right: launcherFixed.right,
+              width: "min(440px, calc(100vw - 12px))",
+              maxWidth: "calc(100vw - 12px)",
+              backgroundColor: "var(--dashboard-card)",
+              borderColor: "var(--dashboard-border)",
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="max-h-[min(72vh,560px)] overflow-y-auto overflow-x-hidden">
+              <AppLauncherGrid
+                items={launcherCfg.items}
+                avatarUrl={avatarUrl}
+                onNavigate={() => {
+                  setAppsOpen(false);
+                  setLauncherFixed(null);
+                }}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setAppLauncherEditOpen(true)}
+              className="mt-3 w-full rounded-2xl border py-2.5 text-xs font-medium transition-opacity hover:opacity-90"
+              style={{
+                borderColor: "var(--dashboard-border)",
+                color: "var(--dashboard-text)",
+              }}
+            >
+              {tLauncher("edit")}
+            </button>
+          </div>
+        )}
 
         <div className="relative" ref={dropdownRef}>
           <button

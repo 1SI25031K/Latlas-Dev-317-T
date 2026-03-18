@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { User } from "iconoir-react";
-import { Database, Cloud, Mail, Users } from "lucide-react";
+import { Database, Cloud, Mail, Users, Link2 } from "lucide-react";
 import {
   SiGoogledrive,
   SiGooglecalendar,
@@ -15,14 +15,15 @@ import {
   type LauncherItem,
   BUILTIN_EXTERNAL_URL,
   LAUNCHER_SI_ICONS,
+  LATLAS_GENERIC_SHORTCUT,
   type BuiltinLauncherId,
 } from "@/lib/app-launcher";
 
 const LAUNCHER_TILE =
-  "flex w-full min-w-0 flex-col items-center gap-2 rounded-2xl px-1 py-2 transition-opacity hover:opacity-90";
+  "flex w-full min-w-0 max-w-full flex-col items-center gap-2 rounded-2xl px-1.5 py-2.5 transition-opacity hover:opacity-90";
 /** Fixed box so SVGs are never squeezed by grid column width */
 const ICON_SHELL =
-  "mx-auto flex size-9 shrink-0 items-center justify-center overflow-hidden [&_svg]:!h-6 [&_svg]:!w-6 [&_svg]:shrink-0";
+  "mx-auto flex size-10 shrink-0 items-center justify-center overflow-hidden [&_svg]:!h-7 [&_svg]:!w-7 [&_svg]:shrink-0";
 const LABEL_WRAP =
   "flex min-h-[2.5rem] w-full max-w-full items-start justify-center px-0.5";
 const LABEL_CLASS =
@@ -52,10 +53,51 @@ export function AppLauncherGrid({ items, avatarUrl, onNavigate }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-x-4 gap-y-4">
+    <div
+      className="grid w-full gap-x-4 gap-y-5"
+      style={{
+        gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+      }}
+    >
       {items.map((item) => {
         if (item.kind === "custom") {
-          const meta = LAUNCHER_SI_ICONS[item.iconKey] ?? LAUNCHER_SI_ICONS.SiGithub;
+          if (item.iconKey === LATLAS_GENERIC_SHORTCUT) {
+            return (
+              <a
+                key={item.cid}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={onNavigate}
+                className={LAUNCHER_TILE}
+                aria-label={item.name}
+              >
+                <div className={ICON_SHELL}>
+                  <Link2 className="size-6 shrink-0" style={{ color: "var(--dashboard-text-muted)" }} />
+                </div>
+                <Label>{item.name}</Label>
+              </a>
+            );
+          }
+          const meta = LAUNCHER_SI_ICONS[item.iconKey];
+          if (!meta) {
+            return (
+              <a
+                key={item.cid}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={onNavigate}
+                className={LAUNCHER_TILE}
+                aria-label={item.name}
+              >
+                <div className={ICON_SHELL}>
+                  <Link2 className="size-6 shrink-0" style={{ color: "var(--dashboard-text-muted)" }} />
+                </div>
+                <Label>{item.name}</Label>
+              </a>
+            );
+          }
           const Icon = meta.Icon;
           return (
             <a

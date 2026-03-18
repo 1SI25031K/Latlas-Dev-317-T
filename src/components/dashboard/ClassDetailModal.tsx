@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { useTranslations, useLocale } from "next-intl";
 import type { Class } from "@/types/database";
 import type { ClassSchedule, ClassScheduleSlot } from "@/types/database";
@@ -70,13 +71,20 @@ export function ClassDetailModal({
   const [slots, setSlots] = useState<ClassScheduleSlot[]>([emptySlot()]);
   const [termStart, setTermStart] = useState("");
   const [termEnd, setTermEnd] = useState("");
+  const [deleteTotpFactorId, setDeleteTotpFactorId] = useState<string | null>(null);
+  const [deleteWebauthnFactorId, setDeleteWebauthnFactorId] = useState<string | null>(null);
+  const [deleteFactorsLoading, setDeleteFactorsLoading] = useState(false);
+  const [deleteMfaCode, setDeleteMfaCode] = useState("");
+  const [deleteStepUpError, setDeleteStepUpError] = useState<string | null>(null);
+  const [deleteConfirmName, setDeleteConfirmName] = useState("");
 
-  if (classId == null) return null;
-
-  const classItem = classes.find((c) => c.id === classId);
-  if (!classItem) return null;
+  const classItem = useMemo(
+    () => (classId ? classes.find((c) => c.id === classId) : undefined),
+    [classId, classes],
+  );
 
   useEffect(() => {
+    if (classId == null) return;
     setLocalAccessCode(null);
     setLocalPassword(null);
     setDeleteConfirm(initialDeleteConfirm);
@@ -101,17 +109,51 @@ export function ClassDetailModal({
     setTermEnd(s?.termEnd ?? "");
   }, [editing, classItem]);
 
+  useEffect(() => {
+    if (!deleteConfirm || classId == null) {
+      setDeleteTotpFactorId(null);
+      setDeleteWebauthnFactorId(null);
+      setDeleteMfaCode("");
+      setDeleteStepUpError(null);
+      setDeleteFactorsLoading(false);
+      setDeleteConfirmName("");
+      return;
+    }
+    let cancelled = false;
+    setDeleteFactorsLoading(true);
+    setDeleteStepUpError(null);
+    createClient()
+      .auth.mfa.listFactors()
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        setDeleteFactorsLoading(false);
+        if (error || !data) {
+          setDeleteStepUpError(error?.message ?? "MFA");
+          return;
+        }
+        const totp = data.totp?.find((f) => f.status === "verified");
+        const wa = data.webauthn?.find((f) => f.status === "verified");
+        setDeleteTotpFactorId(totp?.id ?? null);
+        setDeleteWebauthnFactorId(wa?.id ?? null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [deleteConfirm, classId]);
+
   async function handleRegeneratePassword() {
+    if (classId == null) return;
     setRegenerating(true);
-    const result = await regenerateClassPassword(classId!);
+    const result = await regenerateClassPassword(classId);
     setRegenerating(false);
     if (result.error) return;
     if (result.password) setRegeneratedPassword(result.password);
   }
 
   async function handleRegenerateAccessCode() {
+    if (classId == null) return;
     setRegeneratingAccessCode(true);
-    const result = await regenerateClassAccessCode(classId!);
+    const result = await regenerateClassAccessCode(classId);
     setRegeneratingAccessCode(false);
     if (result.error) return;
     if (result.accessCode) setLocalAccessCode(result.accessCode);
@@ -122,13 +164,72 @@ export function ClassDetailModal({
     router.refresh();
   }
 
-  async function handleDelete() {
-    setDeleting(true);
-    const result = await deleteClass(classId!);
-    setDeleting(false);
-    if (result.error) return;
+  async function finalizeDelete() {
+    if (classId == null) return;
+    const result = await deleteClass(classId);
+    if (result.error) {
+      setDeleteStepUpError(result.error);
+      return;
+    }
     onClose();
     router.refresh();
+  }
+
+  async function handleDeleteWithTotp() {
+    if (classId == null || !classItem || !deleteTotpFactorId) return;
+    setDeleteStepUpError(null);
+    if (deleteConfirmName !== classItem.name) {
+      setDeleteStepUpError(t("deleteNameMismatch"));
+      return;
+    }
+    if (deleteMfaCode.trim().length !== 6) {
+      setDeleteStepUpError(t("deleteMfaCodeInvalid"));
+      return;
+    }
+    setDeleting(true);
+    const supabase = createClient();
+    const { data: ch, error: chErr } = await supabase.auth.mfa.challenge({
+      factorId: deleteTotpFactorId,
+    });
+    if (chErr || !ch?.id) {
+      setDeleting(false);
+      setDeleteStepUpError(chErr?.message ?? t("deleteMfaChallengeFailed"));
+      return;
+    }
+    const { error: vErr } = await supabase.auth.mfa.verify({
+      factorId: deleteTotpFactorId,
+      challengeId: ch.id,
+      code: deleteMfaCode.trim(),
+    });
+    if (vErr) {
+      setDeleting(false);
+      setDeleteStepUpError(vErr.message);
+      return;
+    }
+    await finalizeDelete();
+    setDeleting(false);
+  }
+
+  async function handleDeleteWithPasskey() {
+    if (classId == null || !classItem || !deleteWebauthnFactorId) return;
+    setDeleteStepUpError(null);
+    if (deleteConfirmName !== classItem.name) {
+      setDeleteStepUpError(t("deleteNameMismatch"));
+      return;
+    }
+    setDeleting(true);
+    const supabase = createClient();
+    const { error: waErr } = await supabase.auth.mfa.webauthn.authenticate({
+      factorId: deleteWebauthnFactorId,
+      webauthn: {},
+    });
+    if (waErr) {
+      setDeleting(false);
+      setDeleteStepUpError(waErr.message);
+      return;
+    }
+    await finalizeDelete();
+    setDeleting(false);
   }
 
   function addSlot() {
@@ -155,7 +256,8 @@ export function ClassDetailModal({
             termEnd: termEnd.trim() || undefined,
           }
         : null;
-    const result = await updateClass(classId!, {
+    if (classId == null) return;
+    const result = await updateClass(classId, {
       name: name.trim(),
       description: description.trim() || null,
       icon_id: iconId,
@@ -176,6 +278,8 @@ export function ClassDetailModal({
     borderColor: "var(--dashboard-border)",
     color: "var(--dashboard-text)",
   };
+  if (classId == null || !classItem) return null;
+
   const mutedStyle = { color: "var(--dashboard-text-muted)" };
   const inputStyle = {
     borderColor: "var(--dashboard-border)",
@@ -412,22 +516,88 @@ export function ClassDetailModal({
             {deleteConfirm ? (
               <div className="rounded-2xl border border-red-500/50 bg-red-500/10 p-4">
                 <p className="text-sm font-medium" style={{ color: "var(--dashboard-text)" }}>{t("deleteClassConfirm")}</p>
+                <div className="mt-3">
+                  <label htmlFor="delete-class-name-confirm" className="text-xs font-medium" style={{ color: "var(--dashboard-text)" }}>
+                    {t("deleteTypeClassNameLabel")}
+                  </label>
+                  <input
+                    id="delete-class-name-confirm"
+                    type="text"
+                    value={deleteConfirmName}
+                    onChange={(e) => setDeleteConfirmName(e.target.value)}
+                    onPaste={(e) => e.preventDefault()}
+                    autoComplete="off"
+                    spellCheck={false}
+                    className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                    style={inputStyle}
+                    placeholder={t("deleteTypeClassNamePlaceholder")}
+                  />
+                  <p className="mt-1 text-xs" style={mutedStyle}>
+                    {t("deleteClassNameHint", { name: classItem.name })}
+                  </p>
+                </div>
+                <p className="mt-3 text-xs" style={mutedStyle}>{t("deleteRequireStepUp")}</p>
+                {deleteStepUpError && (
+                  <p className="mt-2 rounded-lg bg-red-500/20 p-2 text-sm text-red-400">{deleteStepUpError}</p>
+                )}
+                {deleteFactorsLoading ? (
+                  <p className="mt-3 text-sm" style={mutedStyle}>...</p>
+                ) : !deleteTotpFactorId && !deleteWebauthnFactorId ? (
+                  <p className="mt-3 text-sm text-amber-600 dark:text-amber-400">{t("deleteNoMfaFactors")}</p>
+                ) : (
+                  <div className="mt-3 space-y-3 opacity-100">
+                    {deleteConfirmName !== classItem.name ? (
+                      <p className="text-xs text-amber-600 dark:text-amber-400">{t("deleteNameMustMatch")}</p>
+                    ) : null}
+                    {deleteTotpFactorId ? (
+                      <div className={deleteConfirmName !== classItem.name ? "pointer-events-none opacity-50" : ""}>
+                        <label htmlFor="delete-mfa-code" className="text-xs font-medium" style={{ color: "var(--dashboard-text)" }}>
+                          {t("deleteMfaCodeLabel")}
+                        </label>
+                        <input
+                          id="delete-mfa-code"
+                          type="text"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          maxLength={6}
+                          value={deleteMfaCode}
+                          onChange={(e) => setDeleteMfaCode(e.target.value.replace(/\D/g, ""))}
+                          placeholder="000000"
+                          disabled={deleteConfirmName !== classItem.name}
+                          className="mt-1 w-full rounded-lg border px-3 py-2 text-center text-lg tracking-widest disabled:opacity-60"
+                          style={inputStyle}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleDeleteWithTotp}
+                          disabled={deleting || deleteConfirmName !== classItem.name}
+                          className="mt-2 w-full rounded-2xl bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                        >
+                          {deleting ? "..." : t("deleteWithTotp")}
+                        </button>
+                      </div>
+                    ) : null}
+                    {deleteWebauthnFactorId ? (
+                      <button
+                        type="button"
+                        onClick={handleDeleteWithPasskey}
+                        disabled={deleting || deleteConfirmName !== classItem.name}
+                        className="w-full rounded-2xl border border-red-500/40 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-500/10 disabled:opacity-50 dark:text-red-300"
+                      >
+                        {deleting ? "..." : t("deleteWithPasskey")}
+                      </button>
+                    ) : null}
+                  </div>
+                )}
                 <div className="mt-3 flex gap-2">
                   <button
                     type="button"
                     onClick={() => setDeleteConfirm(false)}
-                    className="rounded-2xl border px-3 py-1.5 text-sm font-medium hover:opacity-90"
+                    disabled={deleting}
+                    className="rounded-2xl border px-3 py-1.5 text-sm font-medium hover:opacity-90 disabled:opacity-50"
                     style={{ borderColor: "var(--dashboard-border)", color: "var(--dashboard-text)" }}
                   >
                     {t("cancel")}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="rounded-2xl bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
-                  >
-                    {deleting ? "..." : t("deleteClass")}
                   </button>
                 </div>
               </div>

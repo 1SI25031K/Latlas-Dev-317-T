@@ -30,6 +30,9 @@ import {
 
 export const STORAGE_KEY_APP_LAUNCHER = "latlas-app-launcher-v1";
 
+/** Custom shortcut icon: neutral link (no brand logo) until user picks a preset */
+export const LATLAS_GENERIC_SHORTCUT = "LATLAS_GENERIC_SHORTCUT";
+
 export const BUILTIN_IDS = [
   "latlas_account",
   "latlas_data",
@@ -64,33 +67,35 @@ export const CUSTOM_ICON_PRESETS: Array<{
   key: string;
   label: string;
   color: string;
+  /** Filled when user picks this preset in the editor */
+  defaultUrl: string;
 }> = [
-  { key: "SiGoogledrive", label: "Google Drive", color: "#4285F4" },
-  { key: "SiGooglecalendar", label: "Google Calendar", color: "#EA4335" },
-  { key: "SiGoogleclassroom", label: "Classroom", color: "#FBBC05" },
-  { key: "SiSlack", label: "Slack", color: "#611F69" },
-  { key: "SiGithub", label: "GitHub", color: "#181717" },
-  { key: "SiGitlab", label: "GitLab", color: "#FC6D26" },
-  { key: "SiNotion", label: "Notion", color: "#000000" },
-  { key: "SiDiscord", label: "Discord", color: "#5865F2" },
-  { key: "SiYoutube", label: "YouTube", color: "#FF0000" },
-  { key: "SiGmail", label: "Gmail", color: "#EA4335" },
-  { key: "SiWhatsapp", label: "WhatsApp", color: "#25D366" },
-  { key: "SiTelegram", label: "Telegram", color: "#26A5E4" },
-  { key: "SiMoodle", label: "Moodle", color: "#F98012" },
-  { key: "SiZoom", label: "Zoom", color: "#2D8CFF" },
-  { key: "SiTrello", label: "Trello", color: "#0052CC" },
-  { key: "SiFigma", label: "Figma", color: "#F24E1E" },
-  { key: "SiJira", label: "Jira", color: "#0052CC" },
-  { key: "SiNpm", label: "npm", color: "#CB3837" },
-  { key: "SiX", label: "X", color: "#000000" },
-  { key: "SiReddit", label: "Reddit", color: "#FF4500" },
-  { key: "SiSpotify", label: "Spotify", color: "#1DB954" },
-  { key: "SiDocker", label: "Docker", color: "#2496ED" },
-  { key: "SiApple", label: "Apple", color: "#000000" },
-  { key: "SiGoogle", label: "Google", color: "#4285F4" },
-  { key: "SiOpenai", label: "OpenAI", color: "#412991" },
-  { key: "SiWikipedia", label: "Wikipedia", color: "#000000" },
+  { key: "SiGoogledrive", label: "Google Drive", color: "#4285F4", defaultUrl: "https://drive.google.com/" },
+  { key: "SiGooglecalendar", label: "Google Calendar", color: "#EA4335", defaultUrl: "https://calendar.google.com/" },
+  { key: "SiGoogleclassroom", label: "Classroom", color: "#FBBC05", defaultUrl: "https://classroom.google.com/" },
+  { key: "SiSlack", label: "Slack", color: "#611F69", defaultUrl: "https://slack.com/" },
+  { key: "SiGithub", label: "GitHub", color: "#181717", defaultUrl: "https://github.com/" },
+  { key: "SiGitlab", label: "GitLab", color: "#FC6D26", defaultUrl: "https://gitlab.com/" },
+  { key: "SiNotion", label: "Notion", color: "#000000", defaultUrl: "https://www.notion.so/" },
+  { key: "SiDiscord", label: "Discord", color: "#5865F2", defaultUrl: "https://discord.com/" },
+  { key: "SiYoutube", label: "YouTube", color: "#FF0000", defaultUrl: "https://www.youtube.com/" },
+  { key: "SiGmail", label: "Gmail", color: "#EA4335", defaultUrl: "https://mail.google.com/" },
+  { key: "SiWhatsapp", label: "WhatsApp", color: "#25D366", defaultUrl: "https://web.whatsapp.com/" },
+  { key: "SiTelegram", label: "Telegram", color: "#26A5E4", defaultUrl: "https://web.telegram.org/" },
+  { key: "SiMoodle", label: "Moodle", color: "#F98012", defaultUrl: "https://moodle.org/" },
+  { key: "SiZoom", label: "Zoom", color: "#2D8CFF", defaultUrl: "https://zoom.us/" },
+  { key: "SiTrello", label: "Trello", color: "#0052CC", defaultUrl: "https://trello.com/" },
+  { key: "SiFigma", label: "Figma", color: "#F24E1E", defaultUrl: "https://www.figma.com/" },
+  { key: "SiJira", label: "Jira", color: "#0052CC", defaultUrl: "https://www.atlassian.com/software/jira" },
+  { key: "SiNpm", label: "npm", color: "#CB3837", defaultUrl: "https://www.npmjs.com/" },
+  { key: "SiX", label: "X", color: "#000000", defaultUrl: "https://x.com/" },
+  { key: "SiReddit", label: "Reddit", color: "#FF4500", defaultUrl: "https://www.reddit.com/" },
+  { key: "SiSpotify", label: "Spotify", color: "#1DB954", defaultUrl: "https://open.spotify.com/" },
+  { key: "SiDocker", label: "Docker", color: "#2496ED", defaultUrl: "https://www.docker.com/" },
+  { key: "SiApple", label: "Apple", color: "#000000", defaultUrl: "https://www.apple.com/" },
+  { key: "SiGoogle", label: "Google", color: "#4285F4", defaultUrl: "https://www.google.com/" },
+  { key: "SiOpenai", label: "OpenAI", color: "#412991", defaultUrl: "https://chatgpt.com/" },
+  { key: "SiWikipedia", label: "Wikipedia", color: "#000000", defaultUrl: "https://www.wikipedia.org/" },
 ];
 
 export const LAUNCHER_SI_ICONS: Record<string, { Icon: IconType; defaultColor: string }> = {
@@ -164,6 +169,9 @@ function parseConfig(raw: string | null): LauncherConfig | null {
       .map((item) => {
         if ((item as LauncherItem).kind !== "custom") return item as LauncherItem;
         const c = item as LauncherItem & { kind: "custom"; color?: string };
+        if (c.iconKey === LATLAS_GENERIC_SHORTCUT) {
+          return { ...c, color: typeof c.color === "string" ? c.color : "#888888" };
+        }
         const meta = LAUNCHER_SI_ICONS[c.iconKey];
         return {
           ...c,
@@ -207,13 +215,24 @@ export function createCustomLauncherItem(
 ): LauncherItem | null {
   const href = normalizeUrl(url);
   if (!href || !name.trim()) return null;
-  const meta = LAUNCHER_SI_ICONS[iconKey] ?? LAUNCHER_SI_ICONS.SiGithub;
+  if (iconKey === LATLAS_GENERIC_SHORTCUT) {
+    return {
+      kind: "custom",
+      cid: crypto.randomUUID(),
+      url: href,
+      name: name.trim().slice(0, 40),
+      iconKey: LATLAS_GENERIC_SHORTCUT,
+      color: "#888888",
+    };
+  }
+  const meta = LAUNCHER_SI_ICONS[iconKey];
+  if (!meta) return null;
   return {
     kind: "custom",
     cid: crypto.randomUUID(),
     url: href,
     name: name.trim().slice(0, 40),
-    iconKey: LAUNCHER_SI_ICONS[iconKey] ? iconKey : "SiGithub",
+    iconKey,
     color: meta.defaultColor,
   };
 }

@@ -44,7 +44,8 @@
     "createFirstClass": "Create your first class",
     "greeting": "Good afternoon, {name}!",
     "upcomingClasses": "Classes starting soon",
-    "wallpaper": "Daily wallpaper"
+    "wallpaper": "Daily wallpaper",
+    "dailyWallpaper": "Daily image"
   },
   "class": {
     "name": "Class name",

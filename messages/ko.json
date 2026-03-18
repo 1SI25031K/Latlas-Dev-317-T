@@ -44,7 +44,8 @@
     "createFirstClass": "Create your first class",
     "greeting": "Good afternoon, {name}!",
     "upcomingClasses": "곧 시작하는 수업",
-    "wallpaper": "오늘의 배경"
+    "wallpaper": "오늘의 배경",
+    "dailyWallpaper": "일일 이미지"
   },
   "class": {
     "name": "Class name",

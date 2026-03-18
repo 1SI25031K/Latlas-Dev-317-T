@@ -15,11 +15,24 @@ export const STORAGE_KEYS = {
   theme: "latlas-theme",
   fontSize: "latlas-font-size",
   iconAnimation: "latlas-icon-animation",
+  // legacy (kept for backward compatibility with earlier wallpaperOn implementation)
   wallpaperOn: "latlas-wallpaper-on",
+  // background mode for dashboard main area
+  backgroundMode: "latlas-background-mode",
+  backgroundColor: "latlas-background-color",
+  sidebarCollapsed: "latlas-sidebar-collapsed",
 } as const;
 
 export const DEFAULT_ICON_ANIMATION = true;
 export const DEFAULT_WALLPAPER_ON = false;
+
+export const BACKGROUND_MODES = ["theme", "solid", "daily"] as const;
+export type BackgroundMode = (typeof BACKGROUND_MODES)[number];
+
+export const DEFAULT_BACKGROUND_MODE: BackgroundMode = "theme";
+export const DEFAULT_SOLID_BACKGROUND_COLOR = "#3B82F6";
+
+export const DEFAULT_SIDEBAR_COLLAPSED = false;
 
 export const DEFAULT_THEME: ThemeId = "system";
 export const DEFAULT_FONT_SIZE: FontSizeId = "medium";

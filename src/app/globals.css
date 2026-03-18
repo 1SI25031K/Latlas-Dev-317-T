@@ -28,7 +28,7 @@ body {
 /* Dashboard theme: CSS variables for light/dark */
 .dashboard-theme-root[data-theme="light"] {
   --dashboard-bg: #f5f5f7;
-  --dashboard-sidebar: #ffffff;
+  --dashboard-sidebar: #f7f7f8;
   --dashboard-card: #ffffff;
   --dashboard-text: #171717;
   --dashboard-text-muted: #6b7280;

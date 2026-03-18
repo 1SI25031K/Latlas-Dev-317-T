@@ -44,7 +44,8 @@
     "createFirstClass": "最初のクラスを作成してください",
     "greeting": "こんにちは、{name} さん",
     "upcomingClasses": "開講時間の近いクラス",
-    "wallpaper": "日替わり壁紙"
+    "wallpaper": "日替わり壁紙",
+    "dailyWallpaper": "日替わり画像"
   },
   "class": {
     "name": "クラス名",

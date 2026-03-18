@@ -44,7 +44,8 @@
     "createFirstClass": "Create your first class",
     "greeting": "Good afternoon, {name}!",
     "upcomingClasses": "即将开课的班级",
-    "wallpaper": "每日壁纸"
+    "wallpaper": "每日壁纸",
+    "dailyWallpaper": "每日图片"
   },
   "class": {
     "name": "Class name",

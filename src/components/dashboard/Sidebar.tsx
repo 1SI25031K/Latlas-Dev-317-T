@@ -14,7 +14,7 @@ type SidebarProps = {
 export function Sidebar({ locale, classes }: SidebarProps) {
   const t = useTranslations("dashboard");
   const pathname = usePathname();
-  const { iconAnimation } = useDashboardSettings();
+  const { iconAnimation, sidebarCollapsed } = useDashboardSettings();
 
   const iconWrap = (sizeClass: string, hoverClass: string, children: React.ReactNode) => (
     <span
@@ -28,8 +28,9 @@ export function Sidebar({ locale, classes }: SidebarProps) {
     </span>
   );
 
-  const navBase =
-    "flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium transition-colors";
+  const navBase = sidebarCollapsed
+    ? "flex items-center justify-center rounded-2xl px-2 py-2 text-sm font-medium transition-colors"
+    : "flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium transition-colors";
   const navInactive = "hover:opacity-90";
   const navActive =
     "border-l-2 border-green-500 bg-[var(--dashboard-nav-active-bg)] text-green-500";
@@ -52,38 +53,46 @@ export function Sidebar({ locale, classes }: SidebarProps) {
       <div className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-2">
         <Link href="/dashboard" className={`group ${navClass("/dashboard", true)}`} style={{ color: "var(--dashboard-text)" }}>
           {iconWrap("h-5 w-5", "group-hover:scale-110", <Home className="h-5 w-5" />)}
-          {t("home")}
+          {!sidebarCollapsed && t("home")}
         </Link>
 
-        <div className="my-2 border-t" style={{ borderColor: "var(--dashboard-border)" }} />
-        <div className="flex items-center justify-between px-3 py-1">
-          <span
-            className="text-xs font-medium uppercase tracking-wider"
-            style={{ color: "var(--dashboard-text-muted)" }}
-          >
-            {t("classes")}
-          </span>
-        </div>
-        {classes.slice(0, 8).map((c) => (
-          <Link
-            key={c.id}
-            href="/dashboard"
-            className={`group ${navBase} ${navInactive}`}
-            style={{ color: "var(--dashboard-text)" }}
-          >
-            {iconWrap("h-4 w-4", "group-hover:scale-105", <Book className="h-4 w-4" style={{ color: "var(--dashboard-text-muted)" }} />)}
-            <span className="truncate">{c.name}</span>
-          </Link>
-        ))}
-        {classes.length > 8 && (
-          <span
-            className="px-3 py-1.5 text-xs"
-            style={{ color: "var(--dashboard-text-muted)" }}
-          >
-            {t("showMore")}
-          </span>
+        {!sidebarCollapsed && (
+          <>
+            <div className="my-2 border-t" style={{ borderColor: "var(--dashboard-border)" }} />
+            <div className="flex items-center justify-between px-3 py-1">
+              <span
+                className="text-xs font-medium uppercase tracking-wider"
+                style={{ color: "var(--dashboard-text-muted)" }}
+              >
+                {t("classes")}
+              </span>
+            </div>
+            {classes.slice(0, 8).map((c) => (
+              <Link
+                key={c.id}
+                href="/dashboard"
+                className={`group ${navBase} ${navInactive}`}
+                style={{ color: "var(--dashboard-text)" }}
+              >
+                {iconWrap(
+                  "h-4 w-4",
+                  "group-hover:scale-105",
+                  <Book className="h-4 w-4" style={{ color: "var(--dashboard-text-muted)" }} />
+                )}
+                <span className="truncate">{c.name}</span>
+              </Link>
+            ))}
+            {classes.length > 8 && (
+              <span
+                className="px-3 py-1.5 text-xs"
+                style={{ color: "var(--dashboard-text-muted)" }}
+              >
+                {t("showMore")}
+              </span>
+            )}
+            <div className="my-2 border-t" style={{ borderColor: "var(--dashboard-border)" }} />
+          </>
         )}
-        <div className="my-2 border-t" style={{ borderColor: "var(--dashboard-border)" }} />
 
         <Link
           href="/dashboard/monitoring"
@@ -91,7 +100,7 @@ export function Sidebar({ locale, classes }: SidebarProps) {
           style={{ color: "var(--dashboard-text)" }}
         >
           {iconWrap("h-5 w-5", "group-hover:scale-110", <Activity className="h-5 w-5" />)}
-          {t("monitoring")}
+          {!sidebarCollapsed && t("monitoring")}
         </Link>
         <Link
           href="/dashboard/settings"
@@ -99,7 +108,7 @@ export function Sidebar({ locale, classes }: SidebarProps) {
           style={{ color: "var(--dashboard-text)" }}
         >
           {iconWrap("h-5 w-5", "group-hover:rotate-90", <Settings className="h-5 w-5" />)}
-          {t("settings")}
+          {!sidebarCollapsed && t("settings")}
         </Link>
       </div>
 

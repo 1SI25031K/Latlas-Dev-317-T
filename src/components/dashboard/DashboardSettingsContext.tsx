@@ -14,11 +14,16 @@ import {
   DEFAULT_THEME,
   DEFAULT_FONT_SIZE,
   DEFAULT_ICON_ANIMATION,
-  DEFAULT_WALLPAPER_ON,
   STORAGE_KEYS,
+  BACKGROUND_MODES,
+  DEFAULT_BACKGROUND_MODE,
+  DEFAULT_SOLID_BACKGROUND_COLOR,
+  DEFAULT_SIDEBAR_COLLAPSED,
+  DEFAULT_WALLPAPER_ON,
   type ThemeId,
   type FontSizeId,
   type ResolvedThemeId,
+  type BackgroundMode,
 } from "@/lib/theme-constants";
 
 type DashboardSettingsState = {
@@ -26,11 +31,15 @@ type DashboardSettingsState = {
   resolvedTheme: ResolvedThemeId;
   fontSize: FontSizeId;
   iconAnimation: boolean;
-  wallpaperOn: boolean;
+  backgroundMode: BackgroundMode;
+  backgroundColor: string;
+  sidebarCollapsed: boolean;
   setTheme: (v: ThemeId) => void;
   setFontSize: (v: FontSizeId) => void;
   setIconAnimation: (v: boolean) => void;
-  setWallpaperOn: (v: boolean) => void;
+  setBackgroundMode: (v: BackgroundMode) => void;
+  setBackgroundColor: (v: string) => void;
+  setSidebarCollapsed: (v: boolean) => void;
 };
 
 const DashboardSettingsContext = createContext<DashboardSettingsState | null>(
@@ -59,12 +68,38 @@ function readIconAnimation(): boolean {
   return DEFAULT_ICON_ANIMATION;
 }
 
-function readWallpaperOn(): boolean {
+function readWallpaperOnLegacy(): boolean {
   if (typeof window === "undefined") return DEFAULT_WALLPAPER_ON;
   const v = localStorage.getItem(STORAGE_KEYS.wallpaperOn);
   if (v === "false") return false;
   if (v === "true") return true;
   return DEFAULT_WALLPAPER_ON;
+}
+
+function readBackgroundMode(): BackgroundMode {
+  if (typeof window === "undefined") return DEFAULT_BACKGROUND_MODE;
+  const v = localStorage.getItem(STORAGE_KEYS.backgroundMode);
+  if (v && BACKGROUND_MODES.includes(v as BackgroundMode)) {
+    return v as BackgroundMode;
+  }
+
+  // legacy migration: wallpaperOn(true) => daily, otherwise theme
+  return readWallpaperOnLegacy() ? "daily" : "theme";
+}
+
+function readBackgroundColor(): string {
+  if (typeof window === "undefined") return DEFAULT_SOLID_BACKGROUND_COLOR;
+  const v = localStorage.getItem(STORAGE_KEYS.backgroundColor);
+  if (typeof v === "string" && v.trim().length > 0) return v;
+  return DEFAULT_SOLID_BACKGROUND_COLOR;
+}
+
+function readSidebarCollapsed(): boolean {
+  if (typeof window === "undefined") return DEFAULT_SIDEBAR_COLLAPSED;
+  const v = localStorage.getItem(STORAGE_KEYS.sidebarCollapsed);
+  if (v === "false") return false;
+  if (v === "true") return true;
+  return DEFAULT_SIDEBAR_COLLAPSED;
 }
 
 function getResolvedTheme(theme: ThemeId): ResolvedThemeId {
@@ -94,13 +129,17 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedThemeId>("light");
   const [fontSize, setFontSizeState] = useState<FontSizeId>(DEFAULT_FONT_SIZE);
   const [iconAnimation, setIconAnimationState] = useState<boolean>(DEFAULT_ICON_ANIMATION);
-  const [wallpaperOn, setWallpaperOnState] = useState<boolean>(DEFAULT_WALLPAPER_ON);
+  const [backgroundMode, setBackgroundModeState] = useState<BackgroundMode>(DEFAULT_BACKGROUND_MODE);
+  const [backgroundColor, setBackgroundColorState] = useState<string>(DEFAULT_SOLID_BACKGROUND_COLOR);
+  const [sidebarCollapsed, setSidebarCollapsedState] = useState<boolean>(DEFAULT_SIDEBAR_COLLAPSED);
 
   useEffect(() => {
     setThemeState(readTheme());
     setFontSizeState(readFontSize());
     setIconAnimationState(readIconAnimation());
-    setWallpaperOnState(readWallpaperOn());
+    setBackgroundModeState(readBackgroundMode());
+    setBackgroundColorState(readBackgroundColor());
+    setSidebarCollapsedState(readSidebarCollapsed());
   }, []);
 
   useEffect(() => {
@@ -135,10 +174,24 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
     } catch {}
   }, []);
 
-  const setWallpaperOn = useCallback((v: boolean) => {
-    setWallpaperOnState(v);
+  const setBackgroundMode = useCallback((v: BackgroundMode) => {
+    setBackgroundModeState(v);
     try {
-      localStorage.setItem(STORAGE_KEYS.wallpaperOn, v ? "true" : "false");
+      localStorage.setItem(STORAGE_KEYS.backgroundMode, v);
+    } catch {}
+  }, []);
+
+  const setBackgroundColor = useCallback((v: string) => {
+    setBackgroundColorState(v);
+    try {
+      localStorage.setItem(STORAGE_KEYS.backgroundColor, v);
+    } catch {}
+  }, []);
+
+  const setSidebarCollapsed = useCallback((v: boolean) => {
+    setSidebarCollapsedState(v);
+    try {
+      localStorage.setItem(STORAGE_KEYS.sidebarCollapsed, v ? "true" : "false");
     } catch {}
   }, []);
 
@@ -148,13 +201,31 @@ export function DashboardThemeWrapper({ children, locale }: DashboardThemeWrappe
       resolvedTheme,
       fontSize,
       iconAnimation,
-      wallpaperOn,
       setTheme,
       setFontSize,
       setIconAnimation,
-      setWallpaperOn,
+      backgroundMode,
+      backgroundColor,
+      sidebarCollapsed,
+      setBackgroundMode,
+      setBackgroundColor,
+      setSidebarCollapsed,
     }),
-    [theme, resolvedTheme, fontSize, iconAnimation, wallpaperOn, setTheme, setFontSize, setIconAnimation, setWallpaperOn]
+    [
+      theme,
+      resolvedTheme,
+      fontSize,
+      iconAnimation,
+      backgroundMode,
+      backgroundColor,
+      sidebarCollapsed,
+      setTheme,
+      setFontSize,
+      setIconAnimation,
+      setBackgroundMode,
+      setBackgroundColor,
+      setSidebarCollapsed,
+    ]
   );
 
   const bg = THEME_BG[resolvedTheme];

@@ -44,7 +44,8 @@
     "createFirstClass": "Create your first class",
     "greeting": "Good afternoon, {name}!",
     "upcomingClasses": "Cours à venir",
-    "wallpaper": "Fond d'écran du jour"
+    "wallpaper": "Fond d'écran du jour",
+    "dailyWallpaper": "Image du jour"
   },
   "class": {
     "name": "Class name",

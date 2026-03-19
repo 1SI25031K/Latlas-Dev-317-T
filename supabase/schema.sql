@@ -16,8 +16,34 @@ CREATE TABLE IF NOT EXISTS profiles (
   onboarding_completed_at TIMESTAMPTZ,
   profile_updated_at TIMESTAMPTZ,
   share_avatar_with_students BOOLEAN NOT NULL DEFAULT false,
-  dashboard_ui_settings JSONB
+  dashboard_ui_settings JSONB,
+  first_name TEXT,
+  middle_name TEXT,
+  last_name TEXT,
+  date_of_birth DATE,
+  email_visible_to_students BOOLEAN NOT NULL DEFAULT false,
+  contact_email TEXT,
+  phone TEXT,
+  student_contact_json JSONB NOT NULL DEFAULT '{}'::jsonb
 );
+
+CREATE TABLE IF NOT EXISTS profile_affiliations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  sort_order INT NOT NULL DEFAULT 0,
+  affiliation TEXT NOT NULL DEFAULT '',
+  title_at_affiliation TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_profile_affiliations_user ON profile_affiliations(user_id);
+
+ALTER TABLE profile_affiliations ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users manage own profile_affiliations" ON profile_affiliations;
+CREATE POLICY "Users manage own profile_affiliations"
+  ON profile_affiliations FOR ALL
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 -- Classes
 CREATE TABLE IF NOT EXISTS classes (

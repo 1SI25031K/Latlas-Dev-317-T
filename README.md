@@ -27,6 +27,7 @@ cp .env.local.example .env.local
 
 - `NEXT_PUBLIC_SUPABASE_URL`: Supabase プロジェクト URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase anon (publishable) key
+- `NEXT_PUBLIC_ACCOUNT_MANAGE_URL`（任意）: アカウント管理用の別サイト URL。設定すると「アカウントを管理」リンクが表示されます。
 
 ### 3. データベース
 
@@ -40,6 +41,8 @@ ALTER TABLE profiles
 ```
 
 または `supabase/migrations/20250318000000_dashboard_ui_settings.sql` と同じ内容です。未適用でもアプリは動作しますが、カスタマイズ設定のクラウド保存は行われません。
+
+**拡張プロフィール（電話・氏名分割・複数所属・生徒向け連絡など）**: `supabase/migrations/20250319000000_profile_redesign.sql` を SQL Editor で実行してください（`profile_affiliations` テーブルと `profiles` の追加列）。未適用の場合、オンボーディング完了や設定の保存でエラーになります。
 
 ### 4. 開発サーバー
 
@@ -55,7 +58,7 @@ npm run dev
 - **ダッシュボード**: サイドバー + メインの 2 ペイン構成（NavigationSplitView 風）
 - **クラス管理**: クラス新規作成（6 桁アクセスコード・パスワード自動生成）、カード一覧
 - **モニタリング**: 生徒アクティビティ用グリッドのスケルトン
-- **設定・プロフィール**: プレースホルダ
+- **設定・プロフィール**: 基本情報・正式名・複数所属・生徒向け連絡・メール公開設定
 - **i18n**: 日本語 / 英語、言語切替リンク（サイドバー）
 
 ## プロジェクト構成

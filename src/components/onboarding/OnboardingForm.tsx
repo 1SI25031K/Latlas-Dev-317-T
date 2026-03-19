@@ -54,9 +54,7 @@ export function OnboardingForm({ locale }: OnboardingFormProps) {
         setAvatarUrl(null);
         return;
       }
-      const { data: urlData } = client.storage
-        .from(AVATAR_BUCKET)
-        .getPublicUrl(path);
+      const { data: urlData } = client.storage.from(AVATAR_BUCKET).getPublicUrl(path);
       setAvatarUrl(urlData.publicUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
@@ -78,7 +76,9 @@ export function OnboardingForm({ locale }: OnboardingFormProps) {
     try {
       const result = await completeOnboarding(formData);
       if (result && "error" in result) {
-        setError(result.error);
+        setError(
+          result.error === "nameRequired" ? t("nameRequired") : result.error
+        );
         return;
       }
       if (result && "authRequired" in result) {
@@ -86,7 +86,6 @@ export function OnboardingForm({ locale }: OnboardingFormProps) {
         return;
       }
       if (result && "ok" in result && result.ok) {
-        // フル読み込みでレイアウトの profile を確実に再取得（refresh+push だけだとオーバーレイが残る環境がある）
         window.location.assign(`/${locale}/dashboard`);
         return;
       }
@@ -105,17 +104,45 @@ export function OnboardingForm({ locale }: OnboardingFormProps) {
       {error && (
         <p className="rounded-lg bg-red-50 p-2 text-sm text-red-700">{error}</p>
       )}
-      <div className="flex flex-col gap-2">
-        <label htmlFor="full_name" className="text-sm font-medium text-gray-700">
-          {t("fullName")}
-        </label>
-        <input
-          id="full_name"
-          name="full_name"
-          type="text"
-          className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
-          autoComplete="name"
-        />
+      <div className="grid gap-3 sm:grid-cols-3">
+        <div className="flex flex-col gap-2 sm:col-span-1">
+          <label htmlFor="first_name" className="text-sm font-medium text-gray-700">
+            {t("firstName")} *
+          </label>
+          <input
+            id="first_name"
+            name="first_name"
+            type="text"
+            required
+            className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
+            autoComplete="given-name"
+          />
+        </div>
+        <div className="flex flex-col gap-2 sm:col-span-1">
+          <label htmlFor="middle_name" className="text-sm font-medium text-gray-700">
+            {t("middleName")}
+          </label>
+          <input
+            id="middle_name"
+            name="middle_name"
+            type="text"
+            className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
+            autoComplete="additional-name"
+          />
+        </div>
+        <div className="flex flex-col gap-2 sm:col-span-1">
+          <label htmlFor="last_name" className="text-sm font-medium text-gray-700">
+            {t("lastName")} *
+          </label>
+          <input
+            id="last_name"
+            name="last_name"
+            type="text"
+            required
+            className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
+            autoComplete="family-name"
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-2">
         <label htmlFor="title" className="text-sm font-medium text-gray-700">
@@ -146,6 +173,15 @@ export function OnboardingForm({ locale }: OnboardingFormProps) {
           className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
         />
       </div>
+      <label className="flex cursor-pointer items-center gap-2">
+        <input
+          name="share_avatar_with_students"
+          type="checkbox"
+          defaultChecked
+          className="h-4 w-4 rounded accent-green-600"
+        />
+        <span className="text-sm text-gray-700">{t("shareAvatarWithStudents")}</span>
+      </label>
       <div className="flex flex-col gap-2">
         <label htmlFor="avatar_file" className="text-sm font-medium text-gray-700">
           {t("avatarUrl")}
@@ -164,11 +200,7 @@ export function OnboardingForm({ locale }: OnboardingFormProps) {
         )}
         {avatarUrl && (
           <div className="mt-1">
-            <img
-              src={avatarUrl}
-              alt=""
-              className="h-24 w-24 rounded-full object-cover"
-            />
+            <img src={avatarUrl} alt="" className="h-24 w-24 rounded-full object-cover" />
           </div>
         )}
       </div>

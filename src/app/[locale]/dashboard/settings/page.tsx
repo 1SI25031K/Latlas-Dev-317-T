@@ -3,7 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { SettingsAppearanceSection } from "@/components/dashboard/SettingsAppearanceSection";
 import { SettingsLanguageSelect } from "@/components/dashboard/SettingsLanguageSelect";
-import { SettingsProfileSection } from "@/components/dashboard/SettingsProfileSection";
+import { SettingsAccountPreview } from "@/components/dashboard/SettingsAccountPreview";
+import { profileGreetingName } from "@/lib/profile-display";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -17,13 +18,22 @@ export default async function SettingsPage({ params }: Props) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  const { data: profile } = session
-    ? await supabase
-        .from("profiles")
-        .select("full_name, title, department, avatar_url, share_avatar_with_students, profile_updated_at")
-        .eq("id", session.user.id)
-        .single()
-    : { data: null };
+
+  let displayName: string | null = null;
+  let avatarUrl: string | null = null;
+
+  if (session?.user.id) {
+    const { data: profile } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
+    if (profile) {
+      displayName = profileGreetingName(
+        (profile as { first_name?: string | null }).first_name,
+        (profile as { middle_name?: string | null }).middle_name,
+        (profile as { last_name?: string | null }).last_name,
+        (profile as { full_name?: string | null }).full_name ?? null
+      );
+      avatarUrl = (profile as { avatar_url?: string | null }).avatar_url ?? null;
+    }
+  }
 
   return (
     <div className="p-6" style={{ color: "var(--dashboard-text)" }}>
@@ -31,7 +41,11 @@ export default async function SettingsPage({ params }: Props) {
         {t("title")}
       </h1>
 
-      <SettingsProfileSection profile={profile} />
+      <SettingsAccountPreview
+        displayName={displayName}
+        email={session?.user.email ?? null}
+        avatarUrl={avatarUrl}
+      />
 
       <section
         className="mt-6 rounded-lg border p-4"

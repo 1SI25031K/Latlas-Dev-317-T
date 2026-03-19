@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { ClassListWithDetail } from "@/components/dashboard/ClassListWithDetail";
 import { CreateClassForm } from "@/components/dashboard/CreateClassForm";
 import type { Class } from "@/types/database";
+import { profileGreetingName } from "@/lib/profile-display";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -23,7 +24,7 @@ export default async function DashboardPage({ params }: Props) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name")
+    .select("*")
     .eq("id", session.user.id)
     .single();
 
@@ -35,7 +36,15 @@ export default async function DashboardPage({ params }: Props) {
 
   const classes = (classesData ?? []) as Class[];
   const t = await getTranslations("dashboard");
-  const displayName = profile?.full_name || session.user.email || t("profile");
+  const displayName =
+    profileGreetingName(
+      (profile as { first_name?: string | null })?.first_name,
+      (profile as { middle_name?: string | null })?.middle_name,
+      (profile as { last_name?: string | null })?.last_name,
+      profile?.full_name ?? null
+    ) ||
+    session.user.email ||
+    t("profile");
 
   return (
     <div className="p-6" style={{ color: "var(--dashboard-text)" }}>

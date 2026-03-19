@@ -9,6 +9,7 @@ import { DashboardTimerProvider } from "@/components/dashboard/DashboardTimerCon
 import { DashboardOnboardingOverlay } from "@/components/dashboard/DashboardOnboardingOverlay";
 import { DashboardMfaGate } from "@/components/dashboard/DashboardMfaGate";
 import type { Class } from "@/types/database";
+import { profileGreetingName } from "@/lib/profile-display";
 
 type Props = {
   children: React.ReactNode;
@@ -30,7 +31,7 @@ export default async function DashboardLayout({ children, params }: Props) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, avatar_url, onboarding_completed_at")
+    .select("*")
     .eq("id", session.user.id)
     .single();
 
@@ -68,7 +69,14 @@ export default async function DashboardLayout({ children, params }: Props) {
             <div className="flex h-full min-h-screen w-full flex-col">
               <DashboardHeader
                 locale={locale}
-                profileName={profile?.full_name ?? null}
+                profileName={
+                  profileGreetingName(
+                    (profile as { first_name?: string | null })?.first_name,
+                    (profile as { middle_name?: string | null })?.middle_name,
+                    (profile as { last_name?: string | null })?.last_name,
+                    profile?.full_name ?? null
+                  )
+                }
                 userEmail={session.user.email ?? null}
                 avatarUrl={profile?.avatar_url ?? null}
               />

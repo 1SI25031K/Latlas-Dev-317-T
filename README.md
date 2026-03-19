@@ -27,7 +27,7 @@ cp .env.local.example .env.local
 
 - `NEXT_PUBLIC_SUPABASE_URL`: Supabase プロジェクト URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase anon (publishable) key
-- `NEXT_PUBLIC_ACCOUNT_MANAGE_URL`（任意）: アカウント管理用の別サイト URL。設定すると「アカウントを管理」リンクが表示されます。
+- `NEXT_PUBLIC_ACCOUNT_MANAGE_URL`（任意）: アカウント管理用の別サイト URL。設定すると「アカウントを管理」リンクが表示されます。本番のアカウント管理アプリは Amplify などにデプロイした URL を指定し、デプロイ時はホスティングの環境変数にも同じ値を設定して再ビルドしてください。
 
 ### 3. データベース
 

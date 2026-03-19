@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { User, Settings, LogOut, EditPencil, Bell } from "iconoir-react";
@@ -59,6 +59,8 @@ export function DashboardHeader({
   const launcherBtnRef = useRef<HTMLButtonElement>(null);
   const launcherPanelRef = useRef<HTMLDivElement>(null);
   const [launcherFixed, setLauncherFixed] = useState<{ top: number; right: number } | null>(null);
+  const [launcherPanelVisible, setLauncherPanelVisible] = useState(false);
+  const LAUNCHER_PANEL_ANIM_MS = 360;
 
   const supabase = createClient();
   const isDarkHeader = resolvedTheme === "dark";
@@ -160,6 +162,17 @@ export function DashboardHeader({
       window.removeEventListener("scroll", repositionLauncher, true);
     };
   }, [appsOpen]);
+
+  useLayoutEffect(() => {
+    if (appsOpen && launcherFixed != null) {
+      setLauncherPanelVisible(false);
+      const raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setLauncherPanelVisible(true));
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+    setLauncherPanelVisible(false);
+  }, [appsOpen, launcherFixed]);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -284,7 +297,7 @@ export function DashboardHeader({
         {appsOpen && launcherFixed != null && (
           <div
             ref={launcherPanelRef}
-            className="fixed z-[200] rounded-2xl border p-5 shadow-lg"
+            className="fixed z-[200] rounded-2xl border p-5 shadow-lg transition-[transform,opacity] ease-out"
             style={{
               top: launcherFixed.top,
               right: launcherFixed.right,
@@ -292,6 +305,9 @@ export function DashboardHeader({
               maxWidth: "calc(100vw - 12px)",
               backgroundColor: "var(--dashboard-card)",
               borderColor: "var(--dashboard-border)",
+              transform: launcherPanelVisible ? "translateY(0)" : "translateY(20px)",
+              opacity: launcherPanelVisible ? 1 : 0,
+              transitionDuration: `${LAUNCHER_PANEL_ANIM_MS}ms`,
             }}
             onMouseDown={(e) => e.stopPropagation()}
           >

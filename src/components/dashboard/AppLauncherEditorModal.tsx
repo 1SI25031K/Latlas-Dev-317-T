@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { Link2, Database, Cloud, Mail, Users } from "lucide-react";
+import { Link2, Database, Cloud, Mail, Users, GripVertical } from "lucide-react";
 import { User } from "iconoir-react";
 import {
   SiGoogledrive,
@@ -16,7 +16,7 @@ import {
   CUSTOM_ICON_PRESETS,
   createCustomLauncherItem,
   createPresetShortcutItem,
-  moveItem,
+  reorderItems,
   removeItemAt,
   writeLauncherConfig,
   readLauncherConfig,
@@ -73,17 +73,46 @@ export function AppLauncherEditorModal({ open, onClose, onSaved, avatarUrl }: Pr
     move: boolean;
   } | null>(null);
   const flyClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const initialItemsRef = useRef<LauncherItem[]>([]);
+  const [confirmExitOpen, setConfirmExitOpen] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const dragStartIndexRef = useRef<number>(0);
+  const exitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const LAUNCHER_EDITOR_ANIM_MS = 360;
 
   useEffect(() => {
     if (!open) return;
-    setItems(ensureLatlasAccountFirst(readLauncherConfig().items));
+    const loaded = ensureLatlasAccountFirst(readLauncherConfig().items);
+    setItems(loaded);
+    initialItemsRef.current = loaded;
     setUrl("");
     setName("");
     setGenericSelected(true);
     setError(null);
     setFlyPending(null);
     setFlying(null);
+    setConfirmExitOpen(false);
+    setDragOverIndex(null);
   }, [open]);
+
+  useLayoutEffect(() => {
+    if (open) {
+      setVisible(false);
+      const raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setVisible(true));
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+    setVisible(false);
+  }, [open]);
+
+  useEffect(() => {
+    return () => {
+      if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
+    };
+  }, []);
 
   useLayoutEffect(() => {
     if (!flyPending) return;
@@ -239,14 +268,38 @@ export function AppLauncherEditorModal({ open, onClose, onSaved, avatarUrl }: Pr
     }
   }
 
+  function hasUnsavedChanges(): boolean {
+    const initial = initialItemsRef.current;
+    if (initial.length !== items.length) return true;
+    return JSON.stringify(initial) !== JSON.stringify(items);
+  }
+
+  function doClose() {
+    setVisible(false);
+    if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
+    exitTimeoutRef.current = setTimeout(() => {
+      onClose();
+      exitTimeoutRef.current = null;
+    }, LAUNCHER_EDITOR_ANIM_MS);
+  }
+
+  function requestClose() {
+    if (hasUnsavedChanges()) {
+      setConfirmExitOpen(true);
+      return;
+    }
+    doClose();
+  }
+
   function handleSave() {
     if (items.length === 0) {
       setError(t("needOneItem"));
       return;
     }
     writeLauncherConfig({ items: ensureLatlasAccountFirst(items) });
+    initialItemsRef.current = ensureLatlasAccountFirst(items);
     onSaved();
-    onClose();
+    doClose();
   }
 
   function handleReset() {
@@ -291,9 +344,10 @@ export function AppLauncherEditorModal({ open, onClose, onSaved, avatarUrl }: Pr
     >
       <button
         type="button"
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 bg-black/40 transition-opacity duration-300"
+        style={{ opacity: visible ? 1 : 0 }}
         aria-label={t("close")}
-        onClick={onClose}
+        onClick={requestClose}
       />
       {flying && FlyIcon && (
         <div
@@ -309,11 +363,14 @@ export function AppLauncherEditorModal({ open, onClose, onSaved, avatarUrl }: Pr
         </div>
       )}
       <div
-        className="relative z-10 max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border p-5 shadow-xl sm:p-6"
+        className="relative z-10 max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border p-5 shadow-xl sm:p-6 transition-[transform,opacity] ease-out"
         style={{
           backgroundColor: "var(--dashboard-card)",
           borderColor: "var(--dashboard-border)",
           color: "var(--dashboard-text)",
+          transform: visible ? "translateY(0)" : "translateY(40px)",
+          opacity: visible ? 1 : 0,
+          transitionDuration: `${LAUNCHER_EDITOR_ANIM_MS}ms`,
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -321,7 +378,7 @@ export function AppLauncherEditorModal({ open, onClose, onSaved, avatarUrl }: Pr
           <h2 id="app-launcher-editor-title" className="min-w-0 flex-1 text-lg font-semibold">
             {t("title")}
           </h2>
-          <DashboardCloseButton onClick={onClose} aria-label={t("close")} />
+          <DashboardCloseButton onClick={requestClose} aria-label={t("close")} />
         </div>
 
         <ul className="mt-4 space-y-2">
@@ -345,50 +402,58 @@ export function AppLauncherEditorModal({ open, onClose, onSaved, avatarUrl }: Pr
           </li>
           {items.slice(1).map((item, i) => {
             const index = i + 1;
+            const isDropTarget = dragOverIndex === index;
             return (
               <li
                 key={item.kind === "custom" ? item.cid : item.id}
                 data-editor-launcher-cid={item.kind === "custom" ? item.cid : undefined}
-                className="flex items-center gap-2 rounded-2xl border px-2 py-2 text-sm"
-                style={{ borderColor: "var(--dashboard-border)" }}
+                draggable
+                onDragStart={(e) => {
+                  dragStartIndexRef.current = index;
+                  e.dataTransfer.effectAllowed = "move";
+                  e.dataTransfer.setData("text/plain", String(index));
+                  e.dataTransfer.setData("application/json", JSON.stringify({ index }));
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = "move";
+                  setDragOverIndex(index);
+                }}
+                onDragLeave={() => setDragOverIndex((prev) => (prev === index ? null : prev))}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const from = dragStartIndexRef.current;
+                  if (from != null && from !== index) {
+                    setItems((prev) => reorderItems(prev, from, index));
+                  }
+                  setDragOverIndex(null);
+                }}
+                onDragEnd={() => setDragOverIndex(null)}
+                className="flex cursor-grab active:cursor-grabbing items-center gap-2 rounded-2xl border px-2 py-2 text-sm"
+                style={{
+                  borderColor: isDropTarget ? "var(--dashboard-text-muted)" : "var(--dashboard-border)",
+                  backgroundColor: isDropTarget ? "var(--dashboard-nav-active-bg)" : undefined,
+                }}
               >
+                <span className="shrink-0 touch-none" aria-hidden style={{ color: "var(--dashboard-text-muted)" }}>
+                  <GripVertical className="size-4" />
+                </span>
                 {rowLeadingIcon(item)}
                 <div className="min-w-0 flex-1 truncate">
                   <span className="font-medium">{itemLabel(item)}</span>
                 </div>
-                <div className="flex shrink-0 gap-1">
-                  <button
-                    type="button"
-                    className="rounded-xl px-2 py-1 text-xs hover:opacity-80"
-                    style={{ backgroundColor: "var(--dashboard-nav-active-bg)" }}
-                    onClick={() => setItems((prev) => moveItem(prev, index, -1))}
-                    disabled={index <= 1}
-                    aria-label={t("moveUp")}
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-xl px-2 py-1 text-xs hover:opacity-80"
-                    style={{ backgroundColor: "var(--dashboard-nav-active-bg)" }}
-                    onClick={() => setItems((prev) => moveItem(prev, index, 1))}
-                    disabled={index === items.length - 1}
-                    aria-label={t("moveDown")}
-                  >
-                    ↓
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-xl px-2 py-1 text-xs text-red-600 hover:opacity-80"
-                    onClick={() => {
-                      setItems((prev) => removeItemAt(prev, index));
-                      setError(null);
-                    }}
-                    aria-label={t("remove")}
-                  >
-                    {t("remove")}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  className="shrink-0 rounded-xl px-2 py-1 text-xs text-red-600 hover:opacity-80"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setItems((prev) => removeItemAt(prev, index));
+                    setError(null);
+                  }}
+                  aria-label={t("remove")}
+                >
+                  {t("remove")}
+                </button>
               </li>
             );
           })}
@@ -492,7 +557,7 @@ export function AppLauncherEditorModal({ open, onClose, onSaved, avatarUrl }: Pr
           </button>
           <button
             type="button"
-            onClick={onClose}
+            onClick={requestClose}
             className="rounded-2xl border px-4 py-2 text-sm"
             style={{ borderColor: "var(--dashboard-border)" }}
           >
@@ -507,6 +572,57 @@ export function AppLauncherEditorModal({ open, onClose, onSaved, avatarUrl }: Pr
           </button>
         </div>
       </div>
+
+      {confirmExitOpen && (
+        <div
+          className="fixed inset-0 z-[65] flex items-center justify-center p-4"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="app-launcher-confirm-exit-title"
+        >
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setConfirmExitOpen(false)}
+            aria-hidden
+          />
+          <div
+            className="relative z-10 w-full max-w-sm rounded-2xl border p-5 shadow-xl"
+            style={{
+              backgroundColor: "var(--dashboard-card)",
+              borderColor: "var(--dashboard-border)",
+              color: "var(--dashboard-text)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 id="app-launcher-confirm-exit-title" className="text-lg font-semibold">
+              {t("confirmExitTitle")}
+            </h3>
+            <p className="mt-2 text-sm" style={{ color: "var(--dashboard-text-muted)" }}>
+              {t("confirmExitMessage")}
+            </p>
+            <div className="mt-5 flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmExitOpen(false)}
+                className="rounded-2xl border px-4 py-2 text-sm"
+                style={{ borderColor: "var(--dashboard-border)" }}
+              >
+                {t("confirmExitStay")}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setConfirmExitOpen(false);
+                  doClose();
+                }}
+                className="rounded-2xl bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+              >
+                {t("confirmExitDiscard")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

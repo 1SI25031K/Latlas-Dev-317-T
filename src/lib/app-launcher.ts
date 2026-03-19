@@ -346,6 +346,20 @@ export function moveItem(items: LauncherItem[], index: number, dir: -1 | 1): Lau
   return next;
 }
 
+/** Reorder item from fromIndex to toIndex (0-based). Index 0 is fixed (latlas_account). */
+export function reorderItems(
+  items: LauncherItem[],
+  fromIndex: number,
+  toIndex: number
+): LauncherItem[] {
+  if (fromIndex === 0 || toIndex === 0) return items;
+  if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || fromIndex >= items.length || toIndex >= items.length) return items;
+  const next = [...items];
+  const [removed] = next.splice(fromIndex, 1);
+  next.splice(toIndex, 0, removed);
+  return next;
+}
+
 export function removeItemAt(items: LauncherItem[], index: number): LauncherItem[] {
   return items.filter((_, i) => i !== index);
 }
